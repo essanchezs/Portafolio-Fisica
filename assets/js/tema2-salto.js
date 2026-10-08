@@ -86,7 +86,8 @@ window.Tema2 = (() => {
     const ghost = simulateJump({ v0: v0r, g: G_EARTH, fall: 1, vx: p.vx, maxfall: 1e9, vj: false, sus: false, half: false }, Infinity);
     pred = { p, full, tap, ghost, v0r };
     // escala vertical de la vista
-    viewH = Math.min(Math.max(6.5, full.hMax * 1.35 + 2.5), 60);
+    // la vista crece con el salto para que la trayectoria completa siempre quepa en pantalla
+    viewH = Math.min(Math.max(6.5, full.hMax * 1.3 + 2.5), 5000);
   }
 
   function step(dt) {
@@ -123,14 +124,12 @@ window.Tema2 = (() => {
     const prevY = P.y;
     P.x += P.vx * dt;
     P.y += P.vy * dt;
-    if (P.x > WORLD) P.x -= WORLD;
-    if (P.x < 0) P.x += WORLD;
 
     // colisiones: suelo y plataformas de un solo sentido
     let landed = false;
     if (P.y <= 0) { P.y = 0; landed = true; }
     else if (P.vy <= 0) {
-      for (const pl of PLATFORMS) {
+      for (const pl of platformsNear(P.x)) {
         if (P.x + PW / 2 > pl.x && P.x - PW / 2 < pl.x + pl.w && prevY >= pl.y - 1e-6 && P.y <= pl.y) {
           P.y = pl.y; landed = true; break;
         }
@@ -142,7 +141,7 @@ window.Tema2 = (() => {
     }
     if (P.onGround && !landed) {
       // ¿caminó fuera del borde de una plataforma?
-      const on = P.y <= 0 || PLATFORMS.some((pl) => Math.abs(P.y - pl.y) < 1e-6 && P.x + PW / 2 > pl.x && P.x - PW / 2 < pl.x + pl.w);
+      const on = P.y <= 0 || platformsNear(P.x).some((pl) => Math.abs(P.y - pl.y) < 1e-6 && P.x + PW / 2 > pl.x && P.x - PW / 2 < pl.x + pl.w);
       if (!on) { P.onGround = false; P.held = false; P.trace = [{ t: 0, y: 0, vy: 0 }]; P.jumpT = 0; P.jumpStart = P.y; P.apex = P.y; }
     }
     if (!P.onGround) {
@@ -150,6 +149,19 @@ window.Tema2 = (() => {
       P.apex = Math.max(P.apex, P.y);
       if (P.trace.length < 6000) P.trace.push({ t: P.jumpT, y: P.y - P.jumpStart, vy: P.vy });
     }
+  }
+
+  /** Plataformas que se repiten cada WORLD metros (x no se envuelve, así el rastro es continuo). */
+  function platformsNear(x) {
+    const k = Math.floor(x / WORLD);
+    const out = [];
+    for (let r = k - 1; r <= k + 1; r++) PLATFORMS.forEach((pl) => out.push({ x: pl.x + r * WORLD, y: pl.y, w: pl.w }));
+    return out;
+  }
+  function niceStep(x) {
+    const p = Math.pow(10, Math.floor(Math.log10(x)));
+    const m = x / p;
+    return (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p;
   }
 
   /* ---------- Dibujo ---------- */
@@ -173,16 +185,18 @@ window.Tema2 = (() => {
     ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
 
     // regla de alturas
-    const step = viewH > 30 ? 10 : viewH > 14 ? 2 : 1;
+    const step = niceStep(viewH / 7);
     ctx.font = "10.5px JetBrains Mono, monospace";
     for (let yy = 0; yy <= viewH; yy += step) {
       ctx.strokeStyle = C.grid; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(34, Y(yy)); ctx.lineTo(W, Y(yy)); ctx.stroke();
-      ctx.fillStyle = C.faint; ctx.fillText(`${yy} m`, 4, Y(yy) + 4);
+      ctx.fillStyle = C.faint; ctx.fillText(`${+yy.toFixed(2)} m`, 4, Y(yy) + 4);
     }
 
     // plataformas (repetidas)
-    for (let rep = -1; rep <= 2; rep++) {
+    const viewW = W / sc;
+    const r0 = Math.floor(camX / WORLD) - 1, r1 = Math.min(r0 + 60, Math.floor((camX + viewW) / WORLD) + 1);
+    if (0.35 * sc >= 1.5) for (let rep = r0; rep <= r1; rep++) {
       PLATFORMS.forEach((pl) => {
         const x0 = X(pl.x + rep * WORLD);
         if (x0 > W || x0 + pl.w * sc < 0) return;
@@ -195,10 +209,11 @@ window.Tema2 = (() => {
     ctx.fillStyle = C.line; ctx.fillRect(0, H - groundPx, W, groundPx);
     ctx.fillStyle = C.green; ctx.fillRect(0, H - groundPx, W, 3);
     ctx.fillStyle = C.faint;
-    const m0 = Math.ceil(camX / 2) * 2;
-    for (let xm = m0; X(xm) < W; xm += 2) {
+    const xStep = niceStep(70 / sc); // una marca cada ~70 px
+    const m0 = Math.ceil(camX / xStep) * xStep;
+    for (let xm = m0; X(xm) < W; xm += xStep) {
       ctx.fillRect(X(xm), H - groundPx + 3, 1, 6);
-      if (xm % 4 === 0) ctx.fillText(`${((xm % WORLD) + WORLD) % WORLD}`, X(xm) + 2, H - groundPx + 20);
+      ctx.fillText(`${+xm.toFixed(2)}`, X(xm) + 2, H - groundPx + 20);
     }
     ctx.fillText("x (m)", W - 40, H - 6);
 
@@ -235,14 +250,19 @@ window.Tema2 = (() => {
     }
 
     // personaje
-    const px = X(P.x - PW / 2), py = Y(P.y + PH);
+    // tamaño mínimo en pantalla para que siga visible cuando la vista se aleja mucho
+    const pw = Math.max(PW * sc, 9), ph = Math.max(PH * sc, 20);
+    const px = X(P.x) - pw / 2, py = Y(P.y) - ph;
     ctx.fillStyle = C.pink;
-    roundRect(ctx, px, py, PW * sc, PH * sc, Math.min(8, 0.25 * sc)); ctx.fill();
+    roundRect(ctx, px, py, pw, ph, Math.min(8, pw * 0.3)); ctx.fill();
     ctx.fillStyle = "#fff";
-    const eyeX = X(P.x + P.face * 0.18), eyeY = Y(P.y + PH * 0.78);
-    ctx.beginPath(); ctx.arc(eyeX, eyeY, Math.max(2, 0.09 * sc), 0, 7); ctx.fill();
-    // vector velocidad
-    if (!P.onGround) UI.arrow(ctx, X(P.x), Y(P.y + PH / 2), X(P.x) + P.vx * sc * 0.08, Y(P.y + PH / 2) - P.vy * sc * 0.08, C.text, 2);
+    const eyeX = X(P.x) + P.face * pw * 0.22, eyeY = py + ph * 0.22;
+    ctx.beginPath(); ctx.arc(eyeX, eyeY, Math.max(2, pw * 0.11), 0, 7); ctx.fill();
+    // vector velocidad (longitud en píxeles acotada)
+    if (!P.onGround) {
+      const vmag = Math.hypot(P.vx, P.vy) || 1, Lpx = Math.min(70, vmag * 4);
+      UI.arrow(ctx, X(P.x), py + ph / 2, X(P.x) + (P.vx / vmag) * Lpx, py + ph / 2 - (P.vy / vmag) * Lpx, C.text, 2);
+    }
 
     // leyenda
     ctx.font = "11px Inter, sans-serif";
@@ -393,7 +413,7 @@ window.Tema2 = (() => {
     const map = { ArrowLeft: "left", KeyA: "left", ArrowRight: "right", KeyD: "right", Space: "jump", ArrowUp: "jump", KeyW: "jump" };
     canvas.addEventListener("keydown", (e) => {
       if (map[e.code]) { keys[map[e.code]] = true; auto = false; e.preventDefault(); }
-      if (e.code === "KeyR") { P.x = 2; P.y = 0; P.vy = 0; P.onGround = true; }
+      if (e.code === "KeyR") { P.x = 2; P.y = 0; P.vy = 0; P.onGround = true; P.trailPts = []; }
     });
     canvas.addEventListener("keyup", (e) => { if (map[e.code]) { keys[map[e.code]] = false; e.preventDefault(); } });
     // botones táctiles
