@@ -235,12 +235,34 @@ window.Tema5 = (() => {
     canvas.style.cursor = "ew-resize";
 
     // marcas de tiempo del video
+    // Se usa la API del reproductor de YouTube para saltar al instante dentro de la misma
+    // sesión (sin recargar el video ni volver a mostrar anuncios).
     const iframe = document.getElementById("t5-video");
+    let player = null, playerReady = false;
+    const initPlayer = () => {
+      if (player || !window.YT || !YT.Player) return;
+      player = new YT.Player("t5-video", { events: { onReady: () => { playerReady = true; } } });
+    };
+    if (window.YT && YT.Player) initPlayer();
+    else {
+      const prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => { if (prev) prev(); initPlayer(); };
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+    }
     document.querySelectorAll(".timeline .ts").forEach((b) => {
       b.setAttribute("role", "button");
       b.setAttribute("tabindex", "0");
       const go = () => {
-        iframe.src = `https://www.youtube-nocookie.com/embed/8VBZ1upH93w?rel=0&autoplay=1&start=${b.dataset.t}`;
+        const t = parseFloat(b.dataset.t);
+        if (playerReady && player.seekTo) {
+          player.seekTo(t, true);
+          player.playVideo();
+        } else {
+          // respaldo si la API aún no cargó: recargar en el instante pedido
+          iframe.src = `https://www.youtube-nocookie.com/embed/8VBZ1upH93w?rel=0&enablejsapi=1&autoplay=1&start=${t}`;
+        }
         iframe.scrollIntoView({ behavior: "smooth", block: "center" });
       };
       b.addEventListener("click", go);
