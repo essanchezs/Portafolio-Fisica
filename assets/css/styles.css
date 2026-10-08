@@ -109,7 +109,8 @@ h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.2; letter-spac
 .nav a.future { color: var(--faint); }
 .nav a .rtype { display: block; font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
 
-.sidebar-footer { margin-top: 22px; display: flex; gap: 8px; flex-wrap: wrap; }
+.sidebar-actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 14px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.sidebar-actions .btn { flex: 1; justify-content: center; }
 
 .btn {
   font: inherit; font-size: 0.85rem; cursor: pointer;

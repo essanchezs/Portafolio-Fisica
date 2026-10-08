@@ -3,6 +3,9 @@
 Universidad CENFOTEC · Escuela de Fundamentos · Período 2026-C3 · Sección FCV1
 Estudiante: **Esteban Sánchez** · Docente: Andrés Castro Núñez
 
+- Sitio publicado: https://essanchezs.github.io/Portafolio-Fisica/
+- Repositorio: https://github.com/essanchezs/Portafolio-Fisica
+
 Página web personal donde documento cómo la física mecánica vista en clase aparece en el desarrollo de software real.
 El portafolio es acumulativo: la estructura ya contempla los 13 temas del curso.
 
