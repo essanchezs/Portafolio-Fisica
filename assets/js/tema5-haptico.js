@@ -175,8 +175,88 @@ window.Tema5 = (() => {
     `;
   }
 
+  /* ---------- Zona interactiva: la rana con traje de resorte ---------- */
+  // Escala del juego: cada 10 mJ almacenados en el gatillo equivalen a 1 m de salto (U = m·g·h en el mundo del juego).
+  const MJ_PER_M = 10;
+  const LEDGES = [0.8, 1.6, 2.4, 3.2, 4.2];
+  const frog = { y: 0, vy: 0, flying: false, best: 0, peak: 0, ctx: null, cssW: 0, w: 0, h: 0, raf: 0, stars: new Set() };
+
+  function sizeFrog() {
+    const cv = document.getElementById("t5-frog");
+    const cssW = cv.parentElement.clientWidth;
+    if (frog.ctx && frog.cssW === cssW) return;
+    const r = UI.fitCanvas(cv, 0.62);
+    Object.assign(frog, { ctx: r.ctx, w: r.w, h: r.h, cssW });
+  }
+
+  function drawFrog() {
+    sizeFrog();
+    const { ctx, w, h } = frog, P = UI.palette();
+    const top = 5.2, ground = h - 22, sc = (ground - 16) / top;
+    const Y = (m) => ground - m * sc;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = P.panel2; ctx.fillRect(0, 0, w, h);
+    // repisas con estrellas
+    ctx.font = "10.5px JetBrains Mono, monospace";
+    LEDGES.forEach((hh, i) => {
+      const lx = w * 0.56 + (i % 2) * w * 0.14;
+      ctx.fillStyle = P.line; ctx.fillRect(lx, Y(hh), w * 0.22, 5);
+      ctx.fillStyle = frog.stars.has(i) ? P.amber : P.faint; ctx.font = "16px sans-serif";
+      ctx.fillText(frog.stars.has(i) ? "★" : "☆", lx + w * 0.08, Y(hh) - 6);
+      ctx.fillStyle = P.faint; ctx.font = "10.5px JetBrains Mono, monospace"; ctx.fillText(hh + " m", lx + w * 0.16, Y(hh) - 6);
+    });
+    // suelo
+    ctx.fillStyle = P.green; ctx.fillRect(0, ground, w, 3);
+    // resorte: se comprime según la posición actual del gatillo
+    const cx = w * 0.28, comp = frog.flying ? 0 : x / XMAX;
+    const springTop = Y(0) - (46 - 30 * comp);
+    const baseY = frog.flying ? Y(frog.y) : springTop;
+    ctx.strokeStyle = P.muted; ctx.lineWidth = 2.5; ctx.beginPath();
+    const coils = 7, bottom = frog.flying ? baseY + 46 : ground;
+    for (let i = 0; i <= coils * 2; i++) { const yy = baseY + ((bottom - baseY) * i) / (coils * 2); ctx.lineTo(cx + (i % 2 ? 12 : -12), yy); }
+    ctx.stroke();
+    // rana
+    const fy = baseY - 16;
+    ctx.fillStyle = P.green; ctx.beginPath(); ctx.ellipse(cx, fy, 22, 16, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = "#fff"; [-9, 9].forEach((dx) => { ctx.beginPath(); ctx.arc(cx + dx, fy - 14, 6, 0, 7); ctx.fill(); });
+    ctx.fillStyle = "#111"; [-9, 9].forEach((dx) => { ctx.beginPath(); ctx.arc(cx + dx + 1, fy - 14, 2.6, 0, 7); ctx.fill(); });
+    ctx.strokeStyle = "#0b3"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, fy + 2, 8, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+    // marca de la altura máxima del último salto
+    if (frog.peak > 0) {
+      ctx.setLineDash([4, 4]); ctx.strokeStyle = P.amber; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(cx - 40, Y(frog.peak) - 46); ctx.lineTo(w - 10, Y(frog.peak) - 46); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = P.amber; ctx.font = "700 11px Inter, sans-serif"; ctx.fillText(`h = ${UI.fmt(frog.peak, 2)} m`, 8, Y(frog.peak) - 50);
+    }
+    // texto de ayuda
+    ctx.fillStyle = P.muted; ctx.font = "11px Inter, sans-serif";
+    const U = energy(x);
+    ctx.fillText(frog.flying ? "¡Salto!" : x > 0.05 ? `Cargando: U = ${UI.fmt(U, 1)} mJ → h = ${UI.fmt(U / MJ_PER_M, 2)} m` : "Apriete el gatillo (arrastre sobre su dibujo) y suéltelo", 8, 16);
+    ctx.fillText(`Estrellas: ${frog.stars.size}/${LEDGES.length}`, w - 96, 16);
+  }
+
+  /** Lanza la rana con la energía almacenada: v0 = √(2gh) con h = U/escala. */
+  function launchFrog(U) {
+    const h = U / MJ_PER_M;
+    if (h < 0.05) return;
+    cancelAnimationFrame(frog.raf);
+    const g = 9.81;
+    frog.y = 0; frog.vy = Math.sqrt(2 * g * h); frog.flying = true; frog.peak = 0;
+    let last = performance.now();
+    const stepJ = (now) => {
+      const dt = Math.min(0.03, (now - last) / 1000); last = now;
+      frog.vy -= g * dt; frog.y += frog.vy * dt;
+      frog.peak = Math.max(frog.peak, frog.y);
+      LEDGES.forEach((hh, i) => { if (frog.peak >= hh) frog.stars.add(i); });
+      if (frog.y <= 0) { frog.y = 0; frog.flying = false; drawFrog(); return; }
+      drawFrog();
+      frog.raf = requestAnimationFrame(stepJ);
+    };
+    frog.raf = requestAnimationFrame(stepJ);
+  }
+
   function render() {
     drawTrigger();
+    if (!frog.flying) drawFrog();
     readouts();
     if (chart) updateChart();
   }
@@ -188,6 +268,7 @@ window.Tema5 = (() => {
   }
 
   function release() {
+    launchFrog(energy(x)); // la energía guardada en el gatillo se convierte en salto
     releasing = true;
     vxl = 0;
     let last = performance.now();
@@ -270,8 +351,8 @@ window.Tema5 = (() => {
     });
 
     resize();
-    window.addEventListener("resize", () => { resize(); drawTrigger(); });
-    UI.onTheme(() => { makeChart(); drawTrigger(); });
+    window.addEventListener("resize", () => { resize(); drawTrigger(); frog.cssW = 0; drawFrog(); });
+    UI.onTheme(() => { makeChart(); drawTrigger(); drawFrog(); });
     makeChart();
     setX(6);
   }

@@ -194,6 +194,152 @@ window.Tema4 = (() => {
     UI.downloadCSV("llantas_mu_vs_temperatura.csv", ["T_C", "mu_C1", "mu_C2", "mu_C3", "mu_C4", "mu_C5"], rows);
   }
 
+  /* ---------- Zona interactiva: tomar una curva con un F1 ---------- */
+  const lap = { t: 0, running: false, raf: 0, ctx: null, cssW: 0, w: 0, h: 0, result: null };
+  const HALF_ROAD = 7; // media anchura de la pista (m)
+
+  function lapModel() {
+    const sel = c.comp.value, T = c.T.value, R = c.R.value, p = c.pdy2.value;
+    const mu0 = muT(sel, T);
+    const v = c.vin.value / 3.6;
+    const vMax = vmax(R, mu0, p, "mf");
+    const { m, rho, CLA, g } = CAR;
+    const N = m * g + 0.5 * rho * CLA * v * v;
+    const aAvail = (4 * muLoad(mu0, N / 4, p) * (N / 4)) / m; // aceleración lateral que la fricción puede dar
+    const aNeed = (v * v) / R;
+    const Ract = aNeed > aAvail ? (v * v) / aAvail : R; // radio que la llanta logra sostener
+    return { sel, T, R, mu0, v, vMax, aAvail, aNeed, Ract, ok: aNeed <= aAvail };
+  }
+
+  function tireColor(sel, T, P) {
+    const k = COMPOUNDS[sel];
+    if (T < k.lo) return P.accent; // fría
+    if (T > k.hi) return P.danger; // sobrecalentada
+    return P.green; // dentro de la ventana
+  }
+
+  /** Posición sobre un arco de radio Rr que arranca en (0,0) hacia +y y gira a la derecha. */
+  function arcPos(Rr, s) {
+    const phi = Math.PI - s / Rr;
+    return { x: Rr + Rr * Math.cos(phi), y: Rr * Math.sin(phi), head: Math.atan2(-Math.cos(phi), Math.sin(phi)) };
+  }
+
+  function drawLap() {
+    const cv = document.getElementById("t4-play");
+    const cssW = cv.parentElement.clientWidth;
+    if (!lap.ctx || lap.cssW !== cssW) { const r = UI.fitCanvas(cv, window.innerWidth < 700 ? 0.9 : 0.46); Object.assign(lap, { ctx: r.ctx, w: r.w, h: r.h, cssW }); }
+    const { ctx, w, h } = lap, P = UI.palette(), m = lapModel();
+    const R = m.R, arcLen = (Math.PI / 2) * R;
+    // encuadre: recta de entrada, curva de 90° y recta de salida
+    const minX = -HALF_ROAD - 30, maxX = R + R * 0.35 + 30, minY = -R * 0.45, maxY = R + HALF_ROAD + 30;
+    const sc = Math.min((w - 30) / (maxX - minX), (h - 30) / (maxY - minY));
+    const X = (x) => 15 + (x - minX) * sc, Y = (y) => h - 15 - (y - minY) * sc;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = P.panel2; ctx.fillRect(0, 0, w, h);
+    // grava (zona de escape) y pista
+    const road = (Rr, col, width) => {
+      ctx.strokeStyle = col; ctx.lineWidth = width * sc; ctx.lineCap = "butt";
+      ctx.beginPath(); ctx.moveTo(X(0), Y(minY)); ctx.lineTo(X(0), Y(0));
+      for (let i = 0; i <= 60; i++) { const q = arcPos(Rr, (arcLen * i) / 60); ctx.lineTo(X(q.x), Y(q.y)); }
+      ctx.lineTo(X(maxX), Y(R)); ctx.stroke();
+    };
+    road(R, hexA(P.amber, 0.18), HALF_ROAD * 2 + 24);
+    road(R, P.line, HALF_ROAD * 2);
+    // pianos (curbs) en el borde interior y exterior
+    ctx.setLineDash([6, 6]); ctx.strokeStyle = P.danger; ctx.lineWidth = 3;
+    [R - HALF_ROAD, R + HALF_ROAD].forEach((rr) => {
+      ctx.beginPath();
+      for (let i = 0; i <= 60; i++) { const a = Math.PI - (Math.PI / 2) * (i / 60); const x = R + rr * Math.cos(a), y = rr * Math.sin(a); i ? ctx.lineTo(X(x), Y(y)) : ctx.moveTo(X(x), Y(y)); }
+      ctx.stroke();
+    });
+    ctx.setLineDash([]);
+    ctx.fillStyle = P.muted; ctx.font = "600 11px Inter, sans-serif";
+    ctx.fillText(`Curva de R = ${R} m`, X(R) - 40, Y(R * 0.35));
+    ctx.fillText("zona de escape (grava)", X(R + HALF_ROAD + 4), Y(R * 0.2));
+
+    // trayectoria del auto: si la fricción no alcanza, describe un arco más abierto (R_real = v²/a_max)
+    const travel = lap.t * m.v; // metros recorridos
+    const sOnArc = Math.min(travel, (Math.PI / 2) * m.Ract);
+    let pos = arcPos(m.Ract, sOnArc);
+    let offRoad = false;
+    if (!m.ok) {
+      const dist = Math.hypot(pos.x - R, pos.y) - R; // cuánto se abrió respecto al centro de la pista
+      offRoad = dist > HALF_ROAD;
+    }
+    if (travel > (Math.PI / 2) * m.Ract) { const extra = travel - (Math.PI / 2) * m.Ract; pos = { x: pos.x + extra, y: pos.y, head: 0 }; }
+    // huellas de derrape
+    if (!m.ok && lap.t > 0) {
+      ctx.strokeStyle = "rgba(0,0,0,0.35)"; ctx.lineWidth = 2;
+      ctx.beginPath(); for (let i = 0; i <= 40; i++) { const q = arcPos(m.Ract, (sOnArc * i) / 40); i ? ctx.lineTo(X(q.x), Y(q.y)) : ctx.moveTo(X(q.x), Y(q.y)); } ctx.stroke();
+    }
+    // auto (vista superior) con llantas coloreadas por temperatura
+    const carL = Math.max(5.6 * sc, 40), carW = Math.max(2 * sc, 16);
+    const tc = tireColor(m.sel, m.T, P);
+    ctx.save(); ctx.translate(X(pos.x), Y(pos.y)); ctx.rotate(-pos.head);
+    ctx.fillStyle = tc;
+    [[0.3, 0.55], [0.3, -0.55], [-0.32, 0.55], [-0.32, -0.55]].forEach(([fx, fy]) => ctx.fillRect(fx * carL - carL * 0.09, fy * carW - carW * 0.18, carL * 0.18, carW * 0.36));
+    ctx.shadowColor = P.pink; ctx.shadowBlur = 10;
+    ctx.fillStyle = P.pink;
+    ctx.beginPath(); ctx.moveTo(carL * 0.5, 0); ctx.lineTo(carL * 0.1, carW * 0.28); ctx.lineTo(-carL * 0.45, carW * 0.32); ctx.lineTo(-carL * 0.45, -carW * 0.32); ctx.lineTo(carL * 0.1, -carW * 0.28); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = P.text; ctx.fillRect(-carL * 0.5, -carW * 0.5, carL * 0.08, carW); // alerón trasero
+    ctx.fillRect(carL * 0.42, -carW * 0.45, carL * 0.06, carW * 0.9); // alerón delantero
+    ctx.shadowBlur = 0;
+    ctx.restore();
+
+    // mensaje
+    const done = lap.t > 0 && travel >= (Math.PI / 2) * m.Ract;
+    if (lap.t > 0 && (done || offRoad)) {
+      ctx.font = "800 16px Inter, sans-serif";
+      ctx.fillStyle = m.ok ? P.green : P.danger;
+      ctx.fillText(m.ok ? "✓ ¡Tomó la curva!" : "✗ ¡Se salió a la grava!", 16, 26);
+    }
+    // medidor de g lateral
+    const gx = w - 150, gy = 18;
+    ctx.fillStyle = P.muted; ctx.font = "600 11px Inter, sans-serif"; ctx.fillText("g lateral: pedido vs. disponible", gx - 30, gy);
+    const bar = (val, y, col, label) => {
+      const max = Math.max(m.aNeed, m.aAvail) / 9.81 * 1.15;
+      ctx.fillStyle = P.line; ctx.fillRect(gx - 30, y, 170, 8);
+      ctx.fillStyle = col; ctx.fillRect(gx - 30, y, (val / 9.81 / max) * 170, 8);
+      ctx.fillStyle = P.text; ctx.font = "11px JetBrains Mono, monospace"; ctx.fillText(`${label} ${UI.fmt(val / 9.81, 2)} g`, gx - 30, y + 22);
+    };
+    bar(m.aNeed, gy + 8, m.ok ? P.accent : P.danger, "pide");
+    bar(m.aAvail, gy + 38, tc, "da  ");
+
+    const f = UI.fmt;
+    document.getElementById("t4-play-ro").innerHTML = `
+      <div class="ro"><div class="k">Velocidad máxima en esta curva</div><div class="v">${f(m.vMax * 3.6, 0)} <small>km/h</small></div></div>
+      <div class="ro"><div class="k">a pedida = v²/R</div><div class="v">${f(m.aNeed / 9.81, 2)} <small>g</small></div></div>
+      <div class="ro"><div class="k">a disponible = μN/m</div><div class="v">${f(m.aAvail / 9.81, 2)} <small>g</small></div></div>
+      <div class="ro"><div class="k">Llantas (${m.sel} a ${m.T} °C)</div><div class="v" style="color:${tc}">${m.T < COMPOUNDS[m.sel].lo ? "frías" : m.T > COMPOUNDS[m.sel].hi ? "sobrecalentadas" : "en ventana"}</div></div>`;
+  }
+
+  function runLap() {
+    cancelAnimationFrame(lap.raf);
+    const m = lapModel();
+    lap.t = 0;
+    const total = ((Math.PI / 2) * m.Ract + 40) / m.v; // segundos reales hasta salir de la curva
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { lap.t = total; drawLap(); return; }
+    const speedup = total / 2.6; // la animación dura ~2,6 s
+    let last = performance.now();
+    const stepAnim = (now) => {
+      lap.t += ((now - last) / 1000) * speedup; last = now;
+      drawLap();
+      if (lap.t < total) lap.raf = requestAnimationFrame(stepAnim);
+    };
+    lap.raf = requestAnimationFrame(stepAnim);
+  }
+
+  function initLap() {
+    c.vin = UI.bindRange("t4-vin", (v) => `${v} km/h`, () => { lap.t = 0; drawLap(); });
+    document.getElementById("t4-go").addEventListener("click", runLap);
+    document.getElementById("t4-warm").addEventListener("click", () => { c.T.set(Math.min(170, c.T.value + 10)); lap.t = 0; drawLap(); });
+    document.getElementById("t4-cool").addEventListener("click", () => { c.T.set(Math.max(40, c.T.value - 10)); lap.t = 0; drawLap(); });
+    ["t4-T", "t4-R", "t4-pdy2", "t4-comp"].forEach((id) => document.getElementById(id).addEventListener(id === "t4-comp" ? "change" : "input", () => { lap.t = 0; drawLap(); }));
+    window.addEventListener("resize", () => { lap.cssW = 0; drawLap(); });
+    UI.onTheme(drawLap);
+    drawLap();
+  }
+
   function init() {
     c.comp = document.getElementById("t4-comp");
     c.T = UI.bindRange("t4-T", (v) => `${v} °C`, update);
@@ -205,6 +351,7 @@ window.Tema4 = (() => {
     document.getElementById("t4-csv").addEventListener("click", exportCSV);
     UI.onTheme(makeCharts);
     makeCharts();
+    initLap();
   }
 
   return { init };

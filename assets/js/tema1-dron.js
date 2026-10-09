@@ -216,88 +216,219 @@ window.Tema1 = (() => {
     return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
   }
 
-  /* ---------- Mapa ---------- */
-  function drawMap() {
+  /* ---------- Escena del mapa (zona interactiva) ---------- */
+  const scene = { ctx: null, w: 0, h: 0, cssW: 0, rotor: 0, particles: [], drag: null, city: null, cityKey: "" };
+
+  function sizeMap() {
     const canvas = document.getElementById("t1-map");
-    const { ctx, w, h } = UI.fitCanvas(canvas, window.innerWidth < 700 ? 0.8 : 0.48);
-    const P = UI.palette();
-    const d = state.data;
+    const cssW = canvas.parentElement.clientWidth;
+    if (scene.ctx && scene.cssW === cssW) return;
+    const r = UI.fitCanvas(canvas, window.innerWidth < 700 ? 0.8 : 0.5);
+    Object.assign(scene, { ctx: r.ctx, w: r.w, h: r.h, cssW });
+  }
+
+  /** Geometría de pantalla: escala (px/m) y transformaciones mundo → pantalla. */
+  function view() {
+    const d = state.data, w = scene.w, h = scene.h;
     const xs = d.pts.map((p) => p.x), ys = d.pts.map((p) => p.y);
-    let minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
-    const pad = 46;
-    const span = Math.max(maxX - minX, (maxY - minY) * (w - 2 * pad) / (h - 2 * pad), 1);
+    const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+    const pad = 54;
     const sc = Math.min((w - 2 * pad) / (maxX - minX || 1), (h - 2 * pad) / (maxY - minY || 1));
     const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
-    const X = (x) => w / 2 + (x - cx) * sc;
-    const Y = (y) => h / 2 - (y - cy) * sc;
+    return { sc, cx, cy, X: (x) => w / 2 + (x - cx) * sc, Y: (y) => h / 2 - (y - cy) * sc, inv: (px, py) => ({ x: (px - w / 2) / sc + cx, y: -(py - h / 2) / sc + cy }) };
+  }
 
+  /** Manzanas y árboles generados de forma determinista alrededor de la ruta (solo decorativos). */
+  function buildCity(V) {
+    const key = ctrl.route.value + "|" + scene.w + "x" + scene.h;
+    if (scene.city && scene.cityKey === key) return scene.city;
+    const rnd = mulberry32(ctrl.route.value.charCodeAt(0) * 97);
+    const pts = state.data.pts.filter((_, i) => i % 40 === 0);
+    const far = (x, y, m) => pts.every((p) => Math.hypot(p.x - x, p.y - y) > m);
+    const tl = V.inv(0, 0), br = V.inv(scene.w, scene.h);
+    const cell = 70, blocks = [], trees = [];
+    for (let gx = Math.floor(tl.x / cell) * cell; gx < br.x + cell; gx += cell) {
+      for (let gy = Math.floor(br.y / cell) * cell; gy < tl.y + cell; gy += cell) {
+        const bw = 34 + rnd() * 22, bh = 30 + rnd() * 24, x = gx + (cell - bw) / 2, y = gy + (cell - bh) / 2;
+        if (far(x + bw / 2, y + bh / 2, 46)) blocks.push({ x, y, w: bw, h: bh, tone: rnd(), floors: 1 + Math.floor(rnd() * 4) });
+        else if (far(gx + cell / 2, gy + cell / 2, 22) && rnd() > 0.35) trees.push({ x: gx + rnd() * cell, y: gy + rnd() * cell, r: 4 + rnd() * 5 });
+      }
+    }
+    scene.city = { blocks, trees }; scene.cityKey = key;
+    return scene.city;
+  }
+
+  function drawDrone(ctx, x, y, ang, s, rotor, P, tilt) {
+    ctx.save();
+    // sombra en el suelo
+    ctx.fillStyle = "rgba(0,0,0,0.22)";
+    ctx.beginPath(); ctx.ellipse(x + 10, y + 14, s * 0.9, s * 0.55, ang, 0, 7); ctx.fill();
+    ctx.translate(x - tilt.x, y - tilt.y); ctx.rotate(ang);
+    // brazos en X
+    ctx.strokeStyle = P.text; ctx.lineWidth = Math.max(2, s * 0.14); ctx.lineCap = "round";
+    const arm = s * 0.9;
+    const corners = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
+    corners.forEach(([a, b]) => { ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(a * arm * 0.7, b * arm * 0.7); ctx.stroke(); });
+    // rotores girando
+    corners.forEach(([a, b], i) => {
+      const rx = a * arm * 0.7, ry = b * arm * 0.7;
+      ctx.fillStyle = "rgba(160,170,200,0.25)"; ctx.beginPath(); ctx.arc(rx, ry, s * 0.42, 0, 7); ctx.fill();
+      ctx.strokeStyle = P.muted; ctx.lineWidth = 1.6;
+      const ph = rotor * (i % 2 ? 1 : -1);
+      ctx.beginPath(); ctx.moveTo(rx + Math.cos(ph) * s * 0.4, ry + Math.sin(ph) * s * 0.4); ctx.lineTo(rx - Math.cos(ph) * s * 0.4, ry - Math.sin(ph) * s * 0.4); ctx.stroke();
+    });
+    // cuerpo, paquete y luz del frente
+    ctx.fillStyle = P.accent; ctx.beginPath(); ctx.ellipse(0, 0, s * 0.42, s * 0.3, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = P.amber; ctx.fillRect(-s * 0.16, -s * 0.16, s * 0.32, s * 0.32);
+    ctx.fillStyle = P.pink; ctx.beginPath(); ctx.arc(s * 0.36, 0, s * 0.08, 0, 7); ctx.fill();
+    ctx.restore();
+  }
+
+  function drawMap() {
+    sizeMap();
+    const { ctx, w, h } = scene;
+    const P = UI.palette();
+    const d = state.data;
+    const V = view(), { X, Y, sc } = V;
     ctx.clearRect(0, 0, w, h);
-    // cuadrícula con escala en metros
-    const stepM = niceStep(span / 8);
-    ctx.strokeStyle = P.grid; ctx.lineWidth = 1; ctx.fillStyle = P.faint; ctx.font = "10.5px JetBrains Mono, monospace";
-    const gx0 = Math.floor((cx - w / 2 / sc) / stepM) * stepM;
-    for (let gx = gx0; X(gx) < w; gx += stepM) {
-      ctx.beginPath(); ctx.moveTo(X(gx), 0); ctx.lineTo(X(gx), h); ctx.stroke();
-      ctx.fillText(`${Math.round(gx)}`, X(gx) + 3, h - 6);
-    }
-    const gy0 = Math.floor((cy - h / 2 / sc) / stepM) * stepM;
-    for (let gy = gy0; Y(gy) > 0; gy += stepM) {
-      ctx.beginPath(); ctx.moveTo(0, Y(gy)); ctx.lineTo(w, Y(gy)); ctx.stroke();
-      ctx.fillText(`${Math.round(gy)}`, 4, Y(gy) - 3);
-    }
-    ctx.fillStyle = P.muted; ctx.font = "600 11px Inter, sans-serif";
-    ctx.fillText("x (m, este) →", w - 96, h - 20);
-    ctx.fillText("↑ y (m, norte)", 12, 38);
 
-    // ruta coloreada por rapidez
+    // suelo, manzanas y árboles
+    ctx.fillStyle = P.panel2; ctx.fillRect(0, 0, w, h);
+    const city = buildCity(V);
+    city.blocks.forEach((b) => {
+      const x = X(b.x), y = Y(b.y + b.h), bw = b.w * sc, bh = b.h * sc;
+      ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + 2 + b.floors, y + 2 + b.floors, bw, bh);
+      ctx.fillStyle = b.tone > 0.5 ? P.line : P.panel; ctx.fillRect(x, y, bw, bh);
+      ctx.strokeStyle = P.grid; ctx.lineWidth = 1; ctx.strokeRect(x, y, bw, bh);
+    });
+    city.trees.forEach((t) => { ctx.fillStyle = hexA(P.green, 0.35); ctx.beginPath(); ctx.arc(X(t.x), Y(t.y), Math.max(2, t.r * sc), 0, 7); ctx.fill(); });
+
+    // ruta planificada (punteada) y tramo ya volado (color por rapidez)
+    ctx.setLineDash([6, 6]); ctx.strokeStyle = P.muted; ctx.lineWidth = 2;
+    ctx.beginPath(); d.rows.forEach((r, i) => (i ? ctx.lineTo(X(r.x), Y(r.y)) : ctx.moveTo(X(r.x), Y(r.y)))); ctx.stroke(); ctx.setLineDash([]);
     const vmax = Math.max(...d.rows.map((r) => r.v), 1);
-    for (let i = 1; i < d.rows.length; i++) {
+    const iNow = Math.min(d.rows.length - 1, Math.round(state.t / DT));
+    for (let i = 1; i <= iNow; i++) {
       const r0 = d.rows[i - 1], r1 = d.rows[i];
-      ctx.strokeStyle = speedColor(r1.v / vmax);
-      ctx.lineWidth = 4; ctx.lineCap = "round";
+      ctx.strokeStyle = speedColor(r1.v / vmax); ctx.lineWidth = 4.5; ctx.lineCap = "round";
       ctx.beginPath(); ctx.moveTo(X(r0.x), Y(r0.y)); ctx.lineTo(X(r1.x), Y(r1.y)); ctx.stroke();
     }
-    // puntos de GPS ruidoso
     if (ctrl.noise.checked) {
       ctx.fillStyle = P.faint;
       d.noisy.forEach((p, i) => { if (i % 2 === 0) { ctx.beginPath(); ctx.arc(X(p.x), Y(p.y), 1.3, 0, 7); ctx.fill(); } });
     }
-    // inicio y destino
+
+    // centro de distribución y cliente
     const first = d.rows[0], last = d.rows[d.rows.length - 1];
-    marker(ctx, X(first.x), Y(first.y), P.green, "Centro de distribución");
-    marker(ctx, X(last.x), Y(last.y), P.pink, d.route.name === "Circuito de inspección" ? "" : "Cliente");
+    const building = (x, y, col, label, roof) => {
+      ctx.fillStyle = col; ctx.fillRect(x - 13, y - 9, 26, 18);
+      ctx.fillStyle = P.text; ctx.beginPath(); ctx.moveTo(x - 16, y - 9); ctx.lineTo(x, y - 20); ctx.lineTo(x + 16, y - 9); ctx.closePath(); ctx.fill();
+      ctx.font = "600 11px Inter, sans-serif"; ctx.fillStyle = P.text; ctx.fillText(label, x + 18, y + 18);
+      if (roof) { ctx.fillStyle = P.panel; ctx.font = "700 9px Inter, sans-serif"; ctx.fillText(roof, x - 3, y + 4); }
+    };
+    building(X(first.x), Y(first.y), P.green, "Centro de distribución", "H");
+    if (d.route.name !== "Circuito de inspección") building(X(last.x), Y(last.y), P.pink, iNow >= d.rows.length - 1 ? "Cliente · ¡entregado!" : "Cliente", "");
 
-    // leyenda de rapidez
-    const lgW = 120;
-    const grd = ctx.createLinearGradient(w - lgW - 16, 0, w - 16, 0);
-    grd.addColorStop(0, speedColor(0)); grd.addColorStop(0.5, speedColor(0.5)); grd.addColorStop(1, speedColor(1));
-    ctx.fillStyle = grd; ctx.fillRect(w - lgW - 16, 14, lgW, 6);
-    ctx.fillStyle = P.muted; ctx.font = "10.5px Inter, sans-serif";
-    ctx.fillText("0", w - lgW - 16, 34);
-    ctx.textAlign = "right"; ctx.fillText(`${vmax.toFixed(1)} m/s`, w - 16, 34); ctx.textAlign = "left";
-    ctx.fillText("rapidez |v|", w - lgW - 16, 10);
-
-    // viento
-    if (d.wind.W > 0) {
-      const ox = w - 60, oy = 70, L = 16 + d.wind.W * 3;
-      UI.arrow(ctx, ox - (d.wind.x / d.wind.W) * L / 2, oy + (d.wind.y / d.wind.W) * L / 2, ox + (d.wind.x / d.wind.W) * L / 2, oy - (d.wind.y / d.wind.W) * L / 2, P.amber, 2.5);
-      ctx.fillStyle = P.amber; ctx.fillText(`viento ${d.wind.W} m/s`, ox - 40, oy + 34);
+    // partículas de viento (se mueven en la dirección del vector viento real)
+    const W = d.wind;
+    if (W.W > 0) {
+      ctx.strokeStyle = hexA(P.amber, 0.55); ctx.lineWidth = 1.4;
+      const ux = W.x / W.W, uy = -W.y / W.W, len = 6 + W.W * 1.6;
+      scene.particles.forEach((p) => { ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - ux * len, p.y - uy * len); ctx.stroke(); });
     }
 
-    // dron en el tiempo t con vectores
+    // dron: apunta según su velocidad respecto al aire y se inclina hacia donde acelera
     const r = sampleAt(state.t);
     const px = X(r.x), py = Y(r.y);
-    const vScale = 6, aScale = 20;
-    UI.arrow(ctx, px, py, px + r.vx * vScale, py - r.vy * vScale, P.accent, 2.6);
-    UI.arrow(ctx, px, py, px + r.ax * aScale, py - r.ay * aScale, P.pink, 2.6);
-    ctx.fillStyle = P.text; ctx.strokeStyle = P.panel; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.arc(px, py, 6.5, 0, 7); ctx.fill(); ctx.stroke();
-    // etiquetas de vectores
-    ctx.font = "600 11px Inter, sans-serif";
-    ctx.fillStyle = P.accent; ctx.fillText("v", px + r.vx * vScale + 6, py - r.vy * vScale);
-    ctx.fillStyle = P.pink; if (r.a > 0.05) ctx.fillText("a", px + r.ax * aScale + 6, py - r.ay * aScale);
+    const vax = r.vx - W.x, vay = r.vy - W.y;
+    const heading = Math.hypot(vax, vay) > 0.3 ? Math.atan2(-vay, vax) : Math.atan2(-r.vy, r.vx || 1);
+    const tilt = { x: r.ax * 1.2, y: -r.ay * 1.2 };
+    if (ctrl.vectors.checked) {
+      const vScale = 6, aScale = 20;
+      UI.arrow(ctx, px, py, px + r.vx * vScale, py - r.vy * vScale, P.accent, 2.6);
+      if (r.a > 0.05) UI.arrow(ctx, px, py, px + r.ax * aScale, py - r.ay * aScale, P.pink, 2.6);
+      ctx.font = "700 12px Inter, sans-serif";
+      ctx.fillStyle = P.accent; ctx.fillText("v", px + r.vx * vScale + 6, py - r.vy * vScale);
+      ctx.fillStyle = P.pink; if (r.a > 0.05) ctx.fillText("a", px + r.ax * aScale + 6, py - r.ay * aScale);
+    }
+    drawDrone(ctx, px, py, heading, 20, scene.rotor, P, tilt);
+
+    // brújula de viento
+    const ox = w - 52, oy = 62;
+    ctx.fillStyle = hexA(P.panel, 0.85); ctx.beginPath(); ctx.arc(ox, oy, 30, 0, 7); ctx.fill();
+    ctx.strokeStyle = P.line; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = P.muted; ctx.font = "700 9px Inter, sans-serif"; ctx.textAlign = "center";
+    ctx.fillText("N", ox, oy - 19); ctx.fillText("E", ox + 21, oy + 3); ctx.fillText("S", ox, oy + 25); ctx.fillText("O", ox - 21, oy + 3);
+    if (W.W > 0) UI.arrow(ctx, ox - (W.x / W.W) * 14, oy + (W.y / W.W) * 14, ox + (W.x / W.W) * 16, oy - (W.y / W.W) * 16, P.amber, 2.5);
+    ctx.fillStyle = W.W > 0 ? P.amber : P.faint; ctx.font = "600 10.5px Inter, sans-serif";
+    ctx.fillText(W.W > 0 ? `viento ${UI.fmt(W.W, 1)} m/s` : "sin viento", ox, oy + 46);
+    ctx.textAlign = "left";
+    // barra de escala y leyenda de rapidez
+    const barM = niceStep(140 / sc);
+    ctx.fillStyle = P.text; ctx.fillRect(14, h - 22, barM * sc, 3);
+    ctx.font = "10.5px JetBrains Mono, monospace"; ctx.fillText(`${barM} m`, 14, h - 28);
+    const lgW = 110, lx = 14, ly = 16;
+    const grd = ctx.createLinearGradient(lx, 0, lx + lgW, 0);
+    grd.addColorStop(0, speedColor(0)); grd.addColorStop(0.5, speedColor(0.5)); grd.addColorStop(1, speedColor(1));
+    ctx.fillStyle = grd; ctx.fillRect(lx, ly + 6, lgW, 5);
     ctx.fillStyle = P.muted; ctx.font = "10.5px Inter, sans-serif";
-    ctx.fillText(`Escala de vectores: v ×${vScale} px/(m/s) · a ×${aScale} px/(m/s²)`, 12, 18);
+    ctx.fillText(`rapidez: 0 → ${vmax.toFixed(1)} m/s`, lx, ly);
+    // flecha mientras se arrastra para soplar viento
+    if (scene.drag) {
+      const { x0, y0, x1, y1 } = scene.drag;
+      UI.arrow(ctx, x0, y0, x1, y1, P.amber, 3);
+      const mag = Math.min(12, Math.hypot(x1 - x0, y1 - y0) / 10);
+      ctx.fillStyle = P.amber; ctx.font = "700 12px Inter, sans-serif"; ctx.fillText(`${UI.fmt(mag, 1)} m/s`, x1 + 8, y1);
+    }
+  }
+
+  /** Bucle ambiental: rotores y viento se animan aunque la reproducción esté en pausa. */
+  function ambient() {
+    let last = performance.now(), visible = true;
+    new IntersectionObserver((es) => { visible = es[0].isIntersecting; }).observe(document.getElementById("t1-map"));
+    const tick = (now) => {
+      requestAnimationFrame(tick);
+      if (!visible || !state.data) { last = now; return; }
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      scene.rotor += dt * 40;
+      const W = state.data.wind;
+      if (W.W > 0) {
+        if (scene.particles.length < 90) scene.particles = Array.from({ length: 90 }, () => ({ x: Math.random() * scene.w, y: Math.random() * scene.h }));
+        const k = 30 + W.W * 14, vx = (W.x / W.W) * k, vy = -(W.y / W.W) * k;
+        scene.particles.forEach((p) => {
+          p.x += vx * dt; p.y += vy * dt;
+          if (p.x < -20) p.x += scene.w + 40; if (p.x > scene.w + 20) p.x -= scene.w + 40;
+          if (p.y < -20) p.y += scene.h + 40; if (p.y > scene.h + 20) p.y -= scene.h + 40;
+        });
+      }
+      if (!state.playing) drawMap();
+    };
+    requestAnimationFrame(tick);
+  }
+
+  /** Arrastrar sobre el mapa sopla viento: dirección y largo del arrastre fijan el vector viento. */
+  function windDrag() {
+    const canvas = document.getElementById("t1-map");
+    const pos = (e) => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+    canvas.addEventListener("pointerdown", (e) => { const p = pos(e); scene.drag = { x0: p.x, y0: p.y, x1: p.x, y1: p.y }; canvas.setPointerCapture(e.pointerId); });
+    canvas.addEventListener("pointermove", (e) => { if (!scene.drag) return; const p = pos(e); scene.drag.x1 = p.x; scene.drag.y1 = p.y; });
+    const end = () => {
+      if (!scene.drag) return;
+      const { x0, y0, x1, y1 } = scene.drag; scene.drag = null;
+      const dx = x1 - x0, dy = -(y1 - y0), L = Math.hypot(dx, dy);
+      if (L < 8) return; // un clic sin arrastrar no cambia el viento
+      ctrl.wind.set(Math.min(12, Math.round((L / 10) * 2) / 2), true);
+      let deg = Math.round((Math.atan2(dy, dx) * 180) / Math.PI / 5) * 5;
+      if (deg < 0) deg += 360;
+      if (deg >= 360) deg -= 360;
+      ctrl.wdir.set(deg, true);
+      scene.particles = [];
+      regenerate();
+    };
+    canvas.addEventListener("pointerup", end);
+    canvas.addEventListener("pointercancel", end);
+    canvas.style.touchAction = "none";
+    canvas.style.cursor = "crosshair";
   }
 
   function marker(ctx, x, y, color, label) {
@@ -419,19 +550,23 @@ window.Tema1 = (() => {
     const ms2 = (v) => `${UI.fmt(v, 1)} m/s²`;
     ctrl.route = document.getElementById("t1-route");
     ctrl.noise = document.getElementById("t1-noise");
+    ctrl.vectors = document.getElementById("t1-vectors");
+    ctrl.vectors.addEventListener("change", drawMap);
     ctrl.vc = UI.bindRange("t1-vc", ms, regenerate);
     ctrl.at = UI.bindRange("t1-at", ms2, regenerate);
     ctrl.alat = UI.bindRange("t1-alat", ms2, regenerate);
     ctrl.wind = UI.bindRange("t1-wind", ms, regenerate);
     ctrl.wdir = UI.bindRange("t1-wdir", (v) => `${v}° desde el este`, regenerate);
     ctrl.time = document.getElementById("t1-time");
-    ctrl.route.addEventListener("change", () => { state.t = 0; regenerate(); });
+    ctrl.route.addEventListener("change", () => { state.t = 0; scene.city = null; regenerate(); });
     ctrl.noise.addEventListener("change", () => { makeCharts(); drawMap(); });
     ctrl.time.addEventListener("input", () => update(parseFloat(ctrl.time.value)));
     document.getElementById("t1-play").addEventListener("click", togglePlay);
     document.getElementById("t1-csv").addEventListener("click", exportCSV);
-    window.addEventListener("resize", () => drawMap());
+    window.addEventListener("resize", () => { scene.cssW = 0; drawMap(); });
     UI.onTheme(() => { makeCharts(); drawMap(); });
+    windDrag();
+    ambient();
     state.t = 0;
     regenerate();
     // ubica el cursor en el primer giro para que se vean ambos vectores

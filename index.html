@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-  <link rel="stylesheet" href="assets/css/styles.css?v=9" />
+  <link rel="stylesheet" href="assets/css/styles.css?v=11" />
 
   <script>
     // Aplica el tema guardado antes de pintar para evitar parpadeo
@@ -300,16 +300,27 @@
               </div>
             </div>
 
-            <div class="canvas-wrap"><canvas id="t1-map" aria-label="Mapa de la ruta con vectores velocidad y aceleración"></canvas></div>
-
-            <div class="scrubber">
-              <button class="btn small" id="t1-play">▶ Reproducir</button>
-              <input type="range" id="t1-time" min="0" max="100" step="0.1" value="0" aria-label="Tiempo" />
-              <output id="t1-time-out">t = 0,0 s</output>
+            <div class="playground">
+              <span class="play-badge">▶ Zona interactiva · juegue aquí</span>
+              <div class="play-hints">
+                <span>▶ Reproducir: el dron despega y entrega el paquete</span>
+                <span>🖱 Arrastre sobre el mapa para soplar viento</span>
+                <span>⇆ Mueva la línea de tiempo</span>
+                <span>⚙ Cambie la ruta y los límites de aceleración</span>
+              </div>
+              <div class="canvas-wrap"><canvas id="t1-map" aria-label="Escena: dron de reparto volando la ruta, con viento animado"></canvas></div>
+              <div class="scrubber">
+                <button class="btn small primary" id="t1-play">▶ Reproducir</button>
+                <input type="range" id="t1-time" min="0" max="100" step="0.1" value="0" aria-label="Tiempo" />
+                <output id="t1-time-out">t = 0,0 s</output>
+              </div>
+              <label class="toggle"><input type="checkbox" id="t1-vectors" checked /> Mostrar vectores v (azul) y a (rosa) sobre el dron</label>
+              <div class="readouts" id="t1-ro"></div>
+              <p class="play-note">La escena es una ayuda para explorar: el dron apunta según su velocidad respecto al aire y se inclina hacia donde acelera. Las manzanas son decorativas; los datos son los de la ruta declarada.</p>
             </div>
 
-            <div class="readouts" id="t1-ro"></div>
-
+            <div class="zone">
+            <span class="zone-badge">📈 Visualización de datos · recurso del tema</span>
             <div class="chart-grid">
               <div class="chart-card">
                 <h4>Posición: componentes x(t) e y(t)</h4>
@@ -327,6 +338,7 @@
                 <h4>Aceleración tangencial vs. normal (v²/R)</h4>
                 <div class="chart-box"><canvas id="t1-tn"></canvas></div>
               </div>
+            </div>
             </div>
 
             <div class="callout">
@@ -547,15 +559,25 @@
               </div>
             </div>
 
-            <div class="canvas-wrap" style="margin-top:14px"><canvas id="t2-canvas" tabindex="0" aria-label="Escena de plataformas: presione espacio para saltar"></canvas></div>
-            <div class="touch-pad">
-              <button class="btn" data-touch="left">◀</button>
-              <button class="btn primary" data-touch="jump">Saltar</button>
-              <button class="btn" data-touch="right">▶</button>
+            <div class="playground">
+              <span class="play-badge">▶ Simulación interactiva · juegue aquí</span>
+              <div class="play-hints">
+                <span>🖱 Haga clic en la escena para tomar el control</span>
+                <span>⌨ Espacio salta · ← → corre · R reinicia</span>
+                <span>🪙 Recoja las monedas: cada una está a una altura distinta</span>
+                <span>⚙ Cambie g y v₀ y vea cómo cambia el arco</span>
+              </div>
+              <div class="canvas-wrap"><canvas id="t2-canvas" tabindex="0" aria-label="Escena de plataformas: presione espacio para saltar"></canvas></div>
+              <div class="touch-pad">
+                <button class="btn" data-touch="left">◀</button>
+                <button class="btn primary" data-touch="jump">Saltar</button>
+                <button class="btn" data-touch="right">▶</button>
+              </div>
+              <div class="readouts" id="t2-ro"></div>
             </div>
 
-            <div class="readouts" id="t2-ro"></div>
-
+            <div class="zone">
+            <span class="zone-badge">📈 Lo que midió la simulación: el último salto</span>
             <div class="chart-grid">
               <div class="chart-card">
                 <h4>Altura del último salto, y(t)</h4>
@@ -565,6 +587,7 @@
                 <h4>Velocidad vertical del último salto, v<sub>y</sub>(t)</h4>
                 <div class="chart-box"><canvas id="t2-vt"></canvas></div>
               </div>
+            </div>
             </div>
 
             <div class="callout">
@@ -728,6 +751,8 @@
                 <label class="toggle"><input type="checkbox" id="t3-anim" checked /> Animar rotación (a escala de tiempo real ×10)</label>
               </div>
             </div>
+            <div class="zone">
+            <span class="zone-badge dia">📐 Diagrama · recurso del tema</span>
             <figure class="figure">
               <svg id="t3-diagram" viewBox="0 0 1000 650" role="img" aria-label="Diagrama del hábitat rotatorio"></svg>
               <figcaption>
@@ -747,6 +772,31 @@
             </div>
             <p><strong>Resultado:</strong> un anillo de <strong>≈ 224 m de radio girando a 2 rpm</strong> produce 1 g en el piso, y la cabeza del tripulante siente solo 0,8 % menos que los pies. La tabla compara otras opciones, todas para 1 g:</p>
             <div class="table-wrap" id="t3-table"></div>
+            </div>
+
+            <div class="playground">
+              <span class="play-badge">▶ Zona interactiva · experimento extra</span>
+              <div class="play-hints">
+                <span>⬇ Suelte una pelota desde la mano del tripulante</span>
+                <span>⚙ Use los controles del diagrama (radio y gravedad)</span>
+                <span>🔁 Pruebe un hábitat pequeño: el desvío crece</span>
+              </div>
+              <div class="controls" style="margin-bottom:10px">
+                <div class="ctrl">
+                  <label for="t3-hr">Altura desde la que se suelta <output for="t3-hr"></output></label>
+                  <input type="range" id="t3-hr" min="0.3" max="2" step="0.05" value="1.5" />
+                </div>
+                <div class="ctrl" style="flex-direction:row; flex-wrap:wrap; gap:8px; align-items:flex-end">
+                  <button class="btn small primary" id="t3-drop">⬇ Soltar la pelota</button>
+                  <button class="btn small" data-t3r="224">Hábitat de 224 m</button>
+                  <button class="btn small" data-t3r="20">Hábitat de 20 m</button>
+                  <button class="btn small" data-t3r="5">Centrífuga de 5 m</button>
+                </div>
+              </div>
+              <div class="canvas-wrap"><canvas id="t3-play" aria-label="Pelota soltada dentro del hábitat, vista desde afuera y desde el tripulante"></canvas></div>
+              <div class="readouts" id="t3-play-ro"></div>
+              <p class="play-note">Por qué pasa: al soltarla, la pelota conserva la velocidad tangencial de la mano, ω·(r − h), que es menor que la del piso, ω·r. Sin el piso empujándola ya no hay fuerza centrípeta, así que sigue en línea recta (1.ª ley) y el piso la "adelanta". El tripulante lo percibe como una fuerza lateral: la aceleración de Coriolis, \(2\omega v\).</p>
+            </div>
           </div>
         </div>
 
@@ -910,6 +960,8 @@
 
             <div class="readouts" id="t4-ro"></div>
 
+            <div class="zone">
+            <span class="zone-badge">📈 Visualización de datos · recurso del tema</span>
             <div class="chart-grid">
               <div class="chart-card span2">
                 <h4>Coeficiente de agarre máximo en función de la temperatura, por compuesto</h4>
@@ -926,6 +978,30 @@
                 <div class="cap">Con y sin carga aerodinámica, para el compuesto y la temperatura elegidos. Tope: 340 km/h, la velocidad máxima del auto.</div>
                 <div class="chart-box"><canvas id="t4-vR"></canvas></div>
               </div>
+            </div>
+            </div>
+
+            <div class="playground">
+              <span class="play-badge">▶ Zona interactiva · tome la curva</span>
+              <div class="play-hints">
+                <span>🏎 Elija la velocidad de entrada y presione "Tomar la curva"</span>
+                <span>🌡 Caliente o enfríe las llantas (azul = frías, verde = en ventana, rojo = pasadas)</span>
+                <span>⚙ El compuesto, el radio y la sensibilidad salen de los controles de arriba</span>
+              </div>
+              <div class="controls" style="margin-bottom:10px">
+                <div class="ctrl">
+                  <label for="t4-vin">Velocidad de entrada <output for="t4-vin"></output></label>
+                  <input type="range" id="t4-vin" min="50" max="340" step="5" value="170" />
+                </div>
+                <div class="ctrl" style="flex-direction:row; flex-wrap:wrap; gap:8px; align-items:flex-end">
+                  <button class="btn small primary" id="t4-go">🏁 Tomar la curva</button>
+                  <button class="btn small" id="t4-warm">🔥 +10 °C</button>
+                  <button class="btn small" id="t4-cool">❄ −10 °C</button>
+                </div>
+              </div>
+              <div class="canvas-wrap"><canvas id="t4-play" aria-label="Vista superior de un auto de F1 tomando una curva"></canvas></div>
+              <div class="readouts" id="t4-play-ro"></div>
+              <p class="play-note">La regla es la misma de la gráfica de velocidad máxima: si \(m v^2/R\) supera lo que la fricción puede dar (\(\mu N\)), la llanta desliza y el auto describe un arco más abierto, \(R_{real} = v^2/a_{\max}\), hasta salirse de la pista.</p>
             </div>
 
             <div class="callout">
@@ -1077,6 +1153,8 @@
             </div>
           </div>
           <div class="resource-body">
+            <div class="zone">
+            <span class="zone-badge mm">🎬 Multimedia con análisis · recurso del tema</span>
             <div class="video-frame">
               <iframe id="t5-video" src="https://www.youtube-nocookie.com/embed/8VBZ1upH93w?rel=0&enablejsapi=1" title="PS5 Adaptive Trigger Live Mechanics in Game - Full Teardown (Restore Technique)" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
@@ -1114,9 +1192,22 @@
 
             <h4 style="margin:22px 0 6px">La curva de fuerza contra desplazamiento que produce el efecto</h4>
             <p style="margin-top:0">
-              Arrastre el gatillo (o use el control de posición) para “apretarlo”. La gráfica compara el resorte ideal de Hooke con lo
-              que el control puede ejecutar: una rampa por zonas con niveles de intensidad discretos.
+              La gráfica compara el resorte ideal de Hooke con lo que el control puede ejecutar: una rampa por zonas con niveles de
+              intensidad discretos. Se actualiza con el gatillo de la zona interactiva de abajo.
             </p>
+            <div class="chart-card">
+              <h4>Fuerza restauradora vs. desplazamiento del gatillo</h4>
+              <div class="chart-box tall"><canvas id="t5-fx"></canvas></div>
+            </div>
+            </div>
+
+            <div class="playground">
+              <span class="play-badge">▶ Zona interactiva · apriete y salte</span>
+              <div class="play-hints">
+                <span>🖱 Arrastre el gatillo y suéltelo</span>
+                <span>🐸 La energía guardada lanza a la rana: alcance las 5 estrellas</span>
+                <span>⚙ Cambie el modo del gatillo y la constante k</span>
+              </div>
             <div class="controls">
               <div class="ctrl">
                 <label for="t5-mode">Modo del gatillo</label>
@@ -1142,15 +1233,17 @@
             </div>
             <div class="chart-grid">
               <div class="chart-card">
-                <h4>Gatillo y fuerzas (diagrama en vivo)</h4>
+                <h4>Gatillo y fuerzas (tercera ley en vivo)</h4>
                 <div class="canvas-wrap" style="border:none"><canvas id="t5-trigger" aria-label="Diagrama del gatillo con fuerzas"></canvas></div>
               </div>
               <div class="chart-card">
-                <h4>Fuerza restauradora vs. desplazamiento del gatillo</h4>
-                <div class="chart-box"><canvas id="t5-fx"></canvas></div>
+                <h4>El traje de resorte: ½kx² → mgh</h4>
+                <div class="canvas-wrap" style="border:none"><canvas id="t5-frog" aria-label="Rana sobre un resorte que salta con la energía del gatillo"></canvas></div>
               </div>
             </div>
             <div class="readouts" id="t5-ro"></div>
+            <p class="play-note">Escala del juego: cada 10 mJ guardados en el gatillo valen 1 m de salto. Con la rampa de Hooke, apretar el doble cuadruplica la altura (h ∝ x²).</p>
+            </div>
             <div class="data-note">
               <strong>Supuestos.</strong> El recorrido del gatillo se representa en una escala ilustrativa de 0 a 10 mm, y la fuerza
               máxima del actuador, como 6 N. Sony no publica la relación entre el nivel de intensidad y los newtons; la API la expone
@@ -1238,13 +1331,13 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-<script defer src="assets/js/ui.js?v=9"></script>
-<script defer src="assets/js/conexiones.js?v=9"></script>
-<script defer src="assets/js/tema1-dron.js?v=9"></script>
-<script defer src="assets/js/tema2-salto.js?v=9"></script>
-<script defer src="assets/js/tema3-habitat.js?v=9"></script>
-<script defer src="assets/js/tema4-llantas.js?v=9"></script>
-<script defer src="assets/js/tema5-haptico.js?v=9"></script>
-<script defer src="assets/js/main.js?v=9"></script>
+<script defer src="assets/js/ui.js?v=11"></script>
+<script defer src="assets/js/conexiones.js?v=11"></script>
+<script defer src="assets/js/tema1-dron.js?v=11"></script>
+<script defer src="assets/js/tema2-salto.js?v=11"></script>
+<script defer src="assets/js/tema3-habitat.js?v=11"></script>
+<script defer src="assets/js/tema4-llantas.js?v=11"></script>
+<script defer src="assets/js/tema5-haptico.js?v=11"></script>
+<script defer src="assets/js/main.js?v=11"></script>
 </body>
 </html>

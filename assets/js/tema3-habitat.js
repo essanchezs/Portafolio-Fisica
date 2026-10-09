@@ -206,6 +206,135 @@ window.Tema3 = (() => {
       </table>`;
   }
 
+  /* ---------- Zona interactiva: soltar una pelota dentro del hábitat ---------- */
+  const play = { t: 0, running: false, raf: 0, ctx: null, w: 0, h: 0 };
+
+  /** Trayectoria de una pelota soltada a altura hr sobre el piso de un anillo de radio r que gira con ω. */
+  function dropModel() {
+    const d = compute();
+    const hr = Math.min(c.hr.value, d.r * 0.9);
+    const rho = d.r - hr, w = d.w, vt = w * rho;
+    // marco inercial: la pelota sigue en línea recta con la velocidad tangencial que tenía al soltarla
+    const tHit = Math.sqrt(d.r * d.r - rho * rho) / vt;
+    const thBall = Math.atan(w * tHit), thFeet = w * tHit;
+    const behind = d.r * (thFeet - thBall);
+    const tEarth = Math.sqrt((2 * hr) / d.gt);
+    return { ...d, hr, rho, vt, tHit, thBall, thFeet, behind, tEarth };
+  }
+
+  /** Posición de la pelota en el marco que gira con el hábitat: (desplazamiento a lo largo del piso, altura). */
+  function rotPos(m, t) {
+    const x = m.rho, y = m.vt * t; // inercial, con la pelota soltada en ángulo 0
+    const rad = Math.hypot(x, y), ang = Math.atan2(y, x) - m.w * t;
+    return { s: m.r * ang, hgt: m.r - rad, ix: x, iy: y };
+  }
+
+  function drawPlay() {
+    const cv = document.getElementById("t3-play");
+    const cssW = cv.parentElement.clientWidth;
+    if (!play.ctx || play.cssW !== cssW) { const r = UI.fitCanvas(cv, window.innerWidth < 700 ? 1.05 : 0.46); Object.assign(play, { ctx: r.ctx, w: r.w, h: r.h, cssW }); }
+    const { ctx, w, h } = play, P = UI.palette(), m = dropModel();
+    const t = Math.min(play.t, m.tHit);
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = P.panel2; ctx.fillRect(0, 0, w, h);
+    const narrow = w < 560;
+    const half = narrow ? { w, h: h / 2 } : { w: w / 2, h };
+
+    // --- Panel 1: vista desde afuera (marco inercial)
+    const cx = half.w / 2, cy = half.h / 2 + 8, R = Math.min(half.w, half.h) * 0.38;
+    ctx.fillStyle = P.muted; ctx.font = "700 11px Inter, sans-serif"; ctx.fillText("VISTA DESDE AFUERA (no gira)", 12, 18);
+    ctx.save(); ctx.translate(cx, cy);
+    const rot = -m.w * t; // el hábitat gira antihorario en pantalla (ángulo decreciente)
+    ctx.strokeStyle = P.violet; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, 0, R, 0, 7); ctx.stroke();
+    ctx.strokeStyle = P.line; ctx.lineWidth = 4;
+    for (let k = 0; k < 6; k++) { const a = rot + (k * Math.PI) / 3; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(R * Math.cos(a), R * Math.sin(a)); ctx.stroke(); }
+    // pies del tripulante: arrancan abajo (ángulo π/2 en pantalla) y giran con el piso
+    const aFeet = Math.PI / 2 + rot;
+    const fx = R * Math.cos(aFeet), fy = R * Math.sin(aFeet);
+    const hpx = Math.max(16, (m.hr / m.r) * R);
+    ctx.strokeStyle = P.text; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(fx, fy); ctx.lineTo(fx - Math.cos(aFeet) * hpx * 1.3, fy - Math.sin(aFeet) * hpx * 1.3); ctx.stroke();
+    ctx.fillStyle = P.green; ctx.beginPath(); ctx.arc(fx, fy, 4, 0, 7); ctx.fill();
+    // pelota en el marco inercial: ángulo atan(ωt) y radio ρ·√(1+(ωt)²); altura dibujada exagerada
+    const wt = m.w * t, rhoT = m.rho * Math.sqrt(1 + wt * wt);
+    const radVis = (rv) => R - hpx * ((m.r - rv) / m.hr);
+    const aBall = Math.PI / 2 - Math.atan(wt);
+    ctx.setLineDash([4, 4]); ctx.strokeStyle = P.amber; ctx.lineWidth = 1.5; ctx.beginPath();
+    for (let i = 0; i <= 40; i++) { const tt = (t * i) / 40, w2 = m.w * tt, rv = m.rho * Math.sqrt(1 + w2 * w2), aa = Math.PI / 2 - Math.atan(w2); const X2 = radVis(rv) * Math.cos(aa), Y2 = radVis(rv) * Math.sin(aa); i ? ctx.lineTo(X2, Y2) : ctx.moveTo(X2, Y2); }
+    ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = P.amber; ctx.beginPath(); ctx.arc(radVis(rhoT) * Math.cos(aBall), radVis(rhoT) * Math.sin(aBall), 6, 0, 7); ctx.fill();
+    ctx.restore();
+    ctx.fillStyle = P.faint; ctx.font = "10.5px Inter, sans-serif";
+    ctx.fillText("La pelota sigue recta (1.ª ley) y el piso gira debajo. Altura exagerada.", 12, half.h - 10);
+
+    // --- Panel 2: lo que ve el tripulante (marco que gira), con zoom
+    const ox = narrow ? 0 : half.w, oy = narrow ? half.h : 0;
+    ctx.save(); ctx.translate(ox, oy);
+    ctx.strokeStyle = P.line; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(narrow ? w : 0, narrow ? 0 : h); ctx.stroke();
+    ctx.fillStyle = P.muted; ctx.font = "700 11px Inter, sans-serif"; ctx.fillText("LO QUE VE EL TRIPULANTE (gira con él)", 12, 18);
+    const L = 54, B = half.h - 40, Rr = half.w - 20, T = 34;
+    const maxBehind = Math.max(Math.abs(m.behind) * 1.25, 0.05);
+    const Xs = (sv) => L + ((sv + maxBehind) / (maxBehind * 1.6)) * (Rr - L); // el desplazamiento hacia atrás es negativo
+    const Ys = (hv) => B - (hv / (m.hr * 1.15)) * (B - T);
+    // piso y regla
+    ctx.fillStyle = P.violet; ctx.fillRect(L - 10, B, Rr - L + 20, 3);
+    ctx.fillStyle = P.faint; ctx.font = "10px JetBrains Mono, monospace";
+    ctx.fillText(`${UI.fmt(m.hr, 2)} m`, 6, Ys(m.hr) + 3); ctx.fillText("0", 30, B + 3);
+    ctx.fillText(`← ${UI.fmt(maxBehind * 100, 1)} cm atrás`, L, B + 18);
+    // tripulante y su mano
+    const feetX = Xs(0);
+    ctx.strokeStyle = P.text; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(feetX, B); ctx.lineTo(feetX, Ys(m.hr) - 6); ctx.stroke();
+    ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(feetX, Ys(m.hr) - 14, 7, 0, 7); ctx.fill();
+    // caída esperada en la Tierra (vertical)
+    ctx.setLineDash([3, 4]); ctx.strokeStyle = P.green; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(feetX + 10, Ys(m.hr)); ctx.lineTo(feetX + 10, B); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = P.green; ctx.font = "10.5px Inter, sans-serif"; ctx.fillText("en la Tierra caería aquí", feetX + 14, Ys(m.hr * 0.5));
+    // trayectoria en el marco que gira
+    ctx.strokeStyle = P.amber; ctx.lineWidth = 2; ctx.beginPath();
+    for (let i = 0; i <= 80; i++) { const tt = (t * i) / 80, q = rotPos(m, tt); const X2 = Xs(q.s), Y2 = Ys(q.hgt); i ? ctx.lineTo(X2, Y2) : ctx.moveTo(X2, Y2); }
+    ctx.stroke();
+    const q = rotPos(m, t);
+    ctx.fillStyle = P.amber; ctx.beginPath(); ctx.arc(Xs(q.s), Ys(q.hgt), 6, 0, 7); ctx.fill();
+    if (play.t >= m.tHit) { ctx.fillStyle = P.amber; ctx.font = "700 12px Inter, sans-serif"; ctx.fillText(`cayó ${UI.fmt(Math.abs(m.behind) * 100, 1)} cm detrás`, Xs(-m.behind) - 20, B - 10); }
+    ctx.fillStyle = P.faint; ctx.font = "10.5px Inter, sans-serif";
+    ctx.fillText("Escala horizontal ampliada para que se note el desvío (Coriolis).", 12, half.h - 10);
+    ctx.restore();
+
+    const f = UI.fmt;
+    document.getElementById("t3-play-ro").innerHTML = `
+      <div class="ro"><div class="k">Tiempo de caída</div><div class="v">${f(m.tHit, 3)} <small>s</small></div></div>
+      <div class="ro"><div class="k">En la Tierra (misma g)</div><div class="v">${f(m.tEarth, 3)} <small>s</small></div></div>
+      <div class="ro"><div class="k">Cae detrás de los pies</div><div class="v">${f(Math.abs(m.behind) * 100, 1)} <small>cm</small></div></div>
+      <div class="ro"><div class="k">Velocidad de la mano (ω·(r−h))</div><div class="v">${f(m.vt, 2)} <small>m/s</small></div></div>`;
+  }
+
+  function dropBall() {
+    cancelAnimationFrame(play.raf);
+    const m = dropModel();
+    play.t = 0;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { play.t = m.tHit; drawPlay(); return; }
+    const slow = Math.max(1, 1.6 / m.tHit); // caídas muy rápidas se ven en cámara lenta (~1,6 s)
+    let last = performance.now();
+    const stepAnim = (now) => {
+      play.t += ((now - last) / 1000) / slow; last = now;
+      drawPlay();
+      if (play.t < m.tHit) play.raf = requestAnimationFrame(stepAnim);
+    };
+    play.raf = requestAnimationFrame(stepAnim);
+  }
+
+  function initPlay() {
+    c.hr = UI.bindRange("t3-hr", (v) => `${UI.fmt(v, 2)} m`, () => { play.t = 0; drawPlay(); });
+    document.getElementById("t3-drop").addEventListener("click", dropBall);
+    document.querySelectorAll("[data-t3r]").forEach((b) => b.addEventListener("click", () => {
+      c.r.set(+b.dataset.t3r); c.g.set(1); play.t = 0; drawPlay(); dropBall();
+    }));
+    ["t3-r", "t3-g"].forEach((id) => document.getElementById(id).addEventListener("input", () => { play.t = 0; drawPlay(); }));
+    window.addEventListener("resize", () => { play.cssW = 0; drawPlay(); });
+    UI.onTheme(drawPlay);
+    drawPlay();
+  }
+
   function init() {
     c.r = UI.bindRange("t3-r", (v) => `${v} m`, update);
     c.g = UI.bindRange("t3-g", (v) => `${UI.fmt(v, 2)} g (${UI.fmt(v * G, 2)} m/s²)`, update);
@@ -217,6 +346,7 @@ window.Tema3 = (() => {
     const svg = document.getElementById("t3-diagram");
     new IntersectionObserver((es) => { visible = es[0].isIntersecting; }).observe(svg);
     requestAnimationFrame((t) => { last = t; animate(t); });
+    initPlay();
   }
 
   return { init };

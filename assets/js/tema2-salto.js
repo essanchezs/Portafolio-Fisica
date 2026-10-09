@@ -30,7 +30,7 @@ window.Tema2 = (() => {
   let canvas, ctx, W, H;
   let P = {
     x: 2, y: 0, vx: 0, vy: 0, onGround: true, held: false, sustain: 0, face: 1,
-    trace: [], lastJump: null, jumpT: 0, jumpStart: 0, apex: 0,
+    trace: [], lastJump: null, stride: 0, jumpT: 0, jumpStart: 0, apex: 0,
   };
   const keys = { left: false, right: false, jump: false };
   let auto = true, autoWait = 0.6, visible = true, focused = false, acc = 0, lastTime = 0;
@@ -123,6 +123,9 @@ window.Tema2 = (() => {
     }
     const prevY = P.y;
     P.x += P.vx * dt;
+    if (P.onGround) P.stride = (P.stride || 0) + Math.abs(P.vx) * dt * 1.9;
+    collectCoins();
+    if (coinFlash > 0) coinFlash -= dt;
     P.y += P.vy * dt;
 
     // colisiones: suelo y plataformas de un solo sentido
@@ -249,19 +252,16 @@ window.Tema2 = (() => {
       P.trailPts.forEach((q, i) => { if (i % 6 === 0) { ctx.beginPath(); ctx.arc(X(q.x), Y(q.y), 1.8, 0, 7); ctx.fill(); } });
     }
 
-    // personaje
-    // tamaño mínimo en pantalla para que siga visible cuando la vista se aleja mucho
-    const pw = Math.max(PW * sc, 9), ph = Math.max(PH * sc, 20);
-    const px = X(P.x) - pw / 2, py = Y(P.y) - ph;
-    ctx.fillStyle = C.pink;
-    roundRect(ctx, px, py, pw, ph, Math.min(8, pw * 0.3)); ctx.fill();
-    ctx.fillStyle = "#fff";
-    const eyeX = X(P.x) + P.face * pw * 0.22, eyeY = py + ph * 0.22;
-    ctx.beginPath(); ctx.arc(eyeX, eyeY, Math.max(2, pw * 0.11), 0, 7); ctx.fill();
+    // monedas
+    drawCoins(ctx, X, Y, C, sc);
+
+    // personaje: corredor (1,8 m) con brazos y piernas animados
+    const ph = Math.max(PH * sc, 26);
+    drawRunner(ctx, X(P.x), Y(P.y), ph, P.face, P.stride, P.onGround, P.vy, Math.abs(P.vx), C);
     // vector velocidad (longitud en píxeles acotada)
     if (!P.onGround) {
       const vmag = Math.hypot(P.vx, P.vy) || 1, Lpx = Math.min(70, vmag * 4);
-      UI.arrow(ctx, X(P.x), py + ph / 2, X(P.x) + (P.vx / vmag) * Lpx, py + ph / 2 - (P.vy / vmag) * Lpx, C.text, 2);
+      UI.arrow(ctx, X(P.x), Y(P.y) - ph / 2, X(P.x) + (P.vx / vmag) * Lpx, Y(P.y) - ph / 2 - (P.vy / vmag) * Lpx, C.text, 2);
     }
 
     // leyenda
@@ -280,6 +280,92 @@ window.Tema2 = (() => {
       ctx.fillStyle = C.muted; ctx.font = "600 12px Inter, sans-serif";
       ctx.fillText(auto ? "Modo demostración · haga clic aquí para controlar con el teclado" : "Haga clic aquí para controlar con el teclado", 44, 20);
     }
+  }
+
+  /** Corredor de palitos: fx = centro x en px, fy = pies en px, h = alto en px. */
+  function drawRunner(ctx, fx, fy, h, face, stride, onGround, vy, speed, C) {
+    const u = h / 10; // unidad de dibujo
+    const run = onGround && speed > 0.05;
+    const sw = run ? Math.sin(stride) : 0;
+    const hip = { x: fx, y: fy - 4.6 * u };
+    const neck = { x: fx + face * 0.5 * u * (run ? 1 : 0.3), y: fy - 8 * u };
+    ctx.save();
+    ctx.lineCap = "round"; ctx.lineJoin = "round";
+    // sombra
+    ctx.fillStyle = "rgba(0,0,0,0.18)";
+    ctx.beginPath(); ctx.ellipse(fx, fy + 1, 2.4 * u, 0.6 * u, 0, 0, 7); ctx.fill();
+    const limb = (x1, y1, x2, y2, x3, y3, col) => {
+      ctx.strokeStyle = col; ctx.lineWidth = Math.max(2.4, 1.05 * u);
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(x3, y3); ctx.stroke();
+    };
+    const leg = (phase, col) => {
+      let kx, ky, fx2, fy2;
+      if (onGround) {
+        const s1 = run ? Math.sin(phase) : 0;
+        kx = hip.x + face * s1 * 1.6 * u; ky = hip.y + 2.2 * u;
+        fx2 = hip.x + face * s1 * 2.4 * u - face * Math.max(0, -Math.cos(phase)) * 0.8 * u * (run ? 1 : 0);
+        fy2 = fy - Math.max(0, Math.cos(phase)) * 0.9 * u * (run ? 1 : 0);
+      } else {
+        // en el aire: rodillas recogidas al subir, piernas estiradas al bajar
+        const tuck = vy > 0 ? 1 : 0.35;
+        kx = hip.x + face * (1.6 * tuck + (phase > 3 ? -0.4 : 0.6)) * u; ky = hip.y + (2.4 - 0.8 * tuck) * u;
+        fx2 = kx - face * 0.8 * u; fy2 = ky + (2.2 - 0.4 * tuck) * u;
+      }
+      limb(hip.x, hip.y, kx, ky, fx2, fy2, col);
+    };
+    const arm = (phase, col) => {
+      const s1 = run ? Math.sin(phase) : 0;
+      const sh = { x: neck.x, y: neck.y + 0.6 * u };
+      const up = !onGround ? -1 : 0;
+      const ex = sh.x - face * s1 * 1.4 * u, ey = sh.y + (1.9 + up * 1.2) * u;
+      const hx = ex + face * (0.9 + Math.abs(s1)) * u, hy = ey + (1.2 + up * 1.6) * u;
+      limb(sh.x, sh.y, ex, ey, hx, hy, col);
+    };
+    const back = C.violet, front = C.pink;
+    leg(stride + Math.PI, back); arm(stride, back);
+    // torso
+    ctx.strokeStyle = front; ctx.lineWidth = Math.max(3, 1.5 * u);
+    ctx.beginPath(); ctx.moveTo(hip.x, hip.y); ctx.lineTo(neck.x, neck.y); ctx.stroke();
+    leg(stride, front); arm(stride + Math.PI, front);
+    // cabeza con gorra
+    ctx.fillStyle = front; ctx.beginPath(); ctx.arc(neck.x + face * 0.2 * u, neck.y - 1.1 * u, 1.05 * u, 0, 7); ctx.fill();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(neck.x + face * 0.2 * u, neck.y - 1.35 * u, 1.05 * u, Math.PI, 0); ctx.fill();
+    ctx.fillRect(neck.x + face * 0.2 * u + (face > 0 ? 0 : -1.7 * u), neck.y - 1.45 * u, 1.7 * u, 0.35 * u);
+    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(neck.x + face * 0.65 * u, neck.y - 1.0 * u, Math.max(1.2, 0.22 * u), 0, 7); ctx.fill();
+    ctx.restore();
+  }
+
+  /** Monedas repartidas a distintas alturas: probar qué saltos llegan a cada una. */
+  const COINS = [
+    { x: 6, y: 1.2 }, { x: 11, y: 3.4 }, { x: 13.5, y: 5 }, { x: 18.75, y: 5.3 }, { x: 22, y: 7.5 },
+    { x: 25.5, y: 2.6 }, { x: 32, y: 6.8 }, { x: 35, y: 9.5 }, { x: 39.75, y: 4.2 }, { x: 44, y: 1.5 },
+  ];
+  const taken = new Set();
+  let coinCount = 0, coinFlash = 0;
+  function coinsNear(x) {
+    const k = Math.floor(x / WORLD), out = [];
+    for (let r = k - 1; r <= k + 1; r++) COINS.forEach((c, i) => out.push({ x: c.x + r * WORLD, y: c.y, id: r + ":" + i }));
+    return out;
+  }
+  function collectCoins() {
+    const cx = P.x, cy = P.y + PH / 2;
+    coinsNear(P.x).forEach((c) => {
+      if (!taken.has(c.id) && Math.abs(c.x - cx) < 0.75 && Math.abs(c.y - cy) < 1.15) { taken.add(c.id); coinCount++; coinFlash = 0.6; }
+    });
+  }
+  function drawCoins(ctx, X, Y, C, sc) {
+    const t = performance.now() / 1000;
+    coinsNear(P.x).forEach((c) => {
+      if (taken.has(c.id)) return;
+      const px = X(c.x), py = Y(c.y);
+      if (px < -20 || px > W + 20) return;
+      const r = Math.max(5, Math.min(12, 0.32 * sc)), squish = Math.abs(Math.cos(t * 3 + c.x));
+      ctx.fillStyle = C.amber; ctx.beginPath(); ctx.ellipse(px, py, r * (0.3 + 0.7 * squish), r, 0, 0, 7); ctx.fill();
+      ctx.strokeStyle = "rgba(0,0,0,0.25)"; ctx.lineWidth = 1; ctx.stroke();
+      ctx.fillStyle = C.faint; ctx.font = "10px JetBrains Mono, monospace"; ctx.fillText(c.y + " m", px + r + 3, py + 3);
+    });
+    ctx.fillStyle = coinFlash > 0 ? C.amber : C.text; ctx.font = "700 13px Inter, sans-serif";
+    ctx.fillText("🪙 " + coinCount + " monedas", 44, 40);
   }
 
   function roundRect(ctx, x, y, w, h, r) {
@@ -413,7 +499,7 @@ window.Tema2 = (() => {
     const map = { ArrowLeft: "left", KeyA: "left", ArrowRight: "right", KeyD: "right", Space: "jump", ArrowUp: "jump", KeyW: "jump" };
     canvas.addEventListener("keydown", (e) => {
       if (map[e.code]) { keys[map[e.code]] = true; auto = false; e.preventDefault(); }
-      if (e.code === "KeyR") { P.x = 2; P.y = 0; P.vy = 0; P.onGround = true; P.trailPts = []; }
+      if (e.code === "KeyR") { P.x = 2; P.y = 0; P.vy = 0; P.onGround = true; P.trailPts = []; taken.clear(); coinCount = 0; }
     });
     canvas.addEventListener("keyup", (e) => { if (map[e.code]) { keys[map[e.code]] = false; e.preventDefault(); } });
     // botones táctiles
