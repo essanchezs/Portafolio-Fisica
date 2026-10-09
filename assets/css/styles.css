@@ -242,7 +242,9 @@ details.more > .links-box > h4, details.more > .sources > h4, details.more > .ca
 .ctrl label output { font-family: var(--font-mono); color: var(--text); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
 .ctrl select { font: inherit; font-size: 0.86rem; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--text); }
 .toggle { display: flex; align-items: center; gap: 8px; font-size: 0.84rem; color: var(--muted); cursor: pointer; }
-.toggle input { accent-color: var(--accent); width: 15px; height: 15px; }
+.toggle input { accent-color: var(--accent); width: 15px; height: 15px; flex: none; }
+.ctrl label.toggle { justify-content: flex-start; }
+.toggles { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px 22px; margin: 2px 0 16px; padding-top: 12px; border-top: 1px solid var(--line); }
 
 input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 999px; background: var(--line); outline: none; margin: 8px 0; }
 input[type="range"]::-webkit-slider-thumb {

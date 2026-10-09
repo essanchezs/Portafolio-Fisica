@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-  <link rel="stylesheet" href="assets/css/styles.css?v=14" />
+  <link rel="stylesheet" href="assets/css/styles.css?v=15" />
 
   <script>
     // Aplica el tema guardado antes de pintar para evitar parpadeo
@@ -515,12 +515,17 @@
           </div>
           <div class="resource-body">
             <div class="presets" id="t2-presets">
-              <span class="lbl">Escenarios:</span>
-              <button class="btn small" data-preset="real">Humano real (9,81 m/s²)</button>
+              <span class="lbl">Una persona real en:</span>
+              <button class="btn small" data-preset="real">Tierra (9,81 m/s²)</button>
+              <button class="btn small" data-preset="moon">Luna (1,62 m/s²)</button>
+              <button class="btn small" data-preset="mars">Marte (3,71 m/s²)</button>
+              <button class="btn small" data-preset="jupiter">Júpiter (24,8 m/s²)</button>
+            </div>
+            <div class="presets">
+              <span class="lbl">Videojuegos:</span>
               <button class="btn small" data-preset="heroic">Héroe con g real</button>
               <button class="btn small" data-preset="arcade">Plataformero arcade</button>
               <button class="btn small" data-preset="celeste">Celeste (convertido a m)</button>
-              <button class="btn small" data-preset="moon">Luna (1,62 m/s²)</button>
               <button class="btn small" data-preset="heavy">Caída pesada ×3</button>
             </div>
 
@@ -545,12 +550,12 @@
                 <label for="t2-maxfall">Rapidez terminal de caída <output for="t2-maxfall"></output></label>
                 <input type="range" id="t2-maxfall" min="5" max="80" step="0.5" value="80" />
               </div>
-              <div class="ctrl" style="gap:8px; justify-content:center">
-                <label class="toggle"><input type="checkbox" id="t2-var" /> Salto variable: soltar el botón corta la subida (v<sub>y</sub> × 0,5)</label>
+            </div>
+            <div class="toggles">
+                <label class="toggle"><input type="checkbox" id="t2-var" /> <span>Salto variable: soltar el botón corta la subida (v<sub>y</sub> × 0,5)</span></label>
                 <label class="toggle"><input type="checkbox" id="t2-sustain" /> Sostener el impulso 0,2 s mientras se mantiene (Celeste)</label>
                 <label class="toggle"><input type="checkbox" id="t2-half" /> Media gravedad en el ápice (Celeste)</label>
                 <label class="toggle"><input type="checkbox" id="t2-ghost" checked /> Comparar con g = 9,81 (misma altura)</label>
-              </div>
             </div>
 
             <div class="design-box">
@@ -561,7 +566,7 @@
                   <input type="range" id="t2-h" min="0.3" max="8" step="0.05" value="2.5" />
                 </div>
                 <div class="ctrl">
-                  <label for="t2-th">Tiempo hasta la cima t<sub>h</sub> <output for="t2-th"></output></label>
+                  <label for="t2-th"><span>Tiempo hasta la cima t<sub>h</sub></span> <output for="t2-th"></output></label>
                   <input type="range" id="t2-th" min="0.1" max="1.2" step="0.01" value="0.35" />
                 </div>
                 <div class="ctrl" style="justify-content:flex-end">
@@ -968,11 +973,11 @@
                 <input type="range" id="t4-T" min="40" max="170" step="1" value="120" />
               </div>
               <div class="ctrl">
-                <label for="t4-Fz">Carga vertical por llanta F<sub>z</sub> <output for="t4-Fz"></output></label>
+                <label for="t4-Fz"><span>Carga vertical por llanta F<sub>z</sub></span> <output for="t4-Fz"></output></label>
                 <input type="range" id="t4-Fz" min="500" max="12000" step="50" value="6000" />
               </div>
               <div class="ctrl">
-                <label for="t4-pdy2">Sensibilidad a la carga p<sub>Dy2</sub> <output for="t4-pdy2"></output></label>
+                <label for="t4-pdy2"><span>Sensibilidad a la carga p<sub>Dy2</sub></span> <output for="t4-pdy2"></output></label>
                 <input type="range" id="t4-pdy2" min="-0.35" max="0" step="0.01" value="-0.15" />
               </div>
               <div class="ctrl">
@@ -980,7 +985,7 @@
                 <input type="range" id="t4-R" min="15" max="400" step="5" value="80" />
               </div>
               <div class="ctrl">
-                <label for="t4-dfz">Transferencia de carga en el eje ΔF<sub>z</sub> <output for="t4-dfz"></output></label>
+                <label for="t4-dfz"><span>Transferencia de carga en el eje ΔF<sub>z</sub></span> <output for="t4-dfz"></output></label>
                 <input type="range" id="t4-dfz" min="0" max="3800" step="50" value="1500" />
               </div>
             </div>
@@ -1367,13 +1372,13 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-<script defer src="assets/js/ui.js?v=14"></script>
-<script defer src="assets/js/conexiones.js?v=14"></script>
-<script defer src="assets/js/tema1-dron.js?v=14"></script>
-<script defer src="assets/js/tema2-salto.js?v=14"></script>
-<script defer src="assets/js/tema3-habitat.js?v=14"></script>
-<script defer src="assets/js/tema4-llantas.js?v=14"></script>
-<script defer src="assets/js/tema5-haptico.js?v=14"></script>
-<script defer src="assets/js/main.js?v=14"></script>
+<script defer src="assets/js/ui.js?v=15"></script>
+<script defer src="assets/js/conexiones.js?v=15"></script>
+<script defer src="assets/js/tema1-dron.js?v=15"></script>
+<script defer src="assets/js/tema2-salto.js?v=15"></script>
+<script defer src="assets/js/tema3-habitat.js?v=15"></script>
+<script defer src="assets/js/tema4-llantas.js?v=15"></script>
+<script defer src="assets/js/tema5-haptico.js?v=15"></script>
+<script defer src="assets/js/main.js?v=15"></script>
 </body>
 </html>

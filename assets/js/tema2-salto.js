@@ -17,7 +17,10 @@ window.Tema2 = (() => {
     // Celeste: 1 px ≈ 0,145 m → g 900 px/s² ≈ 130,5 m/s²; JumpSpeed 105 px/s ≈ 15,2 m/s;
     // MaxFall 160 px/s ≈ 23,2 m/s; MaxRun 90 px/s ≈ 13,05 m/s
     celeste: { v0: 15.2, g: 130.5, fall: 1, vx: 13.05, maxfall: 23.2, vj: false, sus: true, half: true },
+    // misma persona (mismo impulso de piernas, v₀ = 3,13 m/s) en otros mundos: solo cambia g
     moon: { v0: 3.13, g: 1.62, fall: 1, vx: 3, maxfall: 80, vj: false, half: false },
+    mars: { v0: 3.13, g: 3.71, fall: 1, vx: 3, maxfall: 80, vj: false, half: false },
+    jupiter: { v0: 3.13, g: 24.79, fall: 1, vx: 3, maxfall: 80, vj: false, half: false },
     heavy: { v0: 14, g: 40, fall: 3, vx: 6, maxfall: 80, vj: false, half: false },
   };
 
@@ -423,7 +426,7 @@ window.Tema2 = (() => {
     const s = PRESETS[name];
     c.v0.set(s.v0, true); c.g.set(s.g, true); c.fall.set(s.fall, true); c.vx.set(s.vx, true); c.maxfall.set(s.maxfall, true);
     c.vj.checked = s.vj; c.sus.checked = !!s.sus; c.half.checked = s.half;
-    document.querySelectorAll("#t2-presets [data-preset]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.preset === name));
+    document.querySelectorAll("[data-preset]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.preset === name));
     P.lastJump = null;
     onParamChange();
   }
@@ -442,7 +445,7 @@ window.Tema2 = (() => {
       c.g.set(Math.min(140, (2 * h) / (th * th)), true);
       c.v0.set(Math.min(30, (2 * h) / th), true);
       c.fall.set(1, true); c.maxfall.set(80, true); c.half.checked = false; c.sus.checked = false;
-      document.querySelectorAll("#t2-presets [data-preset]").forEach((b) => b.setAttribute("aria-pressed", "false"));
+      document.querySelectorAll("[data-preset]").forEach((b) => b.setAttribute("aria-pressed", "false"));
       P.lastJump = null;
       onParamChange();
     };
@@ -454,7 +457,7 @@ window.Tema2 = (() => {
     c.ghost = document.getElementById("t2-ghost");
     [c.vj, c.sus, c.half, c.ghost].forEach((el) => el.addEventListener("change", onParamChange));
 
-    document.querySelectorAll("#t2-presets [data-preset]").forEach((b) => b.addEventListener("click", () => applyPreset(b.dataset.preset)));
+    document.querySelectorAll("[data-preset]").forEach((b) => b.addEventListener("click", () => applyPreset(b.dataset.preset)));
 
     // teclado (solo cuando la escena tiene el foco, para no robar la barra espaciadora a la página)
     canvas.addEventListener("focus", () => { focused = true; });
