@@ -25,16 +25,21 @@ window.Tema3 = (() => {
   }
 
   function comfort(rpm) {
-    if (rpm <= 2) return ["cómodo sin adaptación", "--green"];
-    if (rpm <= 4) return ["tolerable con adaptación", "--amber"];
-    if (rpm <= 6) return ["exigente, mareo probable", "--accent-2"];
-    return ["fuera de los criterios de confort", "--danger"];
+    if (rpm <= 2) return ["cómodo", "--green"];
+    if (rpm <= 4) return ["tolerable", "--amber"];
+    if (rpm <= 6) return ["mareo probable", "--accent-2"];
+    return ["fuera de confort", "--danger"];
   }
 
   function build() {
     const svg = document.getElementById("t3-diagram");
     const s = (v) => `style="${v}"`;
-    const cx = 265, cy = 290, Rf = 215, Rh = 242;
+    // el anillo dibujado crece con el radio (escala logarítmica de 5 m a 1000 m) y el tripulante con su altura
+    const dd = compute();
+    const cx = 265, cy = 290;
+    const Rf = Math.round(120 + 95 * Math.min(1, Math.max(0, Math.log10(dd.r / 5) / Math.log10(200))));
+    const Rh = Rf + 27;
+    const hs = dd.h / 1.8;
     const marker = (id, color) =>
       `<marker id="${id}" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" ${s(`fill:var(${color})`)}/></marker>`;
 
@@ -87,17 +92,17 @@ window.Tema3 = (() => {
 
       <!-- tripulante en el piso (abajo) -->
       <g ${s("stroke:var(--text);stroke-width:3;stroke-linecap:round;fill:none")}>
-        <circle cx="${cx}" cy="${cy + Rf - 62}" r="9" ${s("fill:var(--panel)")}/>
-        <line x1="${cx}" y1="${cy + Rf - 53}" x2="${cx}" y2="${cy + Rf - 24}"/>
-        <line x1="${cx}" y1="${cy + Rf - 46}" x2="${cx - 13}" y2="${cy + Rf - 32}"/>
-        <line x1="${cx}" y1="${cy + Rf - 46}" x2="${cx + 13}" y2="${cy + Rf - 32}"/>
-        <line x1="${cx}" y1="${cy + Rf - 24}" x2="${cx - 9}" y2="${cy + Rf}"/>
-        <line x1="${cx}" y1="${cy + Rf - 24}" x2="${cx + 9}" y2="${cy + Rf}"/>
+        <circle cx="${cx}" cy="${cy + Rf - 62 * hs}" r="${9 * hs}" ${s("fill:var(--panel)")}/>
+        <line x1="${cx}" y1="${cy + Rf - 53 * hs}" x2="${cx}" y2="${cy + Rf - 24 * hs}"/>
+        <line x1="${cx}" y1="${cy + Rf - 46 * hs}" x2="${cx - 13 * hs}" y2="${cy + Rf - 32 * hs}"/>
+        <line x1="${cx}" y1="${cy + Rf - 46 * hs}" x2="${cx + 13 * hs}" y2="${cy + Rf - 32 * hs}"/>
+        <line x1="${cx}" y1="${cy + Rf - 24 * hs}" x2="${cx - 9 * hs}" y2="${cy + Rf}"/>
+        <line x1="${cx}" y1="${cy + Rf - 24 * hs}" x2="${cx + 9 * hs}" y2="${cy + Rf}"/>
       </g>
       <!-- N -->
       <line x1="${cx - 30}" y1="${cy + Rf}" x2="${cx - 30}" y2="${cy + Rf - 78}" ${s("stroke:var(--green);stroke-width:3.5")} marker-end="url(#m-green)"/>
-      <text x="${cx - 165}" y="${cy + Rf - 96}" ${s("fill:var(--green);font:700 14px 'Public Sans',sans-serif")}>N = mω²r</text>
-      <text x="${cx - 165}" y="${cy + Rf - 79}" ${s("fill:var(--muted);font:11px 'Public Sans',sans-serif")}>piso → tripulante</text>
+      <text text-anchor="end" x="${cx - 38}" y="${cy + Rf - 70}" ${s("fill:var(--green);font:700 14px 'Public Sans',sans-serif")}>N = mω²r</text>
+      <text text-anchor="end" x="${cx - 38}" y="${cy + Rf - 54}" ${s("fill:var(--muted);font:11px 'Public Sans',sans-serif")}>piso → tripulante</text>
       <!-- a_c -->
       <line x1="${cx + 30}" y1="${cy + Rf - 28}" x2="${cx + 30}" y2="${cy + Rf - 108}" ${s("stroke:var(--accent-2);stroke-width:3.5")} marker-end="url(#m-pink)"/>
       <text x="${cx + 40}" y="${cy + Rf - 96}" ${s("fill:var(--accent-2);font:700 14px 'Public Sans',sans-serif")}>a_c = ω²r = v²/r</text>
@@ -157,6 +162,7 @@ window.Tema3 = (() => {
   }
 
   function update() {
+    build();
     const d = compute();
     const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
     set("t3-rlabel", `${F(d.r, 0)} m`);
@@ -177,7 +183,7 @@ window.Tema3 = (() => {
     cf.textContent = `${F(d.rpm, 2)} rpm: ${txt}`;
     cf.style.fill = `var(${col})`;
     set("t3-cor", `a_cor = 2ωv = ${F(d.cor, 2)} m/s²`);
-    set("t3-cor2", `(Coriolis al caminar a 1,4 m/s: ${F((d.cor / d.gt) * 100, 1)} % de g)`);
+    set("t3-cor2", `(al caminar: ${F((d.cor / d.gt) * 100, 1)} % de g)`);
   }
 
   function animate(now) {
@@ -189,7 +195,7 @@ window.Tema3 = (() => {
     const wDisp = Math.min(d.w * 10, (2 * Math.PI) / 2.2); // ×10 real, con tope para radios pequeños
     phase -= wDisp * dt; // antihorario en pantalla (y hacia abajo)
     const g = document.getElementById("t3-rot");
-    if (g) g.setAttribute("transform", `rotate(${(phase * 180) / Math.PI} 265 300)`);
+    if (g) g.setAttribute("transform", `rotate(${(phase * 180) / Math.PI} 265 290)`);
   }
 
   function table() {

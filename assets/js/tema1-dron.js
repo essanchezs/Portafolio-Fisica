@@ -332,7 +332,7 @@ window.Tema1 = (() => {
     // partículas de viento (se mueven en la dirección del vector viento real)
     const W = d.wind;
     if (W.W > 0) {
-      ctx.strokeStyle = hexA(P.amber, 0.55); ctx.lineWidth = 1.4;
+      ctx.strokeStyle = hexA(P.amber, 0.35); ctx.lineWidth = 1.2;
       const ux = W.x / W.W, uy = -W.y / W.W, len = 6 + W.W * 1.6;
       scene.particles.forEach((p) => { ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - ux * len, p.y - uy * len); ctx.stroke(); });
     }
@@ -343,15 +343,22 @@ window.Tema1 = (() => {
     const vax = r.vx - W.x, vay = r.vy - W.y;
     const heading = Math.hypot(vax, vay) > 0.3 ? Math.atan2(-vay, vax) : Math.atan2(-r.vy, r.vx || 1);
     const tilt = { x: r.ax * 1.2, y: -r.ay * 1.2 };
-    if (ctrl.vectors.checked) {
-      const vScale = 6, aScale = 20;
-      UI.arrow(ctx, px, py, px + r.vx * vScale, py - r.vy * vScale, P.accent, 2.6);
-      if (r.a > 0.05) UI.arrow(ctx, px, py, px + r.ax * aScale, py - r.ay * aScale, P.pink, 2.6);
-      ctx.font = "700 12px Public Sans, sans-serif";
-      ctx.fillStyle = P.accent; ctx.fillText("v", px + r.vx * vScale + 6, py - r.vy * vScale);
-      ctx.fillStyle = P.pink; if (r.a > 0.05) ctx.fillText("a", px + r.ax * aScale + 6, py - r.ay * aScale);
-    }
     drawDrone(ctx, px, py, heading, 20, scene.rotor, P, tilt);
+    if (ctrl.vectors.checked) {
+      // vectores encima del dron, con contorno claro para que se lean sobre el mapa
+      const vScale = 7, aScale = 26;
+      const vec = (x2, y2, col, label) => {
+        UI.arrow(ctx, px, py, x2, y2, P.panel, 7, 15);
+        UI.arrow(ctx, px, py, x2, y2, col, 3.4, 14);
+        const lx = x2 + (x2 >= px ? 8 : -26), ly = y2 + 4;
+        ctx.font = "700 12px Public Sans, sans-serif";
+        const tw = ctx.measureText(label).width;
+        ctx.fillStyle = hexA(P.panel, 0.9); ctx.fillRect(lx - 3, ly - 12, tw + 6, 16);
+        ctx.fillStyle = col; ctx.fillText(label, lx, ly);
+      };
+      vec(px + r.vx * vScale, py - r.vy * vScale, P.accent, `v = ${UI.fmt(r.v, 1)} m/s`);
+      if (r.a > 0.05) vec(px + r.ax * aScale, py - r.ay * aScale, P.pink, `a = ${UI.fmt(r.a, 2)} m/s²`);
+    }
 
     // brújula de viento
     const ox = w - 52, oy = 62;
@@ -393,8 +400,8 @@ window.Tema1 = (() => {
       scene.rotor += dt * 40;
       const W = state.data.wind;
       if (W.W > 0) {
-        if (scene.particles.length < 90) scene.particles = Array.from({ length: 90 }, () => ({ x: Math.random() * scene.w, y: Math.random() * scene.h }));
-        const k = 30 + W.W * 14, vx = (W.x / W.W) * k, vy = -(W.y / W.W) * k;
+        if (scene.particles.length < 45) scene.particles = Array.from({ length: 45 }, () => ({ x: Math.random() * scene.w, y: Math.random() * scene.h }));
+        const k = 14 + W.W * 5, vx = (W.x / W.W) * k, vy = -(W.y / W.W) * k;
         scene.particles.forEach((p) => {
           p.x += vx * dt; p.y += vy * dt;
           if (p.x < -20) p.x += scene.w + 40; if (p.x > scene.w + 20) p.x -= scene.w + 40;
@@ -407,6 +414,16 @@ window.Tema1 = (() => {
   }
 
   /** Arrastrar sobre el mapa sopla viento: dirección y largo del arrastre fijan el vector viento. */
+  function hoverPlay() {
+    const canvas = document.getElementById("t1-map");
+    canvas.addEventListener("pointerenter", (e) => {
+      if (e.pointerType !== "mouse" || state.playing || scene.drag) return;
+      if (!hoverPlay.done || state.t >= state.data.T - 0.05) state.t = 0; // la primera vez arranca desde el despegue
+      hoverPlay.done = true;
+      togglePlay();
+    });
+  }
+
   function windDrag() {
     const canvas = document.getElementById("t1-map");
     const pos = (e) => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
@@ -565,6 +582,7 @@ window.Tema1 = (() => {
     window.addEventListener("resize", () => { scene.cssW = 0; drawMap(); });
     UI.onTheme(() => { makeCharts(); drawMap(); });
     windDrag();
+    hoverPlay();
     ambient();
     state.t = 0;
     regenerate();

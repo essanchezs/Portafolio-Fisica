@@ -146,7 +146,7 @@ window.Tema5 = (() => {
       ctx.fillStyle = UI.css("--accent-2"); ctx.fillText(`gatillo → dedo  ${UI.fmt(F, 2)} N`, ax, cy + 38);
     }
     ctx.fillStyle = P.muted; ctx.font = "12px Public Sans, sans-serif";
-    ctx.fillText(releasing ? "Soltado: la fuerza restauradora devuelve la manija (cámara lenta ×60)" : "Arrastre la manija hacia la pared para comprimir el resorte", 16, 22);
+    ctx.fillText(releasing ? (document.getElementById("t5-slow").checked ? "Soltado: la fuerza restauradora devuelve la manija (cámara lenta ×60)" : "Soltado: en tiempo real el regreso dura unos milisegundos") : "Arrastre la manija hacia la pared para comprimir el resorte", 16, 22);
   }
 
   function readouts() {
@@ -187,7 +187,7 @@ window.Tema5 = (() => {
     let last = performance.now();
     cancelAnimationFrame(raf);
     const m = 0.01; // masa efectiva ilustrativa del gatillo (kg)
-    const SLOW = 60; // cámara lenta: el regreso real dura milisegundos
+    const SLOW = document.getElementById("t5-slow").checked ? 60 : 1; // en tiempo real el regreso dura milisegundos
     const step = (now) => {
       const dt = Math.min(0.03, (now - last) / 1000) / SLOW; last = now;
       // a = F/m (m/s²) ×1000 → mm/s²; con amortiguamiento para que no oscile indefinidamente

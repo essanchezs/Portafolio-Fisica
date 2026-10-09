@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-  <link rel="stylesheet" href="assets/css/styles.css?v=12" />
+  <link rel="stylesheet" href="assets/css/styles.css?v=14" />
 
   <script>
     // Aplica el tema guardado antes de pintar para evitar parpadeo
@@ -291,20 +291,20 @@
               </div>
               <div class="ctrl">
                 <label for="t1-wind">Viento (rapidez) <output for="t1-wind"></output></label>
-                <input type="range" id="t1-wind" min="0" max="12" step="0.5" value="0" />
+                <input type="range" id="t1-wind" min="0" max="12" step="0.5" value="5" />
               </div>
               <div class="ctrl">
                 <label for="t1-wdir">Viento sopla hacia <output for="t1-wdir"></output></label>
                 <input type="range" id="t1-wdir" min="0" max="355" step="5" value="45" />
               </div>
               <div class="ctrl" style="justify-content:flex-end">
-                <label class="toggle"><input type="checkbox" id="t1-noise" /> Simular GPS ruidoso (σ = 1,5 m) y derivar numéricamente</label>
+                <label class="toggle" title="Muestra qué pasa si la velocidad y la aceleración se calculan derivando posiciones de un GPS con ±1,5 m de error: los puntos grises en las gráficas se dispersan. Por eso los autopilotos usan filtros de Kalman."><input type="checkbox" id="t1-noise" /> Comparar con un GPS impreciso (±1,5 m): ver por qué derivar posiciones ruidosas falla</label>
               </div>
             </div>
 
             <div class="playground">
               <span class="play-badge">Exploración interactiva</span>
-              <p class="play-hint">Presione Reproducir para ver el vuelo. Arrastre sobre el mapa para cambiar el viento.</p>
+              <p class="play-hint">Pase el cursor sobre el mapa o presione Reproducir para ver el vuelo. Arrastre sobre el mapa para cambiar el viento.</p>
               <div class="canvas-wrap"><canvas id="t1-map" aria-label="Escena: dron de reparto volando la ruta, con viento animado"></canvas></div>
               <div class="scrubber">
                 <button class="btn small primary" id="t1-play">▶ Reproducir</button>
@@ -987,6 +987,25 @@
 
             <div class="readouts" id="t4-ro"></div>
 
+            <div class="playground">
+              <span class="play-badge">Exploración interactiva</span>
+              <p class="play-hint">Elija la velocidad de entrada y la temperatura de las llantas, y tome la curva.</p>
+              <div class="controls" style="margin-bottom:10px">
+                <div class="ctrl">
+                  <label for="t4-vin">Velocidad de entrada <output for="t4-vin"></output></label>
+                  <input type="range" id="t4-vin" min="50" max="340" step="5" value="170" />
+                </div>
+                <div class="ctrl" style="flex-direction:row; flex-wrap:wrap; gap:8px; align-items:flex-end">
+                  <button class="btn small primary" id="t4-go">Tomar la curva</button>
+                  <button class="btn small" id="t4-warm">Calentar +10 °C</button>
+                  <button class="btn small" id="t4-cool">Enfriar −10 °C</button>
+                </div>
+              </div>
+              <div class="canvas-wrap"><canvas id="t4-play" aria-label="Vista superior de un auto de F1 tomando una curva"></canvas></div>
+              <div class="readouts" id="t4-play-ro"></div>
+              <p class="play-note">La regla es la misma de la gráfica de velocidad máxima: si \(m v^2/R\) supera lo que la fricción puede dar (\(\mu N\)), la llanta desliza y el auto describe un arco más abierto, \(R_{real} = v^2/a_{\max}\), hasta salirse de la pista.</p>
+            </div>
+
             <div class="zone">
             <span class="zone-badge">Visualización de datos · recurso del tema</span>
             <div class="chart-grid">
@@ -1008,24 +1027,7 @@
             </div>
             </div>
 
-            <div class="playground">
-              <span class="play-badge">Exploración interactiva</span>
-              <p class="play-hint">Elija la velocidad de entrada y la temperatura de las llantas, y tome la curva.</p>
-              <div class="controls" style="margin-bottom:10px">
-                <div class="ctrl">
-                  <label for="t4-vin">Velocidad de entrada <output for="t4-vin"></output></label>
-                  <input type="range" id="t4-vin" min="50" max="340" step="5" value="170" />
-                </div>
-                <div class="ctrl" style="flex-direction:row; flex-wrap:wrap; gap:8px; align-items:flex-end">
-                  <button class="btn small primary" id="t4-go">Tomar la curva</button>
-                  <button class="btn small" id="t4-warm">Calentar +10 °C</button>
-                  <button class="btn small" id="t4-cool">Enfriar −10 °C</button>
-                </div>
-              </div>
-              <div class="canvas-wrap"><canvas id="t4-play" aria-label="Vista superior de un auto de F1 tomando una curva"></canvas></div>
-              <div class="readouts" id="t4-play-ro"></div>
-              <p class="play-note">La regla es la misma de la gráfica de velocidad máxima: si \(m v^2/R\) supera lo que la fricción puede dar (\(\mu N\)), la llanta desliza y el auto describe un arco más abierto, \(R_{real} = v^2/a_{\max}\), hasta salirse de la pista.</p>
-            </div>
+            
 
             <details class="more">
               <summary>Qué observar</summary>
@@ -1263,6 +1265,7 @@
               </div>
               <div class="ctrl" style="justify-content:flex-end">
                 <button class="btn small" id="t5-release">Soltar (ver la fuerza restauradora)</button>
+                <label class="toggle"><input type="checkbox" id="t5-slow" checked /> Cámara lenta ×60</label>
               </div>
             </div>
             <div class="canvas-wrap"><canvas id="t5-trigger" aria-label="Resorte virtual: arrastre la manija para comprimirlo"></canvas></div>
@@ -1364,13 +1367,13 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-<script defer src="assets/js/ui.js?v=12"></script>
-<script defer src="assets/js/conexiones.js?v=12"></script>
-<script defer src="assets/js/tema1-dron.js?v=12"></script>
-<script defer src="assets/js/tema2-salto.js?v=12"></script>
-<script defer src="assets/js/tema3-habitat.js?v=12"></script>
-<script defer src="assets/js/tema4-llantas.js?v=12"></script>
-<script defer src="assets/js/tema5-haptico.js?v=12"></script>
-<script defer src="assets/js/main.js?v=12"></script>
+<script defer src="assets/js/ui.js?v=14"></script>
+<script defer src="assets/js/conexiones.js?v=14"></script>
+<script defer src="assets/js/tema1-dron.js?v=14"></script>
+<script defer src="assets/js/tema2-salto.js?v=14"></script>
+<script defer src="assets/js/tema3-habitat.js?v=14"></script>
+<script defer src="assets/js/tema4-llantas.js?v=14"></script>
+<script defer src="assets/js/tema5-haptico.js?v=14"></script>
+<script defer src="assets/js/main.js?v=14"></script>
 </body>
 </html>
