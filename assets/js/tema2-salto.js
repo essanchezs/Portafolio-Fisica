@@ -12,7 +12,6 @@ window.Tema2 = (() => {
 
   const PRESETS = {
     real: { v0: 3.13, g: 9.81, fall: 1, vx: 3, maxfall: 80, vj: false, half: false },
-    heroic: { v0: 8.86, g: 9.81, fall: 1, vx: 6, maxfall: 80, vj: false, half: false },
     arcade: { v0: 20, g: 50, fall: 1.8, vx: 3.5, maxfall: 80, vj: true, sus: false, half: false },
     // Celeste: 1 px ≈ 0,145 m → g 900 px/s² ≈ 130,5 m/s²; JumpSpeed 105 px/s ≈ 15,2 m/s;
     // MaxFall 160 px/s ≈ 23,2 m/s; MaxRun 90 px/s ≈ 13,05 m/s

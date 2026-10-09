@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-  <link rel="stylesheet" href="assets/css/styles.css?v=15" />
+  <link rel="stylesheet" href="assets/css/styles.css?v=17" />
 
   <script>
     // Aplica el tema guardado antes de pintar para evitar parpadeo
@@ -523,7 +523,6 @@
             </div>
             <div class="presets">
               <span class="lbl">Videojuegos:</span>
-              <button class="btn small" data-preset="heroic">Héroe con g real</button>
               <button class="btn small" data-preset="arcade">Plataformero arcade</button>
               <button class="btn small" data-preset="celeste">Celeste (convertido a m)</button>
               <button class="btn small" data-preset="heavy">Caída pesada ×3</button>
@@ -607,9 +606,10 @@
               <div class="callout">
               <strong>Experimentos sugeridos</strong>
               <ol style="margin:4px 0 0; padding-left:20px">
-                <li><b>“Humano real” → “Héroe con g real”:</b> la misma física sube 4 m, pero tarda casi 2 s en el aire. Compárelo con “Plataformero arcade”, que llega a una altura parecida en un tercio del tiempo.</li>
+                <li><b>“Plataformero arcade” con la comparación activa:</b> la silueta gris hace el mismo salto con \(g = 9{,}81\) y tarda casi tres veces más en el aire. Por eso los juegos multiplican la gravedad.</li>
                 <li><b>Multiplicador de caída:</b> súbalo a 2,5. La pendiente de \(v_y(t)\) cambia de golpe en el ápice; la bajada es más corta que la subida.</li>
                 <li><b>Altura controlada por el botón:</b> active “salto variable” (lo usa la mayoría de plataformeros) o “sostener el impulso” (la técnica de Celeste) y dé toques cortos y largos a <span class="kbd">Espacio</span>. Con el mismo \(v_0\), el jugador elige la altura.</li>
+                <li><b>Tierra → Luna → Marte → Júpiter:</b> la misma persona, con el mismo impulso, salta unos 0,5 m, 3 m, 1,3 m y 0,2 m. Solo cambia \(g\) en \(h = v_0^2/2g\).</li>
                 <li><b>Duplique \(v_0\):</b> la altura máxima se cuadruplica (\(h\propto v_0^2\)), pero el tiempo en el aire solo se duplica.</li>
               </ol>
             </div>
@@ -1372,13 +1372,13 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-<script defer src="assets/js/ui.js?v=15"></script>
-<script defer src="assets/js/conexiones.js?v=15"></script>
-<script defer src="assets/js/tema1-dron.js?v=15"></script>
-<script defer src="assets/js/tema2-salto.js?v=15"></script>
-<script defer src="assets/js/tema3-habitat.js?v=15"></script>
-<script defer src="assets/js/tema4-llantas.js?v=15"></script>
-<script defer src="assets/js/tema5-haptico.js?v=15"></script>
-<script defer src="assets/js/main.js?v=15"></script>
+<script defer src="assets/js/ui.js?v=17"></script>
+<script defer src="assets/js/conexiones.js?v=17"></script>
+<script defer src="assets/js/tema1-dron.js?v=17"></script>
+<script defer src="assets/js/tema2-salto.js?v=17"></script>
+<script defer src="assets/js/tema3-habitat.js?v=17"></script>
+<script defer src="assets/js/tema4-llantas.js?v=17"></script>
+<script defer src="assets/js/tema5-haptico.js?v=17"></script>
+<script defer src="assets/js/main.js?v=17"></script>
 </body>
 </html>

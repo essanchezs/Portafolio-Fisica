@@ -257,7 +257,8 @@ window.Tema3 = (() => {
     // pies del tripulante: arrancan abajo (ángulo π/2 en pantalla) y giran con el piso
     const aFeet = Math.PI / 2 + rot;
     const fx = R * Math.cos(aFeet), fy = R * Math.sin(aFeet);
-    const hpx = Math.max(16, (m.hr / m.r) * R);
+    // a escala si ya se ve (centrífugas pequeñas); si no, exagerada a ~30 % del radio para 1,5 m
+    const hReal = (m.hr / m.r) * R, hpx = Math.max(hReal, Math.min(R * 0.45, R * 0.2 * m.hr));
     ctx.strokeStyle = P.text; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.moveTo(fx, fy); ctx.lineTo(fx - Math.cos(aFeet) * hpx * 1.3, fy - Math.sin(aFeet) * hpx * 1.3); ctx.stroke();
     ctx.fillStyle = P.green; ctx.beginPath(); ctx.arc(fx, fy, 4, 0, 7); ctx.fill();
@@ -271,7 +272,7 @@ window.Tema3 = (() => {
     ctx.fillStyle = P.amber; ctx.beginPath(); ctx.arc(radVis(rhoT) * Math.cos(aBall), radVis(rhoT) * Math.sin(aBall), 6, 0, 7); ctx.fill();
     ctx.restore();
     ctx.fillStyle = P.faint; ctx.font = "10.5px Public Sans, sans-serif";
-    ctx.fillText("La pelota sigue recta (1.ª ley) y el piso gira debajo. Altura exagerada.", 12, half.h - 10);
+    ctx.fillText(hpx > hReal * 1.05 ? `La pelota sigue recta (1.ª ley) y el piso gira debajo. Altura exagerada ×${UI.fmt(hpx / hReal, 0)} para que se vea.` : "La pelota sigue recta (1.ª ley) y el piso gira debajo. Dibujo a escala.", 12, half.h - 10);
 
     // --- Panel 2: lo que ve el tripulante (marco que gira), con zoom
     const ox = narrow ? 0 : half.w, oy = narrow ? half.h : 0;
