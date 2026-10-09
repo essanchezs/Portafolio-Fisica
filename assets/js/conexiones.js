@@ -42,8 +42,8 @@ window.Conexiones = (() => {
       const href = n.id ? `#tema-${n.id}` : "#inicio";
       s += `<a href="${href}"><g style="cursor:pointer">`;
       s += `<rect x="${n.x - w / 2}" y="${n.y - h / 2}" width="${w}" height="${h}" rx="14" fill="${P.panel}" stroke="${col}" stroke-width="${n.hub ? 1.5 : 2}"/>`;
-      s += `<text x="${n.x}" y="${n.y - 5}" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="14" fill="${col}">${n.t[0]}</text>`;
-      s += `<text x="${n.x}" y="${n.y + 15}" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" fill="${P.text}">${n.t[1]}</text>`;
+      s += `<text x="${n.x}" y="${n.y - 5}" text-anchor="middle" font-family="Source Serif 4, serif" font-weight="700" font-size="14" fill="${col}">${n.t[0]}</text>`;
+      s += `<text x="${n.x}" y="${n.y + 15}" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="13" fill="${P.text}">${n.t[1]}</text>`;
       s += `</g></a>`;
     });
     svg.innerHTML = s;

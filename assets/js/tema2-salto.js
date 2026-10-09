@@ -124,8 +124,6 @@ window.Tema2 = (() => {
     const prevY = P.y;
     P.x += P.vx * dt;
     if (P.onGround) P.stride = (P.stride || 0) + Math.abs(P.vx) * dt * 1.9;
-    collectCoins();
-    if (coinFlash > 0) coinFlash -= dt;
     P.y += P.vy * dt;
 
     // colisiones: suelo y plataformas de un solo sentido
@@ -241,7 +239,7 @@ window.Tema2 = (() => {
     // ápice
     const ax = X(baseX + dirx * p.vx * pred.full.tApex), ay = Y(baseY + pred.full.hMax);
     ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(ax, ay, 4, 0, 7); ctx.fill();
-    ctx.font = "600 11.5px Inter, sans-serif";
+    ctx.font = "600 11.5px Public Sans, sans-serif";
     ctx.fillText(`h máx = ${UI.fmt(pred.full.hMax, 2)} m`, ax + 8, ay - 8);
     ctx.setLineDash([3, 4]); ctx.strokeStyle = C.accent; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax, Y(baseY)); ctx.stroke(); ctx.setLineDash([]);
@@ -251,9 +249,6 @@ window.Tema2 = (() => {
       ctx.fillStyle = C.pink;
       P.trailPts.forEach((q, i) => { if (i % 6 === 0) { ctx.beginPath(); ctx.arc(X(q.x), Y(q.y), 1.8, 0, 7); ctx.fill(); } });
     }
-
-    // monedas
-    drawCoins(ctx, X, Y, C, sc);
 
     // personaje: corredor (1,8 m) con brazos y piernas animados
     const ph = Math.max(PH * sc, 26);
@@ -265,7 +260,7 @@ window.Tema2 = (() => {
     }
 
     // leyenda
-    ctx.font = "11px Inter, sans-serif";
+    ctx.font = "11px Public Sans, sans-serif";
     let ly = 18;
     const leg = (col, txt, dash) => {
       ctx.strokeStyle = col; ctx.lineWidth = 2.4; ctx.setLineDash(dash);
@@ -277,7 +272,7 @@ window.Tema2 = (() => {
     if (c.ghost.checked) leg(C.amber, "Misma altura con g = 9,81 m/s²", [6, 6]);
 
     if (!focused) {
-      ctx.fillStyle = C.muted; ctx.font = "600 12px Inter, sans-serif";
+      ctx.fillStyle = C.muted; ctx.font = "600 12px Public Sans, sans-serif";
       ctx.fillText(auto ? "Modo demostración · haga clic aquí para controlar con el teclado" : "Haga clic aquí para controlar con el teclado", 44, 20);
     }
   }
@@ -321,7 +316,7 @@ window.Tema2 = (() => {
       const hx = ex + face * (0.9 + Math.abs(s1)) * u, hy = ey + (1.2 + up * 1.6) * u;
       limb(sh.x, sh.y, ex, ey, hx, hy, col);
     };
-    const back = C.violet, front = C.pink;
+    const back = C.faint, front = C.text;
     leg(stride + Math.PI, back); arm(stride, back);
     // torso
     ctx.strokeStyle = front; ctx.lineWidth = Math.max(3, 1.5 * u);
@@ -333,39 +328,6 @@ window.Tema2 = (() => {
     ctx.fillRect(neck.x + face * 0.2 * u + (face > 0 ? 0 : -1.7 * u), neck.y - 1.45 * u, 1.7 * u, 0.35 * u);
     ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(neck.x + face * 0.65 * u, neck.y - 1.0 * u, Math.max(1.2, 0.22 * u), 0, 7); ctx.fill();
     ctx.restore();
-  }
-
-  /** Monedas repartidas a distintas alturas: probar qué saltos llegan a cada una. */
-  const COINS = [
-    { x: 6, y: 1.2 }, { x: 11, y: 3.4 }, { x: 13.5, y: 5 }, { x: 18.75, y: 5.3 }, { x: 22, y: 7.5 },
-    { x: 25.5, y: 2.6 }, { x: 32, y: 6.8 }, { x: 35, y: 9.5 }, { x: 39.75, y: 4.2 }, { x: 44, y: 1.5 },
-  ];
-  const taken = new Set();
-  let coinCount = 0, coinFlash = 0;
-  function coinsNear(x) {
-    const k = Math.floor(x / WORLD), out = [];
-    for (let r = k - 1; r <= k + 1; r++) COINS.forEach((c, i) => out.push({ x: c.x + r * WORLD, y: c.y, id: r + ":" + i }));
-    return out;
-  }
-  function collectCoins() {
-    const cx = P.x, cy = P.y + PH / 2;
-    coinsNear(P.x).forEach((c) => {
-      if (!taken.has(c.id) && Math.abs(c.x - cx) < 0.75 && Math.abs(c.y - cy) < 1.15) { taken.add(c.id); coinCount++; coinFlash = 0.6; }
-    });
-  }
-  function drawCoins(ctx, X, Y, C, sc) {
-    const t = performance.now() / 1000;
-    coinsNear(P.x).forEach((c) => {
-      if (taken.has(c.id)) return;
-      const px = X(c.x), py = Y(c.y);
-      if (px < -20 || px > W + 20) return;
-      const r = Math.max(5, Math.min(12, 0.32 * sc)), squish = Math.abs(Math.cos(t * 3 + c.x));
-      ctx.fillStyle = C.amber; ctx.beginPath(); ctx.ellipse(px, py, r * (0.3 + 0.7 * squish), r, 0, 0, 7); ctx.fill();
-      ctx.strokeStyle = "rgba(0,0,0,0.25)"; ctx.lineWidth = 1; ctx.stroke();
-      ctx.fillStyle = C.faint; ctx.font = "10px JetBrains Mono, monospace"; ctx.fillText(c.y + " m", px + r + 3, py + 3);
-    });
-    ctx.fillStyle = coinFlash > 0 ? C.amber : C.text; ctx.font = "700 13px Inter, sans-serif";
-    ctx.fillText("🪙 " + coinCount + " monedas", 44, 40);
   }
 
   function roundRect(ctx, x, y, w, h, r) {
@@ -474,22 +436,24 @@ window.Tema2 = (() => {
     c.fall = UI.bindRange("t2-fall", (v) => `×${UI.fmt(v, 2)}`, onParamChange);
     c.vx = UI.bindRange("t2-vx", ms, onParamChange);
     c.maxfall = UI.bindRange("t2-maxfall", (v) => (v >= 80 ? "sin límite" : ms(v)), onParamChange);
-    c.h = UI.bindRange("t2-h", (v) => `${UI.fmt(v, 2)} m`, readouts);
-    c.th = UI.bindRange("t2-th", (v) => `${UI.fmt(v, 2)} s`, readouts);
+    // diseño inverso: al mover h o t_h se recalculan g y v₀ al instante
+    const applyDesign = () => {
+      const h = c.h.value, th = c.th.value;
+      c.g.set(Math.min(140, (2 * h) / (th * th)), true);
+      c.v0.set(Math.min(30, (2 * h) / th), true);
+      c.fall.set(1, true); c.maxfall.set(80, true); c.half.checked = false; c.sus.checked = false;
+      document.querySelectorAll("#t2-presets [data-preset]").forEach((b) => b.setAttribute("aria-pressed", "false"));
+      P.lastJump = null;
+      onParamChange();
+    };
+    c.h = UI.bindRange("t2-h", (v) => `${UI.fmt(v, 2)} m`, applyDesign);
+    c.th = UI.bindRange("t2-th", (v) => `${UI.fmt(v, 2)} s`, applyDesign);
     c.vj = document.getElementById("t2-var");
     c.half = document.getElementById("t2-half");
     c.sus = document.getElementById("t2-sustain");
     c.ghost = document.getElementById("t2-ghost");
     [c.vj, c.sus, c.half, c.ghost].forEach((el) => el.addEventListener("change", onParamChange));
 
-    document.getElementById("t2-apply").addEventListener("click", () => {
-      const h = c.h.value, th = c.th.value;
-      c.g.set(Math.min(140, 2 * h / (th * th)), true);
-      c.v0.set(Math.min(30, 2 * h / th), true);
-      c.fall.set(1, true); c.maxfall.set(80, true); c.half.checked = false;
-      P.lastJump = null;
-      onParamChange();
-    });
     document.querySelectorAll("#t2-presets [data-preset]").forEach((b) => b.addEventListener("click", () => applyPreset(b.dataset.preset)));
 
     // teclado (solo cuando la escena tiene el foco, para no robar la barra espaciadora a la página)
@@ -499,7 +463,7 @@ window.Tema2 = (() => {
     const map = { ArrowLeft: "left", KeyA: "left", ArrowRight: "right", KeyD: "right", Space: "jump", ArrowUp: "jump", KeyW: "jump" };
     canvas.addEventListener("keydown", (e) => {
       if (map[e.code]) { keys[map[e.code]] = true; auto = false; e.preventDefault(); }
-      if (e.code === "KeyR") { P.x = 2; P.y = 0; P.vy = 0; P.onGround = true; P.trailPts = []; taken.clear(); coinCount = 0; }
+      if (e.code === "KeyR") { P.x = 2; P.y = 0; P.vy = 0; P.onGround = true; P.trailPts = []; }
     });
     canvas.addEventListener("keyup", (e) => { if (map[e.code]) { keys[map[e.code]] = false; e.preventDefault(); } });
     // botones táctiles

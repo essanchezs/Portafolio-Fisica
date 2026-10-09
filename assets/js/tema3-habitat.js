@@ -64,7 +64,7 @@ window.Tema3 = (() => {
       <rect x="0" y="0" width="1000" height="650" rx="14" ${s("fill:var(--panel-2)")}/>
 
       <!-- ===== Vista frontal ===== -->
-      <text x="20" y="30" ${s("fill:var(--muted);font:600 13px Inter,sans-serif;letter-spacing:.08em")}>VISTA A LO LARGO DEL EJE</text>
+      <text x="20" y="30" ${s("fill:var(--muted);font:600 13px 'Public Sans',sans-serif;letter-spacing:.08em")}>VISTA A LO LARGO DEL EJE</text>
 
       <circle cx="${cx}" cy="${cy}" r="${Rh}" ${s("fill:none;stroke:var(--muted);stroke-width:2")}/>
       <circle cx="${cx}" cy="${cy}" r="${Rf}" ${s("fill:none;stroke:var(--violet);stroke-width:3")}/>
@@ -73,16 +73,16 @@ window.Tema3 = (() => {
       <circle cx="${cx}" cy="${cy}" r="34" ${s("fill:var(--panel);stroke:var(--muted);stroke-width:2")}/>
       <circle cx="${cx}" cy="${cy}" r="9" ${s("fill:none;stroke:var(--text);stroke-width:2")}/>
       <circle cx="${cx}" cy="${cy}" r="3" ${s("fill:var(--text)")}/>
-      <text x="${cx + 44}" y="${cy - 8}" ${s("fill:var(--text);font:600 12.5px Inter,sans-serif")}>⊙ eje de giro</text>
-      <text x="${cx + 44}" y="${cy + 8}" ${s("fill:var(--muted);font:11px Inter,sans-serif")}>(sale de la pantalla)</text>
+      <text x="${cx + 44}" y="${cy - 8}" ${s("fill:var(--text);font:600 12.5px 'Public Sans',sans-serif")}>⊙ eje de giro</text>
+      <text x="${cx + 44}" y="${cy + 8}" ${s("fill:var(--muted);font:11px 'Public Sans',sans-serif")}>(sale de la pantalla)</text>
 
       <!-- ω -->
       <path d="M ${cx + 58 * Math.cos(-2.3)} ${cy + 58 * Math.sin(-2.3)} A 58 58 0 0 1 ${cx + 58 * Math.cos(-0.7)} ${cy + 58 * Math.sin(-0.7)}" ${s("fill:none;stroke:var(--amber);stroke-width:2.5")} marker-start="url(#m-amber)"/>
-      <text x="${cx - 10}" y="${cy - 66}" ${s("fill:var(--amber);font:700 17px 'Space Grotesk',sans-serif")}>ω</text>
+      <text x="${cx - 10}" y="${cy - 66}" ${s("fill:var(--amber);font:700 17px 'Source Serif 4',serif")}>ω</text>
 
       <!-- cota del radio -->
       <line x1="${cx}" y1="${cy}" x2="${rx}" y2="${ry}" ${s("stroke:var(--text);stroke-width:1.6;stroke-dasharray:6 5")} marker-end="url(#m-muted)"/>
-      <text x="${(cx + rx) / 2 - 30}" y="${(cy + ry) / 2 - 12}" ${s("fill:var(--text);font:700 16px 'Space Grotesk',sans-serif")}>r</text>
+      <text x="${(cx + rx) / 2 - 30}" y="${(cy + ry) / 2 - 12}" ${s("fill:var(--text);font:700 16px 'Source Serif 4',serif")}>r</text>
       <text id="t3-rlabel" x="${(cx + rx) / 2 - 62}" y="${(cy + ry) / 2 + 8}" ${s("fill:var(--muted);font:12px 'JetBrains Mono',monospace")}></text>
 
       <!-- tripulante en el piso (abajo) -->
@@ -96,47 +96,47 @@ window.Tema3 = (() => {
       </g>
       <!-- N -->
       <line x1="${cx - 30}" y1="${cy + Rf}" x2="${cx - 30}" y2="${cy + Rf - 78}" ${s("stroke:var(--green);stroke-width:3.5")} marker-end="url(#m-green)"/>
-      <text x="${cx - 165}" y="${cy + Rf - 96}" ${s("fill:var(--green);font:700 14px Inter,sans-serif")}>N = mω²r</text>
-      <text x="${cx - 165}" y="${cy + Rf - 79}" ${s("fill:var(--muted);font:11px Inter,sans-serif")}>piso → tripulante</text>
+      <text x="${cx - 165}" y="${cy + Rf - 96}" ${s("fill:var(--green);font:700 14px 'Public Sans',sans-serif")}>N = mω²r</text>
+      <text x="${cx - 165}" y="${cy + Rf - 79}" ${s("fill:var(--muted);font:11px 'Public Sans',sans-serif")}>piso → tripulante</text>
       <!-- a_c -->
       <line x1="${cx + 30}" y1="${cy + Rf - 28}" x2="${cx + 30}" y2="${cy + Rf - 108}" ${s("stroke:var(--accent-2);stroke-width:3.5")} marker-end="url(#m-pink)"/>
-      <text x="${cx + 40}" y="${cy + Rf - 96}" ${s("fill:var(--accent-2);font:700 14px Inter,sans-serif")}>a_c = ω²r = v²/r</text>
-      <text x="${cx + 40}" y="${cy + Rf - 79}" ${s("fill:var(--muted);font:11px Inter,sans-serif")}>siempre apunta al eje</text>
+      <text x="${cx + 40}" y="${cy + Rf - 96}" ${s("fill:var(--accent-2);font:700 14px 'Public Sans',sans-serif")}>a_c = ω²r = v²/r</text>
+      <text x="${cx + 40}" y="${cy + Rf - 79}" ${s("fill:var(--muted);font:11px 'Public Sans',sans-serif")}>siempre apunta al eje</text>
       <!-- v tangencial -->
       <line x1="${cx + 18}" y1="${cy + Rf + 13}" x2="${cx + 118}" y2="${cy + Rf + 13}" ${s("stroke:var(--accent);stroke-width:3.5")} marker-end="url(#m-acc)"/>
-      <text x="${cx + 122}" y="${cy + Rf + 18}" ${s("fill:var(--accent);font:700 14px Inter,sans-serif")}>v = ωr</text>
-      <text x="${cx + 122}" y="${cy + Rf + 34}" ${s("fill:var(--muted);font:11px Inter,sans-serif")}>tangente al anillo</text>
-      <text x="${cx - 120}" y="${cy + Rf + 52}" ${s("fill:var(--faint);font:11px Inter,sans-serif")}>“abajo” para el tripulante = hacia afuera del anillo (tripulante no a escala)</text>
+      <text x="${cx + 122}" y="${cy + Rf + 18}" ${s("fill:var(--accent);font:700 14px 'Public Sans',sans-serif")}>v = ωr</text>
+      <text x="${cx + 122}" y="${cy + Rf + 34}" ${s("fill:var(--muted);font:11px 'Public Sans',sans-serif")}>tangente al anillo</text>
+      <text x="${cx - 120}" y="${cy + Rf + 52}" ${s("fill:var(--faint);font:11px 'Public Sans',sans-serif")}>“abajo” para el tripulante = hacia afuera del anillo (tripulante no a escala)</text>
 
       <!-- ecuaciones de la vista frontal -->
       ${eqs(20, 62, ["ω = 2π/T = 2πf", "rpm = 60ω / 2π", "g_ap = ω²r"], "--text", 13)}
 
       <!-- ===== Vista lateral ===== -->
       <line x1="555" y1="20" x2="555" y2="600" ${s("stroke:var(--line);stroke-width:1")}/>
-      <text x="580" y="30" ${s("fill:var(--muted);font:600 13px Inter,sans-serif;letter-spacing:.08em")}>VISTA LATERAL (CORTE)</text>
+      <text x="580" y="30" ${s("fill:var(--muted);font:600 13px 'Public Sans',sans-serif;letter-spacing:.08em")}>VISTA LATERAL (CORTE)</text>
       <line x1="590" y1="${sy}" x2="985" y2="${sy}" ${s("stroke:var(--amber);stroke-width:2;stroke-dasharray:14 5 3 5")}/>
-      <text x="900" y="${sy - 8}" ${s("fill:var(--amber);font:600 12px Inter,sans-serif")}>eje de giro</text>
+      <text x="900" y="${sy - 8}" ${s("fill:var(--amber);font:600 12px 'Public Sans',sans-serif")}>eje de giro</text>
       <rect x="${sx - 16}" y="${sy - 22}" width="32" height="44" rx="6" ${s("fill:var(--panel);stroke:var(--muted);stroke-width:2")}/>
       <line x1="${sx}" y1="${sy - 22}" x2="${sx}" y2="${sy - 92}" ${s("stroke:var(--line);stroke-width:6")}/>
       <line x1="${sx}" y1="${sy + 22}" x2="${sx}" y2="${sy + 92}" ${s("stroke:var(--line);stroke-width:6")}/>
       <ellipse cx="${sx}" cy="${sy - 108}" rx="40" ry="18" ${s("fill:var(--violet);opacity:.18;stroke:var(--violet);stroke-width:2.5")}/>
       <ellipse cx="${sx}" cy="${sy + 108}" rx="40" ry="18" ${s("fill:var(--violet);opacity:.18;stroke:var(--violet);stroke-width:2.5")}/>
       <line x1="${sx + 58}" y1="${sy}" x2="${sx + 58}" y2="${sy + 122}" ${s("stroke:var(--text);stroke-width:1.5")} marker-start="url(#m-muted)" marker-end="url(#m-muted)"/>
-      <text x="${sx + 66}" y="${sy + 66}" ${s("fill:var(--text);font:700 15px 'Space Grotesk',sans-serif")}>r</text>
-      <text x="${sx - 160}" y="${sy + 116}" ${s("fill:var(--muted);font:11px Inter,sans-serif")}>piso = cara exterior del tubo</text>
+      <text x="${sx + 66}" y="${sy + 66}" ${s("fill:var(--text);font:700 15px 'Source Serif 4',serif")}>r</text>
+      <text x="${sx - 160}" y="${sy + 116}" ${s("fill:var(--muted);font:11px 'Public Sans',sans-serif")}>piso = cara exterior del tubo</text>
       <line x1="${sx - 60}" y1="${sy + 121}" x2="${sx + 30}" y2="${sy + 121}" ${s("stroke:var(--green);stroke-width:2")}/>
 
       <!-- DCL -->
-      <text x="580" y="320" ${s("fill:var(--muted);font:600 13px Inter,sans-serif;letter-spacing:.08em")}>CUERPO LIBRE</text>
+      <text x="580" y="320" ${s("fill:var(--muted);font:600 13px 'Public Sans',sans-serif;letter-spacing:.08em")}>CUERPO LIBRE</text>
       <rect x="600" y="400" width="64" height="64" rx="8" ${s("fill:var(--panel);stroke:var(--text);stroke-width:2")}/>
-      <text x="626" y="438" ${s("fill:var(--text);font:700 16px 'Space Grotesk',sans-serif")}>m</text>
+      <text x="626" y="438" ${s("fill:var(--text);font:700 16px 'Source Serif 4',serif")}>m</text>
       <line x1="632" y1="400" x2="632" y2="336" ${s("stroke:var(--green);stroke-width:3.5")} marker-end="url(#m-green)"/>
-      <text x="642" y="350" ${s("fill:var(--green);font:700 13.5px Inter,sans-serif")}>N (hacia el eje)</text>
+      <text x="642" y="350" ${s("fill:var(--green);font:700 13.5px 'Public Sans',sans-serif")}>N (hacia el eje)</text>
       ${eqs(580, 500, ["ΣF = N = m·a_c", "N = mω²r"], "--text", 13)}
       ${eqs(580, 560, ["Sin rotación: N = 0", "y el tripulante flota.", "N es lo que siente", "como su “peso”."], "--muted", 11.5)}
 
       <!-- gradiente cabeza-pies -->
-      <text x="790" y="320" ${s("fill:var(--muted);font:600 13px Inter,sans-serif;letter-spacing:.08em")}>GRADIENTE</text>
+      <text x="790" y="320" ${s("fill:var(--muted);font:600 13px 'Public Sans',sans-serif;letter-spacing:.08em")}>GRADIENTE</text>
       <line x1="800" y1="460" x2="800" y2="370" ${s("stroke:var(--muted);stroke-width:2")}/>
       <circle cx="800" cy="364" r="7" ${s("fill:none;stroke:var(--muted);stroke-width:2")}/>
       <line id="t3-gh" x1="815" y1="368" x2="815" y2="368" ${s("stroke:var(--accent-2);stroke-width:3")} marker-end="url(#m-pink)"/>
@@ -145,9 +145,9 @@ window.Tema3 = (() => {
       <text id="t3-gfl" x="830" y="464" ${s("fill:var(--text);font:12px 'JetBrains Mono',monospace")}></text>
       <text x="790" y="500" ${s("fill:var(--text);font:12.5px 'JetBrains Mono',monospace")}>g_cab/g_pies = 1 − h/r</text>
       <text id="t3-gradl" x="790" y="520" ${s("fill:var(--accent-2);font:700 12.5px 'JetBrains Mono',monospace")}></text>
-      <text id="t3-comfort" x="790" y="560" ${s("font:700 12.5px Inter,sans-serif")}></text>
+      <text id="t3-comfort" x="790" y="560" ${s("font:700 12.5px 'Public Sans',sans-serif")}></text>
       <text id="t3-cor" x="790" y="582" ${s("fill:var(--muted);font:12px 'JetBrains Mono',monospace")}></text>
-      <text id="t3-cor2" x="790" y="600" ${s("fill:var(--muted);font:11px Inter,sans-serif")}>(Coriolis al caminar a 1,4 m/s)</text>
+      <text id="t3-cor2" x="790" y="600" ${s("fill:var(--muted);font:11px 'Public Sans',sans-serif")}>(Coriolis al caminar a 1,4 m/s)</text>
 
       <!-- recuadro de resultados -->
       <rect x="18" y="578" width="520" height="62" rx="10" ${s("fill:var(--panel);stroke:var(--line)")}/>
@@ -242,7 +242,7 @@ window.Tema3 = (() => {
 
     // --- Panel 1: vista desde afuera (marco inercial)
     const cx = half.w / 2, cy = half.h / 2 + 8, R = Math.min(half.w, half.h) * 0.38;
-    ctx.fillStyle = P.muted; ctx.font = "700 11px Inter, sans-serif"; ctx.fillText("VISTA DESDE AFUERA (no gira)", 12, 18);
+    ctx.fillStyle = P.muted; ctx.font = "700 11px Public Sans, sans-serif"; ctx.fillText("VISTA DESDE AFUERA (no gira)", 12, 18);
     ctx.save(); ctx.translate(cx, cy);
     const rot = -m.w * t; // el hábitat gira antihorario en pantalla (ángulo decreciente)
     ctx.strokeStyle = P.violet; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, 0, R, 0, 7); ctx.stroke();
@@ -264,14 +264,14 @@ window.Tema3 = (() => {
     ctx.stroke(); ctx.setLineDash([]);
     ctx.fillStyle = P.amber; ctx.beginPath(); ctx.arc(radVis(rhoT) * Math.cos(aBall), radVis(rhoT) * Math.sin(aBall), 6, 0, 7); ctx.fill();
     ctx.restore();
-    ctx.fillStyle = P.faint; ctx.font = "10.5px Inter, sans-serif";
+    ctx.fillStyle = P.faint; ctx.font = "10.5px Public Sans, sans-serif";
     ctx.fillText("La pelota sigue recta (1.ª ley) y el piso gira debajo. Altura exagerada.", 12, half.h - 10);
 
     // --- Panel 2: lo que ve el tripulante (marco que gira), con zoom
     const ox = narrow ? 0 : half.w, oy = narrow ? half.h : 0;
     ctx.save(); ctx.translate(ox, oy);
     ctx.strokeStyle = P.line; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(narrow ? w : 0, narrow ? 0 : h); ctx.stroke();
-    ctx.fillStyle = P.muted; ctx.font = "700 11px Inter, sans-serif"; ctx.fillText("LO QUE VE EL TRIPULANTE (gira con él)", 12, 18);
+    ctx.fillStyle = P.muted; ctx.font = "700 11px Public Sans, sans-serif"; ctx.fillText("LO QUE VE EL TRIPULANTE (gira con él)", 12, 18);
     const L = 54, B = half.h - 40, Rr = half.w - 20, T = 34;
     const maxBehind = Math.max(Math.abs(m.behind) * 1.25, 0.05);
     const Xs = (sv) => L + ((sv + maxBehind) / (maxBehind * 1.6)) * (Rr - L); // el desplazamiento hacia atrás es negativo
@@ -288,15 +288,15 @@ window.Tema3 = (() => {
     // caída esperada en la Tierra (vertical)
     ctx.setLineDash([3, 4]); ctx.strokeStyle = P.green; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(feetX + 10, Ys(m.hr)); ctx.lineTo(feetX + 10, B); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle = P.green; ctx.font = "10.5px Inter, sans-serif"; ctx.fillText("en la Tierra caería aquí", feetX + 14, Ys(m.hr * 0.5));
+    ctx.fillStyle = P.green; ctx.font = "10.5px Public Sans, sans-serif"; ctx.fillText("en la Tierra caería aquí", feetX + 14, Ys(m.hr * 0.5));
     // trayectoria en el marco que gira
     ctx.strokeStyle = P.amber; ctx.lineWidth = 2; ctx.beginPath();
     for (let i = 0; i <= 80; i++) { const tt = (t * i) / 80, q = rotPos(m, tt); const X2 = Xs(q.s), Y2 = Ys(q.hgt); i ? ctx.lineTo(X2, Y2) : ctx.moveTo(X2, Y2); }
     ctx.stroke();
     const q = rotPos(m, t);
     ctx.fillStyle = P.amber; ctx.beginPath(); ctx.arc(Xs(q.s), Ys(q.hgt), 6, 0, 7); ctx.fill();
-    if (play.t >= m.tHit) { ctx.fillStyle = P.amber; ctx.font = "700 12px Inter, sans-serif"; ctx.fillText(`cayó ${UI.fmt(Math.abs(m.behind) * 100, 1)} cm detrás`, Xs(-m.behind) - 20, B - 10); }
-    ctx.fillStyle = P.faint; ctx.font = "10.5px Inter, sans-serif";
+    if (play.t >= m.tHit) { ctx.fillStyle = P.amber; ctx.font = "700 12px Public Sans, sans-serif"; ctx.fillText(`cayó ${UI.fmt(Math.abs(m.behind) * 100, 1)} cm detrás`, Xs(-m.behind) - 20, B - 10); }
+    ctx.fillStyle = P.faint; ctx.font = "10.5px Public Sans, sans-serif";
     ctx.fillText("Escala horizontal ampliada para que se note el desvío (Coriolis).", 12, half.h - 10);
     ctx.restore();
 

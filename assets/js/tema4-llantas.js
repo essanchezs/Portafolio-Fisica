@@ -253,7 +253,7 @@ window.Tema4 = (() => {
       ctx.stroke();
     });
     ctx.setLineDash([]);
-    ctx.fillStyle = P.muted; ctx.font = "600 11px Inter, sans-serif";
+    ctx.fillStyle = P.muted; ctx.font = "600 11px Public Sans, sans-serif";
     ctx.fillText(`Curva de R = ${R} m`, X(R) - 40, Y(R * 0.35));
     ctx.fillText("zona de escape (grava)", X(R + HALF_ROAD + 4), Y(R * 0.2));
 
@@ -278,24 +278,22 @@ window.Tema4 = (() => {
     ctx.save(); ctx.translate(X(pos.x), Y(pos.y)); ctx.rotate(-pos.head);
     ctx.fillStyle = tc;
     [[0.3, 0.55], [0.3, -0.55], [-0.32, 0.55], [-0.32, -0.55]].forEach(([fx, fy]) => ctx.fillRect(fx * carL - carL * 0.09, fy * carW - carW * 0.18, carL * 0.18, carW * 0.36));
-    ctx.shadowColor = P.pink; ctx.shadowBlur = 10;
-    ctx.fillStyle = P.pink;
+    ctx.fillStyle = P.accent;
     ctx.beginPath(); ctx.moveTo(carL * 0.5, 0); ctx.lineTo(carL * 0.1, carW * 0.28); ctx.lineTo(-carL * 0.45, carW * 0.32); ctx.lineTo(-carL * 0.45, -carW * 0.32); ctx.lineTo(carL * 0.1, -carW * 0.28); ctx.closePath(); ctx.fill();
     ctx.fillStyle = P.text; ctx.fillRect(-carL * 0.5, -carW * 0.5, carL * 0.08, carW); // alerón trasero
     ctx.fillRect(carL * 0.42, -carW * 0.45, carL * 0.06, carW * 0.9); // alerón delantero
-    ctx.shadowBlur = 0;
     ctx.restore();
 
     // mensaje
     const done = lap.t > 0 && travel >= (Math.PI / 2) * m.Ract;
     if (lap.t > 0 && (done || offRoad)) {
-      ctx.font = "800 16px Inter, sans-serif";
+      ctx.font = "800 16px Public Sans, sans-serif";
       ctx.fillStyle = m.ok ? P.green : P.danger;
       ctx.fillText(m.ok ? "✓ ¡Tomó la curva!" : "✗ ¡Se salió a la grava!", 16, 26);
     }
     // medidor de g lateral
     const gx = w - 150, gy = 18;
-    ctx.fillStyle = P.muted; ctx.font = "600 11px Inter, sans-serif"; ctx.fillText("g lateral: pedido vs. disponible", gx - 30, gy);
+    ctx.fillStyle = P.muted; ctx.font = "600 11px Public Sans, sans-serif"; ctx.fillText("g lateral: pedido vs. disponible", gx - 30, gy);
     const bar = (val, y, col, label) => {
       const max = Math.max(m.aNeed, m.aAvail) / 9.81 * 1.15;
       ctx.fillStyle = P.line; ctx.fillRect(gx - 30, y, 170, 8);

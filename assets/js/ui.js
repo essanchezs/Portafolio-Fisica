@@ -57,7 +57,7 @@ const UI = (() => {
     const p = palette();
     Chart.defaults.color = p.chartText;
     Chart.defaults.borderColor = p.grid;
-    Chart.defaults.font.family = "Inter, system-ui, sans-serif";
+    Chart.defaults.font.family = "Public Sans, system-ui, sans-serif";
     Chart.defaults.font.size = 11.5;
     Chart.defaults.plugins.legend.labels.boxWidth = 12;
     Chart.defaults.plugins.legend.labels.boxHeight = 3;
@@ -123,7 +123,7 @@ const UI = (() => {
         ctx.fillRect(Math.max(x1, chartArea.left), top, Math.min(x2, chartArea.right) - Math.max(x1, chartArea.left), bot - top);
         if (b.label) {
           ctx.fillStyle = b.labelColor || palette().muted;
-          ctx.font = "600 10.5px Inter, sans-serif";
+          ctx.font = "600 10.5px Public Sans, sans-serif";
           ctx.fillText(b.label, Math.max(x1, chartArea.left) + 4, top + 12);
         }
         ctx.restore();

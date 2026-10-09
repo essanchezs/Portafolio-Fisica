@@ -323,8 +323,8 @@ window.Tema1 = (() => {
     const building = (x, y, col, label, roof) => {
       ctx.fillStyle = col; ctx.fillRect(x - 13, y - 9, 26, 18);
       ctx.fillStyle = P.text; ctx.beginPath(); ctx.moveTo(x - 16, y - 9); ctx.lineTo(x, y - 20); ctx.lineTo(x + 16, y - 9); ctx.closePath(); ctx.fill();
-      ctx.font = "600 11px Inter, sans-serif"; ctx.fillStyle = P.text; ctx.fillText(label, x + 18, y + 18);
-      if (roof) { ctx.fillStyle = P.panel; ctx.font = "700 9px Inter, sans-serif"; ctx.fillText(roof, x - 3, y + 4); }
+      ctx.font = "600 11px Public Sans, sans-serif"; ctx.fillStyle = P.text; ctx.fillText(label, x + 18, y + 18);
+      if (roof) { ctx.fillStyle = P.panel; ctx.font = "700 9px Public Sans, sans-serif"; ctx.fillText(roof, x - 3, y + 4); }
     };
     building(X(first.x), Y(first.y), P.green, "Centro de distribución", "H");
     if (d.route.name !== "Circuito de inspección") building(X(last.x), Y(last.y), P.pink, iNow >= d.rows.length - 1 ? "Cliente · ¡entregado!" : "Cliente", "");
@@ -347,7 +347,7 @@ window.Tema1 = (() => {
       const vScale = 6, aScale = 20;
       UI.arrow(ctx, px, py, px + r.vx * vScale, py - r.vy * vScale, P.accent, 2.6);
       if (r.a > 0.05) UI.arrow(ctx, px, py, px + r.ax * aScale, py - r.ay * aScale, P.pink, 2.6);
-      ctx.font = "700 12px Inter, sans-serif";
+      ctx.font = "700 12px Public Sans, sans-serif";
       ctx.fillStyle = P.accent; ctx.fillText("v", px + r.vx * vScale + 6, py - r.vy * vScale);
       ctx.fillStyle = P.pink; if (r.a > 0.05) ctx.fillText("a", px + r.ax * aScale + 6, py - r.ay * aScale);
     }
@@ -357,10 +357,10 @@ window.Tema1 = (() => {
     const ox = w - 52, oy = 62;
     ctx.fillStyle = hexA(P.panel, 0.85); ctx.beginPath(); ctx.arc(ox, oy, 30, 0, 7); ctx.fill();
     ctx.strokeStyle = P.line; ctx.lineWidth = 1; ctx.stroke();
-    ctx.fillStyle = P.muted; ctx.font = "700 9px Inter, sans-serif"; ctx.textAlign = "center";
+    ctx.fillStyle = P.muted; ctx.font = "700 9px Public Sans, sans-serif"; ctx.textAlign = "center";
     ctx.fillText("N", ox, oy - 19); ctx.fillText("E", ox + 21, oy + 3); ctx.fillText("S", ox, oy + 25); ctx.fillText("O", ox - 21, oy + 3);
     if (W.W > 0) UI.arrow(ctx, ox - (W.x / W.W) * 14, oy + (W.y / W.W) * 14, ox + (W.x / W.W) * 16, oy - (W.y / W.W) * 16, P.amber, 2.5);
-    ctx.fillStyle = W.W > 0 ? P.amber : P.faint; ctx.font = "600 10.5px Inter, sans-serif";
+    ctx.fillStyle = W.W > 0 ? P.amber : P.faint; ctx.font = "600 10.5px Public Sans, sans-serif";
     ctx.fillText(W.W > 0 ? `viento ${UI.fmt(W.W, 1)} m/s` : "sin viento", ox, oy + 46);
     ctx.textAlign = "left";
     // barra de escala y leyenda de rapidez
@@ -371,14 +371,14 @@ window.Tema1 = (() => {
     const grd = ctx.createLinearGradient(lx, 0, lx + lgW, 0);
     grd.addColorStop(0, speedColor(0)); grd.addColorStop(0.5, speedColor(0.5)); grd.addColorStop(1, speedColor(1));
     ctx.fillStyle = grd; ctx.fillRect(lx, ly + 6, lgW, 5);
-    ctx.fillStyle = P.muted; ctx.font = "10.5px Inter, sans-serif";
+    ctx.fillStyle = P.muted; ctx.font = "10.5px Public Sans, sans-serif";
     ctx.fillText(`rapidez: 0 → ${vmax.toFixed(1)} m/s`, lx, ly);
     // flecha mientras se arrastra para soplar viento
     if (scene.drag) {
       const { x0, y0, x1, y1 } = scene.drag;
       UI.arrow(ctx, x0, y0, x1, y1, P.amber, 3);
       const mag = Math.min(12, Math.hypot(x1 - x0, y1 - y0) / 10);
-      ctx.fillStyle = P.amber; ctx.font = "700 12px Inter, sans-serif"; ctx.fillText(`${UI.fmt(mag, 1)} m/s`, x1 + 8, y1);
+      ctx.fillStyle = P.amber; ctx.font = "700 12px Public Sans, sans-serif"; ctx.fillText(`${UI.fmt(mag, 1)} m/s`, x1 + 8, y1);
     }
   }
 
@@ -434,16 +434,15 @@ window.Tema1 = (() => {
   function marker(ctx, x, y, color, label) {
     ctx.save();
     ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, 7, 0, 7); ctx.fill();
-    ctx.fillStyle = UI.palette().text; ctx.font = "600 11px Inter, sans-serif";
+    ctx.fillStyle = UI.palette().text; ctx.font = "600 11px Public Sans, sans-serif";
     if (label) ctx.fillText(label, x + 10, y + 16);
     ctx.restore();
   }
+  /** Color de la ruta según la rapidez: de gris (lento) al azul acero del tema (rápido). */
   function speedColor(f) {
-    // de violeta (lento) a cian (rápido)
-    const a = [167, 139, 250], b = [76, 201, 240], c = [94, 227, 161];
-    const lerp = (p, q, u) => p.map((v, i) => Math.round(v + (q[i] - v) * u));
-    const col = f < 0.5 ? lerp(a, b, f * 2) : lerp(b, c, (f - 0.5) * 2);
-    return `rgb(${col.join(",")})`;
+    const rgb = (h) => { const m = h.match(/^#([0-9a-f]{6})$/i); const n = m ? parseInt(m[1], 16) : 0x888888; return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
+    const a = rgb(UI.css("--faint")), b = rgb(UI.css("--accent"));
+    return "rgb(" + a.map((v, i) => Math.round(v + (b[i] - v) * Math.max(0, Math.min(1, f)))).join(",") + ")";
   }
   function niceStep(x) {
     const p = Math.pow(10, Math.floor(Math.log10(x)));

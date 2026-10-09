@@ -79,80 +79,74 @@ window.Tema5 = (() => {
   }
 
   function resize() {
-    const r = UI.fitCanvas(canvas, 0.62);
+    const r = UI.fitCanvas(canvas, window.innerWidth < 700 ? 0.6 : 0.34);
     ctx = r.ctx; W = r.w; H = r.h;
   }
 
+  /** Geometría del dibujo: pared a la izquierda, manija (el gatillo) a la derecha. */
+  let geo = { restX: 0, k: 1 };
+
+  /** Resorte virtual: la manija comprime un resorte contra una pared; x es el recorrido del gatillo. */
   function drawTrigger() {
     const P = UI.palette();
     ctx.clearRect(0, 0, W, H);
-    const s = W / 420; // escala del dibujo (diseñado a 420 × 260)
-    const px = 215 * s, py = 40 * s; // pivote del gatillo
-    const ang = -(x / XMAX) * 0.4; // apretar = la punta se mueve hacia la derecha (hacia adentro)
+    const wallX = 56, cy = H * 0.5, handleW = 26, handleH = Math.min(96, H * 0.5);
+    const restX = W * 0.7;
+    const k = ((restX - wallX) * 0.62) / XMAX; // px por mm
+    geo = { restX, k, handleW };
+    const hx = restX - x * k; // cara izquierda de la manija
     const F = total(x);
-    const font = (w, sz) => `${w} ${sz * s}px Inter, sans-serif`;
 
-    // carcasa
-    ctx.fillStyle = P.panel; ctx.strokeStyle = P.line; ctx.lineWidth = 2;
-    ctx.beginPath();
-    if (ctx.roundRect) ctx.roundRect(150 * s, 12 * s, 255 * s, 46 * s, 12 * s); else ctx.rect(150 * s, 12 * s, 255 * s, 46 * s);
-    ctx.fill(); ctx.stroke();
-    ctx.fillStyle = P.faint; ctx.font = font(400, 10.5);
-    ctx.fillText("carcasa del control", 300 * s, 40 * s);
+    // pared con rayado
+    ctx.fillStyle = P.line; ctx.fillRect(wallX - 14, cy - handleH * 0.8, 14, handleH * 1.6);
+    ctx.strokeStyle = P.faint; ctx.lineWidth = 1;
+    for (let yy = cy - handleH * 0.8; yy < cy + handleH * 0.8; yy += 9) { ctx.beginPath(); ctx.moveTo(wallX - 14, yy + 9); ctx.lineTo(wallX, yy); ctx.stroke(); }
 
-    // motor + engranes (gira al moverse el gatillo)
-    const mx = 345 * s, my = 145 * s;
-    ctx.fillStyle = P.panel2; ctx.strokeStyle = P.muted; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(mx, my, 28 * s, 0, 7); ctx.fill(); ctx.stroke();
-    const rot = x * 0.9;
-    for (let i = 0; i < 12; i++) {
-      const a = rot + (i * Math.PI) / 6;
-      ctx.beginPath(); ctx.moveTo(mx + 28 * s * Math.cos(a), my + 28 * s * Math.sin(a)); ctx.lineTo(mx + 35 * s * Math.cos(a), my + 35 * s * Math.sin(a)); ctx.stroke();
+    // zonas del modo discretizado (10 tramos con su nivel)
+    if (c.mode.value === "zones") {
+      for (let z = 0; z < 10; z++) {
+        const lvl = Math.round((force("zones", c.k.value, (z + 0.5)) / 6) * 8);
+        ctx.fillStyle = UI.css("--accent"); ctx.globalAlpha = 0.04 + lvl * 0.025;
+        ctx.fillRect(restX - (z + 1) * k, cy + handleH * 0.62, k - 1, 10);
+      }
+      ctx.globalAlpha = 1;
     }
-    ctx.fillStyle = P.muted; ctx.font = font(600, 10); ctx.textAlign = "center";
-    ctx.fillText("motor +", mx, my - 2 * s); ctx.fillText("engranes", mx, my + 11 * s); ctx.textAlign = "left";
 
-    // gatillo
-    const toWorld = (lx, ly) => [px + lx * Math.cos(ang) - ly * Math.sin(ang), py + lx * Math.sin(ang) + ly * Math.cos(ang)];
-    ctx.save();
-    ctx.translate(px, py); ctx.rotate(ang);
-    ctx.fillStyle = P.violet; ctx.globalAlpha = 0.92;
-    ctx.beginPath();
-    ctx.moveTo(-9 * s, 0); ctx.lineTo(13 * s, 0);
-    ctx.quadraticCurveTo(26 * s, 85 * s, 6 * s, 160 * s);
-    ctx.lineTo(-14 * s, 160 * s);
-    ctx.quadraticCurveTo(3 * s, 85 * s, -9 * s, 0);
-    ctx.fill(); ctx.globalAlpha = 1;
-    ctx.restore();
-    const [tx0, ty0] = toWorld(-6 * s, 150 * s);
-    ctx.fillStyle = P.violet; ctx.font = font(600, 10.5); ctx.fillText("gatillo", tx0 + 14 * s, ty0 + 14 * s);
+    // resorte (espiral) entre la pared y la manija
+    const coils = 12, amp = handleH * 0.22, len = hx - wallX;
+    ctx.strokeStyle = P.muted; ctx.lineWidth = 2; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(wallX, cy);
+    for (let i = 0; i <= coils * 2; i++) {
+      const px = wallX + 10 + ((len - 20) * i) / (coils * 2);
+      ctx.lineTo(px, cy + (i === 0 || i === coils * 2 ? 0 : i % 2 ? -amp : amp));
+    }
+    ctx.lineTo(hx, cy); ctx.stroke();
 
-    // brazo del actuador hasta la cara trasera del gatillo
-    const [cxW, cyW] = toWorld(19 * s, 100 * s);
-    ctx.strokeStyle = P.muted; ctx.lineWidth = 5 * s; ctx.lineCap = "round";
-    ctx.beginPath(); ctx.moveTo(mx - 26 * s, my - 6 * s); ctx.lineTo(cxW, cyW); ctx.stroke();
+    // manija
+    ctx.fillStyle = P.text; ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(hx, cy - handleH / 2, handleW, handleH, 6); else ctx.rect(hx, cy - handleH / 2, handleW, handleH);
+    ctx.fill();
+    ctx.fillStyle = P.panel; ctx.fillRect(hx + handleW / 2 - 1, cy - handleH / 2 + 10, 2, handleH - 20);
 
-    // pivote
-    ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(px, py, 4.5 * s, 0, 7); ctx.fill();
+    // regla del recorrido en mm
+    const ry = cy + handleH * 0.62 + 22;
+    ctx.strokeStyle = P.line; ctx.beginPath(); ctx.moveTo(restX - XMAX * k, ry); ctx.lineTo(restX, ry); ctx.stroke();
+    ctx.fillStyle = P.faint; ctx.font = "10.5px JetBrains Mono, monospace"; ctx.textAlign = "center";
+    for (let mm = 0; mm <= XMAX; mm += 2) { ctx.fillRect(restX - mm * k, ry - 3, 1, 6); ctx.fillText(mm + " mm", restX - mm * k, ry + 16); }
+    ctx.textAlign = "left";
 
-    // dedo sobre la cara delantera
-    const [fxW, fyW] = toWorld(-10 * s, 128 * s);
-    ctx.fillStyle = hexA(P.amber, 0.9);
-    ctx.beginPath(); ctx.ellipse(fxW - 38 * s, fyW, 36 * s, 14 * s, 0, 0, 7); ctx.fill();
-    ctx.fillStyle = "#3a2600"; ctx.font = font(700, 10.5); ctx.fillText("dedo", fxW - 52 * s, fyW + 4 * s);
-
-    // fuerzas: par acción-reacción, iguales y opuestas, sobre cuerpos distintos
-    const L = Math.min(150 * s, 16 * s * F);
+    // fuerzas: par acción-reacción sobre cuerpos distintos (dedo y gatillo)
     if (F > 0.02) {
-      const y1 = fyW - 26 * s, y2 = fyW + 26 * s;
-      UI.arrow(ctx, fxW - L, y1, fxW, y1, P.pink, 3);
-      UI.arrow(ctx, fxW, y2, fxW - L, y2, P.green, 3);
-      ctx.font = font(600, 10.5);
-      ctx.fillStyle = P.pink; ctx.fillText(`F dedo→gatillo = ${UI.fmt(F, 2)} N`, 10 * s, y1 - 8 * s);
-      ctx.fillStyle = P.green; ctx.fillText(`F gatillo→dedo = ${UI.fmt(F, 2)} N`, 10 * s, y2 + 18 * s);
+      const L = Math.min(W - restX - handleW - 40, 18 * F);
+      const ax = hx + handleW + 12;
+      UI.arrow(ctx, ax + L, cy - 16, ax, cy - 16, P.accent, 2.2);
+      UI.arrow(ctx, ax, cy + 16, ax + L, cy + 16, P.accent2 || UI.css("--accent-2"), 2.2);
+      ctx.font = "12px Public Sans, sans-serif";
+      ctx.fillStyle = P.accent; ctx.fillText(`dedo → gatillo  ${UI.fmt(F, 2)} N`, ax, cy - 26);
+      ctx.fillStyle = UI.css("--accent-2"); ctx.fillText(`gatillo → dedo  ${UI.fmt(F, 2)} N`, ax, cy + 38);
     }
-    ctx.fillStyle = P.muted; ctx.font = font(400, 10);
-    ctx.fillText(releasing ? "Soltado (cámara lenta ×60): el motor regresa el gatillo" : "Arrastre horizontalmente sobre el dibujo para apretar el gatillo", 10 * s, H - 8 * s);
+    ctx.fillStyle = P.muted; ctx.font = "12px Public Sans, sans-serif";
+    ctx.fillText(releasing ? "Soltado: la fuerza restauradora devuelve la manija (cámara lenta ×60)" : "Arrastre la manija hacia la pared para comprimir el resorte", 16, 22);
   }
 
   function readouts() {
@@ -170,93 +164,13 @@ window.Tema5 = (() => {
       <div class="ro"><div class="k">|F dedo→gatillo| (3.ª ley)</div><div class="v">${f(F, 2)} <small>N</small></div></div>
       <div class="ro"><div class="k">Rigidez local dF/dx</div><div class="v">${f(kEff, 2)} <small>N/mm</small></div></div>
       <div class="ro"><div class="k">Energía U = ∫F dx</div><div class="v">${f(U, 2)} <small>mJ</small></div></div>
-      <div class="ro"><div class="k">Salto relativo (h ∝ U)</div><div class="v">${f(Umax > 0 ? (U / Umax) * 100 : 0, 0)} <small>% del máximo</small></div></div>
+      <div class="ro"><div class="k">Energía relativa</div><div class="v">${f(Umax > 0 ? (U / Umax) * 100 : 0, 0)} <small>% de la carga máxima</small></div></div>
       ${level !== null ? `<div class="ro"><div class="k">Zona / nivel</div><div class="v">${zone} / ${level} <small>de 8</small></div></div>` : ""}
     `;
   }
 
-  /* ---------- Zona interactiva: la rana con traje de resorte ---------- */
-  // Escala del juego: cada 10 mJ almacenados en el gatillo equivalen a 1 m de salto (U = m·g·h en el mundo del juego).
-  const MJ_PER_M = 10;
-  const LEDGES = [0.8, 1.6, 2.4, 3.2, 4.2];
-  const frog = { y: 0, vy: 0, flying: false, best: 0, peak: 0, ctx: null, cssW: 0, w: 0, h: 0, raf: 0, stars: new Set() };
-
-  function sizeFrog() {
-    const cv = document.getElementById("t5-frog");
-    const cssW = cv.parentElement.clientWidth;
-    if (frog.ctx && frog.cssW === cssW) return;
-    const r = UI.fitCanvas(cv, 0.62);
-    Object.assign(frog, { ctx: r.ctx, w: r.w, h: r.h, cssW });
-  }
-
-  function drawFrog() {
-    sizeFrog();
-    const { ctx, w, h } = frog, P = UI.palette();
-    const top = 5.2, ground = h - 22, sc = (ground - 16) / top;
-    const Y = (m) => ground - m * sc;
-    ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = P.panel2; ctx.fillRect(0, 0, w, h);
-    // repisas con estrellas
-    ctx.font = "10.5px JetBrains Mono, monospace";
-    LEDGES.forEach((hh, i) => {
-      const lx = w * 0.56 + (i % 2) * w * 0.14;
-      ctx.fillStyle = P.line; ctx.fillRect(lx, Y(hh), w * 0.22, 5);
-      ctx.fillStyle = frog.stars.has(i) ? P.amber : P.faint; ctx.font = "16px sans-serif";
-      ctx.fillText(frog.stars.has(i) ? "★" : "☆", lx + w * 0.08, Y(hh) - 6);
-      ctx.fillStyle = P.faint; ctx.font = "10.5px JetBrains Mono, monospace"; ctx.fillText(hh + " m", lx + w * 0.16, Y(hh) - 6);
-    });
-    // suelo
-    ctx.fillStyle = P.green; ctx.fillRect(0, ground, w, 3);
-    // resorte: se comprime según la posición actual del gatillo
-    const cx = w * 0.28, comp = frog.flying ? 0 : x / XMAX;
-    const springTop = Y(0) - (46 - 30 * comp);
-    const baseY = frog.flying ? Y(frog.y) : springTop;
-    ctx.strokeStyle = P.muted; ctx.lineWidth = 2.5; ctx.beginPath();
-    const coils = 7, bottom = frog.flying ? baseY + 46 : ground;
-    for (let i = 0; i <= coils * 2; i++) { const yy = baseY + ((bottom - baseY) * i) / (coils * 2); ctx.lineTo(cx + (i % 2 ? 12 : -12), yy); }
-    ctx.stroke();
-    // rana
-    const fy = baseY - 16;
-    ctx.fillStyle = P.green; ctx.beginPath(); ctx.ellipse(cx, fy, 22, 16, 0, 0, 7); ctx.fill();
-    ctx.fillStyle = "#fff"; [-9, 9].forEach((dx) => { ctx.beginPath(); ctx.arc(cx + dx, fy - 14, 6, 0, 7); ctx.fill(); });
-    ctx.fillStyle = "#111"; [-9, 9].forEach((dx) => { ctx.beginPath(); ctx.arc(cx + dx + 1, fy - 14, 2.6, 0, 7); ctx.fill(); });
-    ctx.strokeStyle = "#0b3"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, fy + 2, 8, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
-    // marca de la altura máxima del último salto
-    if (frog.peak > 0) {
-      ctx.setLineDash([4, 4]); ctx.strokeStyle = P.amber; ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.moveTo(cx - 40, Y(frog.peak) - 46); ctx.lineTo(w - 10, Y(frog.peak) - 46); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = P.amber; ctx.font = "700 11px Inter, sans-serif"; ctx.fillText(`h = ${UI.fmt(frog.peak, 2)} m`, 8, Y(frog.peak) - 50);
-    }
-    // texto de ayuda
-    ctx.fillStyle = P.muted; ctx.font = "11px Inter, sans-serif";
-    const U = energy(x);
-    ctx.fillText(frog.flying ? "¡Salto!" : x > 0.05 ? `Cargando: U = ${UI.fmt(U, 1)} mJ → h = ${UI.fmt(U / MJ_PER_M, 2)} m` : "Apriete el gatillo (arrastre sobre su dibujo) y suéltelo", 8, 16);
-    ctx.fillText(`Estrellas: ${frog.stars.size}/${LEDGES.length}`, w - 96, 16);
-  }
-
-  /** Lanza la rana con la energía almacenada: v0 = √(2gh) con h = U/escala. */
-  function launchFrog(U) {
-    const h = U / MJ_PER_M;
-    if (h < 0.05) return;
-    cancelAnimationFrame(frog.raf);
-    const g = 9.81;
-    frog.y = 0; frog.vy = Math.sqrt(2 * g * h); frog.flying = true; frog.peak = 0;
-    let last = performance.now();
-    const stepJ = (now) => {
-      const dt = Math.min(0.03, (now - last) / 1000); last = now;
-      frog.vy -= g * dt; frog.y += frog.vy * dt;
-      frog.peak = Math.max(frog.peak, frog.y);
-      LEDGES.forEach((hh, i) => { if (frog.peak >= hh) frog.stars.add(i); });
-      if (frog.y <= 0) { frog.y = 0; frog.flying = false; drawFrog(); return; }
-      drawFrog();
-      frog.raf = requestAnimationFrame(stepJ);
-    };
-    frog.raf = requestAnimationFrame(stepJ);
-  }
-
   function render() {
     drawTrigger();
-    if (!frog.flying) drawFrog();
     readouts();
     if (chart) updateChart();
   }
@@ -268,7 +182,6 @@ window.Tema5 = (() => {
   }
 
   function release() {
-    launchFrog(energy(x)); // la energía guardada en el gatillo se convierte en salto
     releasing = true;
     vxl = 0;
     let last = performance.now();
@@ -304,8 +217,8 @@ window.Tema5 = (() => {
     let dragging = false;
     const toX = (e) => {
       const r = canvas.getBoundingClientRect();
-      const u = (e.clientX - r.left) / r.width; // 0..1
-      return ((u - 0.2) / 0.7) * XMAX;
+      const px = e.clientX - r.left - geo.handleW / 2;
+      return (geo.restX - px) / geo.k;
     };
     canvas.addEventListener("pointerdown", (e) => { dragging = true; releasing = false; cancelAnimationFrame(raf); canvas.setPointerCapture(e.pointerId); setX(toX(e)); });
     canvas.addEventListener("pointermove", (e) => { if (dragging) setX(toX(e)); });
@@ -313,7 +226,7 @@ window.Tema5 = (() => {
     canvas.addEventListener("pointerup", up);
     canvas.addEventListener("pointercancel", up);
     canvas.style.touchAction = "none";
-    canvas.style.cursor = "ew-resize";
+    canvas.style.cursor = "grab";
 
     // marcas de tiempo del video
     // Se usa la API del reproductor de YouTube para saltar al instante dentro de la misma
@@ -351,8 +264,8 @@ window.Tema5 = (() => {
     });
 
     resize();
-    window.addEventListener("resize", () => { resize(); drawTrigger(); frog.cssW = 0; drawFrog(); });
-    UI.onTheme(() => { makeChart(); drawTrigger(); drawFrog(); });
+    window.addEventListener("resize", () => { resize(); drawTrigger(); });
+    UI.onTheme(() => { makeChart(); drawTrigger(); });
     makeChart();
     setX(6);
   }

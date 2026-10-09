@@ -10,9 +10,9 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-  <link rel="stylesheet" href="assets/css/styles.css?v=11" />
+  <link rel="stylesheet" href="assets/css/styles.css?v=12" />
 
   <script>
     // Aplica el tema guardado antes de pintar para evitar parpadeo
@@ -87,10 +87,9 @@
 
     <!-- ===================== INICIO ===================== -->
     <header class="hero" id="inicio">
-      <canvas id="hero-canvas" aria-hidden="true"></canvas>
       <div class="container hero-inner">
         <div class="eyebrow">Universidad CENFOTEC · Escuela de Fundamentos</div>
-        <h1>Física mecánica <span class="grad">dentro del software</span></h1>
+        <h1>Física mecánica <em>dentro del software</em></h1>
         <p class="lead">
           Portafolio de evidencias de Física I. Cada tema documenta un caso real donde una ley de la cinemática o la
           dinámica se convierte en código: el autopiloto de un dron, el salto de un personaje, un hábitat que gira, el
@@ -234,7 +233,9 @@
               apunte sobre la ruta. Y como el GPS entrega posiciones a pocos hercios, la predicción \(\vec r+\vec v\Delta t+\tfrac12\vec a\Delta t^2\)
               es lo que permite controlar el dron cientos de veces por segundo entre lecturas.
             </p>
-            <div class="pro-con">
+            <details class="more">
+              <summary>Qué se gana y qué cuesta modelar la física</summary>
+              <div class="pro-con">
               <div class="gain">
                 <h4>Qué se gana</h4>
                 <ul>
@@ -253,6 +254,7 @@
                 </ul>
               </div>
             </div>
+            </details>
           </div>
         </div>
 
@@ -301,13 +303,8 @@
             </div>
 
             <div class="playground">
-              <span class="play-badge">▶ Zona interactiva · juegue aquí</span>
-              <div class="play-hints">
-                <span>▶ Reproducir: el dron despega y entrega el paquete</span>
-                <span>🖱 Arrastre sobre el mapa para soplar viento</span>
-                <span>⇆ Mueva la línea de tiempo</span>
-                <span>⚙ Cambie la ruta y los límites de aceleración</span>
-              </div>
+              <span class="play-badge">Exploración interactiva</span>
+              <p class="play-hint">Presione Reproducir para ver el vuelo. Arrastre sobre el mapa para cambiar el viento.</p>
               <div class="canvas-wrap"><canvas id="t1-map" aria-label="Escena: dron de reparto volando la ruta, con viento animado"></canvas></div>
               <div class="scrubber">
                 <button class="btn small primary" id="t1-play">▶ Reproducir</button>
@@ -320,7 +317,7 @@
             </div>
 
             <div class="zone">
-            <span class="zone-badge">📈 Visualización de datos · recurso del tema</span>
+            <span class="zone-badge">Visualización de datos · recurso del tema</span>
             <div class="chart-grid">
               <div class="chart-card">
                 <h4>Posición: componentes x(t) e y(t)</h4>
@@ -341,15 +338,20 @@
             </div>
             </div>
 
-            <div class="callout">
+            <details class="more">
+              <summary>Qué observar</summary>
+              <div class="callout">
               <strong>Qué observar</strong>
               Las componentes \(v_x\) y \(v_y\) se intercambian en cada giro aunque la rapidez no cambie: en ese tramo la
               aceleración es <em>puramente normal</em> (\(a_t=0\), \(a_n=v^2/R\)). Si sube la rapidez de crucero sin subir la
               aceleración lateral máxima, el planificador frena antes de cada curva: aparecen “valles” en |v| y la ruta tarda más.
               Con viento, la curva punteada muestra la rapidez <em>respecto al aire</em> que el dron debe generar.
             </div>
+            </details>
 
-            <div class="data-note">
+            <details class="more">
+              <summary>Fuente de los datos y ruta declarada</summary>
+              <div class="data-note">
               <strong>Fuente de los datos.</strong> Generados por mí con el modelo descrito arriba a partir de las rutas
               declaradas en esta tabla (x = este, y = norte, en metros). El perfil de rapidez se calcula con dos pasadas
               (aceleración y frenado) que respetan \(a_t\le a_{t,\max}\) y, en las curvas, \(v\le\sqrt{a_{\text{lat},\max}R}\),
@@ -357,10 +359,13 @@
               aceleración se calculan de forma analítica (\(\vec v=v\hat T\), \(\vec a=a_t\hat T+\tfrac{v^2}{R}\hat N\)).
               <div class="table-wrap" id="t1-route-table"></div>
             </div>
+            </details>
           </div>
         </div>
 
-        <div class="links-box">
+        <details class="more">
+          <summary>Conexiones con la clase y con otros temas</summary>
+          <div class="links-box">
           <h4>↔ Conexiones con la clase y con otros temas</h4>
           <ul>
             <li><strong>Semana 2:</strong> notación \(\hat\imath,\hat\jmath\), derivada como razón de cambio (posición → velocidad → aceleración), MRUA por componentes y movimiento circular con \(a_c=v^2/r\). La suma \(\vec v_{\text{suelo}}=\vec v_{\text{aire}}+\vec v_{\text{viento}}\) es la velocidad relativa del ejemplo del tren.</li>
@@ -368,8 +373,11 @@
             <li><strong>Tema 4:</strong> el límite \(v\le\sqrt{a_{\max}R}\) que usa el dron es el mismo que limita a un F1 en una curva, donde \(a_{\max}\) depende de la fricción de la llanta.</li>
           </ul>
         </div>
+        </details>
 
-        <div class="sources">
+        <details class="more">
+          <summary>Fuentes del Tema 1</summary>
+          <div class="sources">
           <h4>Fuentes del Tema 1</h4>
           <ol>
             <li>PX4 Autopilot — Documentación oficial. <a href="https://docs.px4.io/main/en/" target="_blank" rel="noopener">docs.px4.io</a></li>
@@ -379,6 +387,7 @@
             <li>Wing (Alphabet) <a href="https://wing.com" target="_blank" rel="noopener">wing.com</a> · Zipline <a href="https://www.flyzipline.com" target="_blank" rel="noopener">flyzipline.com</a></li>
           </ol>
         </div>
+        </details>
       </section>
 
       <!-- ===================================================================
@@ -469,7 +478,9 @@
               coherente, y el diseño de niveles se vuelve predecible: si el alcance máximo es \(v_x t_{\text{aire}}\), se
               puede garantizar que un abismo sea saltable.
             </p>
-            <div class="pro-con">
+            <details class="more">
+              <summary>Qué se gana y qué cuesta modelar la física</summary>
+              <div class="pro-con">
               <div class="gain">
                 <h4>Qué se gana</h4>
                 <ul>
@@ -487,6 +498,7 @@
                 </ul>
               </div>
             </div>
+            </details>
           </div>
         </div>
 
@@ -541,8 +553,8 @@
               </div>
             </div>
 
-            <div class="callout pink" style="margin-top:0">
-              <strong>Diseño inverso: elija la altura y el tiempo a la cima, y la simulación despeja g y v₀</strong>
+            <div class="design-box">
+              <strong>Diseño inverso: elija la altura y el tiempo a la cima; g y v₀ se ajustan solos</strong>
               <div class="controls" style="margin:8px 0 0">
                 <div class="ctrl">
                   <label for="t2-h">Altura deseada h <output for="t2-h"></output></label>
@@ -554,19 +566,14 @@
                 </div>
                 <div class="ctrl" style="justify-content:flex-end">
                   <div class="mono" id="t2-design-out" style="font-size:.85rem"></div>
-                  <button class="btn small primary" id="t2-apply">Aplicar g y v₀ calculados</button>
+                  
                 </div>
               </div>
             </div>
 
             <div class="playground">
-              <span class="play-badge">▶ Simulación interactiva · juegue aquí</span>
-              <div class="play-hints">
-                <span>🖱 Haga clic en la escena para tomar el control</span>
-                <span>⌨ Espacio salta · ← → corre · R reinicia</span>
-                <span>🪙 Recoja las monedas: cada una está a una altura distinta</span>
-                <span>⚙ Cambie g y v₀ y vea cómo cambia el arco</span>
-              </div>
+              <span class="play-badge">Simulación interactiva · recurso del tema</span>
+              <p class="play-hint">Haga clic en la escena para controlarla: Espacio salta, ← → mueven, R reinicia.</p>
               <div class="canvas-wrap"><canvas id="t2-canvas" tabindex="0" aria-label="Escena de plataformas: presione espacio para saltar"></canvas></div>
               <div class="touch-pad">
                 <button class="btn" data-touch="left">◀</button>
@@ -577,7 +584,7 @@
             </div>
 
             <div class="zone">
-            <span class="zone-badge">📈 Lo que midió la simulación: el último salto</span>
+            <span class="zone-badge">Medición del último salto</span>
             <div class="chart-grid">
               <div class="chart-card">
                 <h4>Altura del último salto, y(t)</h4>
@@ -590,7 +597,9 @@
             </div>
             </div>
 
-            <div class="callout">
+            <details class="more">
+              <summary>Experimentos sugeridos</summary>
+              <div class="callout">
               <strong>Experimentos sugeridos</strong>
               <ol style="margin:4px 0 0; padding-left:20px">
                 <li><b>“Humano real” → “Héroe con g real”:</b> la misma física sube 4 m, pero tarda casi 2 s en el aire. Compárelo con “Plataformero arcade”, que llega a una altura parecida en un tercio del tiempo.</li>
@@ -599,17 +608,23 @@
                 <li><b>Duplique \(v_0\):</b> la altura máxima se cuadruplica (\(h\propto v_0^2\)), pero el tiempo en el aire solo se duplica.</li>
               </ol>
             </div>
-            <div class="data-note">
+            </details>
+            <details class="more">
+              <summary>Modelo numérico</summary>
+              <div class="data-note">
               <strong>Modelo.</strong> Integración semi-implícita de Euler con \(\Delta t=1/240\) s fijo:
               \(v_y\leftarrow v_y-g_{\text{ef}}\Delta t\), \(y\leftarrow y+v_y\Delta t\), donde \(g_{\text{ef}}\) incluye el
               multiplicador de caída y la media gravedad cuando están activos (mismas reglas que <code>Player.cs</code> [1]). La
               escena está en metros; el personaje mide 1,8 m. La curva punteada de comparación usa \(g=9{,}81\) m/s² con el
               \(v_0\) necesario para alcanzar la misma altura máxima.
             </div>
+            </details>
           </div>
         </div>
 
-        <div class="links-box">
+        <details class="more">
+          <summary>Conexiones con la clase y con otros temas</summary>
+          <div class="links-box">
           <h4>↔ Conexiones con la clase y con otros temas</h4>
           <ul>
             <li><strong>Semana 2:</strong> caída libre con \(g\) constante e independiente de la masa; tiro parabólico con ejes independientes. La altura máxima sale de \(v^2=v_0^2-2gh\) con \(v=0\).</li>
@@ -618,8 +633,11 @@
             <li><strong>Tema 5:</strong> en <em>Astro’s Playroom</em> el salto del traje de resorte se carga comprimiendo un resorte virtual con el gatillo: \(\tfrac12kx^2\to mgh\).</li>
           </ul>
         </div>
+        </details>
 
-        <div class="sources">
+        <details class="more">
+          <summary>Fuentes del Tema 2</summary>
+          <div class="sources">
           <h4>Fuentes del Tema 2</h4>
           <ol>
             <li>NoelFB / Maddy Makes Games — <code>Celeste/Source/Player/Player.cs</code> (código publicado, 2018). <a href="https://github.com/NoelFB/Celeste/blob/master/Source/Player/Player.cs" target="_blank" rel="noopener">github.com/NoelFB/Celeste</a></li>
@@ -628,6 +646,7 @@
             <li>K. Pittman, “Math for Game Programmers: Building a Better Jump”, GDC 2016. <a href="https://www.gdcvault.com/play/1023559/Math-for-Game-Programmers-Building" target="_blank" rel="noopener">gdcvault.com</a></li>
           </ol>
         </div>
+        </details>
       </section>
 
       <!-- ===================================================================
@@ -704,7 +723,9 @@
               <li><strong>Radio pequeño</strong> → hay que girar rápido → gradiente cabeza-pies grande y Coriolis fuerte, que produce mareo. La literatura de diseño suele tomar 2 rpm como límite cómodo sin adaptación [3].</li>
               <li><strong>Radio grande</strong> → giro lento y cómodo → estructura enorme, mucha masa y alto costo de lanzamiento.</li>
             </ul>
-            <div class="pro-con">
+            <details class="more">
+              <summary>Qué se gana y qué cuesta modelar la física</summary>
+              <div class="pro-con">
               <div class="gain">
                 <h4>Qué se gana</h4>
                 <ul>
@@ -722,6 +743,7 @@
                 </ul>
               </div>
             </div>
+            </details>
           </div>
         </div>
 
@@ -752,7 +774,7 @@
               </div>
             </div>
             <div class="zone">
-            <span class="zone-badge dia">📐 Diagrama · recurso del tema</span>
+            <span class="zone-badge dia">Diagrama · recurso del tema</span>
             <figure class="figure">
               <svg id="t3-diagram" viewBox="0 0 1000 650" role="img" aria-label="Diagrama del hábitat rotatorio"></svg>
               <figcaption>
@@ -775,19 +797,15 @@
             </div>
 
             <div class="playground">
-              <span class="play-badge">▶ Zona interactiva · experimento extra</span>
-              <div class="play-hints">
-                <span>⬇ Suelte una pelota desde la mano del tripulante</span>
-                <span>⚙ Use los controles del diagrama (radio y gravedad)</span>
-                <span>🔁 Pruebe un hábitat pequeño: el desvío crece</span>
-              </div>
+              <span class="play-badge">Exploración interactiva · experimento complementario</span>
+              <p class="play-hint">Suelte la pelota desde la mano del tripulante. El radio y la gravedad salen de los controles del diagrama.</p>
               <div class="controls" style="margin-bottom:10px">
                 <div class="ctrl">
                   <label for="t3-hr">Altura desde la que se suelta <output for="t3-hr"></output></label>
                   <input type="range" id="t3-hr" min="0.3" max="2" step="0.05" value="1.5" />
                 </div>
                 <div class="ctrl" style="flex-direction:row; flex-wrap:wrap; gap:8px; align-items:flex-end">
-                  <button class="btn small primary" id="t3-drop">⬇ Soltar la pelota</button>
+                  <button class="btn small primary" id="t3-drop">Soltar la pelota</button>
                   <button class="btn small" data-t3r="224">Hábitat de 224 m</button>
                   <button class="btn small" data-t3r="20">Hábitat de 20 m</button>
                   <button class="btn small" data-t3r="5">Centrífuga de 5 m</button>
@@ -800,7 +818,9 @@
           </div>
         </div>
 
-        <div class="links-box">
+        <details class="more">
+          <summary>Conexiones con la clase y con otros temas</summary>
+          <div class="links-box">
           <h4>↔ Conexiones con la clase y con otros temas</h4>
           <ul>
             <li><strong>Semana 2:</strong> movimiento circular con \(\omega\), \(v=\omega r\), período y aceleración centrípeta.</li>
@@ -809,8 +829,11 @@
             <li><strong>Tema 4:</strong> en una curva el F1 necesita la misma \(mv^2/R\), pero ahí la aporta la fricción y no la normal.</li>
           </ul>
         </div>
+        </details>
 
-        <div class="sources">
+        <details class="more">
+          <summary>Fuentes del Tema 3</summary>
+          <div class="sources">
           <h4>Fuentes del Tema 3</h4>
           <ol>
             <li>R. D. Johnson y C. Holbrow (eds.), <em>Space Settlements: A Design Study</em>, NASA SP-413, 1977. <a href="https://space.nss.org/settlement/nasa/75SummerStudy/Design.html" target="_blank" rel="noopener">space.nss.org (copia del estudio)</a></li>
@@ -818,6 +841,7 @@
             <li>T. W. Hall, “Artificial Gravity in Theory and Practice”, 46th International Conference on Environmental Systems (ICES), 2016. <a href="https://www.artificial-gravity.com/" target="_blank" rel="noopener">artificial-gravity.com</a></li>
           </ol>
         </div>
+        </details>
       </section>
 
       <!-- ===================================================================
@@ -894,7 +918,9 @@
               estabilizadoras: controlan cuánta carga se transfiere y, con eso, cuánto agarre se pierde. La calculadora
               de abajo lo cuantifica.
             </p>
-            <div class="pro-con">
+            <details class="more">
+              <summary>Qué se gana y qué cuesta modelar la física</summary>
+              <div class="pro-con">
               <div class="gain">
                 <h4>Qué se gana</h4>
                 <ul>
@@ -912,6 +938,7 @@
                 </ul>
               </div>
             </div>
+            </details>
           </div>
         </div>
 
@@ -961,7 +988,7 @@
             <div class="readouts" id="t4-ro"></div>
 
             <div class="zone">
-            <span class="zone-badge">📈 Visualización de datos · recurso del tema</span>
+            <span class="zone-badge">Visualización de datos · recurso del tema</span>
             <div class="chart-grid">
               <div class="chart-card span2">
                 <h4>Coeficiente de agarre máximo en función de la temperatura, por compuesto</h4>
@@ -982,21 +1009,17 @@
             </div>
 
             <div class="playground">
-              <span class="play-badge">▶ Zona interactiva · tome la curva</span>
-              <div class="play-hints">
-                <span>🏎 Elija la velocidad de entrada y presione "Tomar la curva"</span>
-                <span>🌡 Caliente o enfríe las llantas (azul = frías, verde = en ventana, rojo = pasadas)</span>
-                <span>⚙ El compuesto, el radio y la sensibilidad salen de los controles de arriba</span>
-              </div>
+              <span class="play-badge">Exploración interactiva</span>
+              <p class="play-hint">Elija la velocidad de entrada y la temperatura de las llantas, y tome la curva.</p>
               <div class="controls" style="margin-bottom:10px">
                 <div class="ctrl">
                   <label for="t4-vin">Velocidad de entrada <output for="t4-vin"></output></label>
                   <input type="range" id="t4-vin" min="50" max="340" step="5" value="170" />
                 </div>
                 <div class="ctrl" style="flex-direction:row; flex-wrap:wrap; gap:8px; align-items:flex-end">
-                  <button class="btn small primary" id="t4-go">🏁 Tomar la curva</button>
-                  <button class="btn small" id="t4-warm">🔥 +10 °C</button>
-                  <button class="btn small" id="t4-cool">❄ −10 °C</button>
+                  <button class="btn small primary" id="t4-go">Tomar la curva</button>
+                  <button class="btn small" id="t4-warm">Calentar +10 °C</button>
+                  <button class="btn small" id="t4-cool">Enfriar −10 °C</button>
                 </div>
               </div>
               <div class="canvas-wrap"><canvas id="t4-play" aria-label="Vista superior de un auto de F1 tomando una curva"></canvas></div>
@@ -1004,14 +1027,19 @@
               <p class="play-note">La regla es la misma de la gráfica de velocidad máxima: si \(m v^2/R\) supera lo que la fricción puede dar (\(\mu N\)), la llanta desliza y el auto describe un arco más abierto, \(R_{real} = v^2/a_{\max}\), hasta salirse de la pista.</p>
             </div>
 
-            <div class="callout">
+            <details class="more">
+              <summary>Qué observar</summary>
+              <div class="callout">
               <strong>Qué observar</strong>
               (1) Baje la temperatura a 70 °C: el C1 casi no agarra, mientras que el C5 ya está cerca de su ventana. Por eso los
               compuestos blandos se usan en pistas frías y de poca exigencia. (2) En la gráfica de \(F_y\) vs. \(F_z\), la
               curva real se separa de la recta: con 10 kN de carga la diferencia es grande. (3) Con la transferencia de carga
               en 0 el eje rinde al máximo. Súbala y vea en los indicadores cuánto agarre se pierde.
             </div>
-            <div class="data-note">
+            </details>
+            <details class="more">
+              <summary>Fuentes y supuestos del modelo</summary>
+              <div class="data-note">
               <strong>Fuentes y supuestos.</strong> <b>Datos reales:</b> rangos de trabajo de cada compuesto, Pirelli 2019 [1].
               <b>Modelo propio:</b> \(\mu(T)=\mu_{\text{frío}}+(\mu_{\max}-\mu_{\text{frío}})\,e^{-((T-T_c)/\sigma)^2}\), con
               \(T_c\) en el centro de la ventana publicada y \(\sigma\) elegido para que en los bordes de la ventana se conserve el
@@ -1020,10 +1048,13 @@
               parámetro \(D\) de la Magic Formula [2], \(F_{z0}=4\) kN. Auto: \(m=798\) kg (peso mínimo con piloto,
               reglamento 2023), \(\rho=1{,}225\) kg/m³ y \(C_LA\approx 4{,}5\) m² (estimación de orden de magnitud).
             </div>
+            </details>
           </div>
         </div>
 
-        <div class="links-box">
+        <details class="more">
+          <summary>Conexiones con la clase y con otros temas</summary>
+          <div class="links-box">
           <h4>↔ Conexiones con la clase y con otros temas</h4>
           <ul>
             <li><strong>Semana 3:</strong> fricción estática y cinética, la gráfica de fricción contra fuerza aplicada con su techo \(\mu_sN\), la observación de que el agua reduce el coeficiente y de que el análisis riguroso de una llanta es de rodamiento.</li>
@@ -1032,8 +1063,11 @@
             <li><strong>Temas 1 y 3:</strong> la misma aceleración \(v^2/R\) del giro del dron y del hábitat; aquí la provee la fricción.</li>
           </ul>
         </div>
+        </details>
 
-        <div class="sources">
+        <details class="more">
+          <summary>Fuentes del Tema 4</summary>
+          <div class="sources">
           <h4>Fuentes del Tema 4</h4>
           <ol>
             <li>Pirelli — “What’s new with Pirelli’s 2019 Formula 1 tyres?” (rangos de trabajo por compuesto). <a href="https://press.pirelli.com/whats-new-with-pirellis-2019-formula-1-tyres/" target="_blank" rel="noopener">press.pirelli.com</a></li>
@@ -1043,6 +1077,7 @@
             <li>FIA — 2023 Formula 1 Technical Regulations (masa mínima 798 kg). <a href="https://www.fia.com/regulation/category/110" target="_blank" rel="noopener">fia.com</a></li>
           </ol>
         </div>
+        </details>
       </section>
 
       <!-- ===================================================================
@@ -1123,7 +1158,9 @@
               fuerza. El resorte virtual, en cambio, permite que cada juego (y cada momento del juego) tenga su propia
               curva \(F(x)\): la tensión de un arco, un freno que se endurece al bloquearse la rueda o el resorte de Astro.
             </p>
-            <div class="pro-con">
+            <details class="more">
+              <summary>Qué se gana y qué cuesta modelar la física</summary>
+              <div class="pro-con">
               <div class="gain">
                 <h4>Qué se gana</h4>
                 <ul>
@@ -1141,6 +1178,7 @@
                 </ul>
               </div>
             </div>
+            </details>
           </div>
         </div>
 
@@ -1154,7 +1192,7 @@
           </div>
           <div class="resource-body">
             <div class="zone">
-            <span class="zone-badge mm">🎬 Multimedia con análisis · recurso del tema</span>
+            <span class="zone-badge mm">Multimedia con análisis · recurso del tema</span>
             <div class="video-frame">
               <iframe id="t5-video" src="https://www.youtube-nocookie.com/embed/8VBZ1upH93w?rel=0&enablejsapi=1" title="PS5 Adaptive Trigger Live Mechanics in Game - Full Teardown (Restore Technique)" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
@@ -1202,12 +1240,8 @@
             </div>
 
             <div class="playground">
-              <span class="play-badge">▶ Zona interactiva · apriete y salte</span>
-              <div class="play-hints">
-                <span>🖱 Arrastre el gatillo y suéltelo</span>
-                <span>🐸 La energía guardada lanza a la rana: alcance las 5 estrellas</span>
-                <span>⚙ Cambie el modo del gatillo y la constante k</span>
-              </div>
+              <span class="play-badge">Exploración interactiva · el resorte virtual</span>
+              <p class="play-hint">Arrastre la manija del resorte y suéltela.</p>
             <div class="controls">
               <div class="ctrl">
                 <label for="t5-mode">Modo del gatillo</label>
@@ -1228,23 +1262,15 @@
                 <input type="range" id="t5-x" min="0" max="10" step="0.05" value="0" />
               </div>
               <div class="ctrl" style="justify-content:flex-end">
-                <button class="btn small" id="t5-release">Soltar el gatillo (ver la fuerza restauradora)</button>
+                <button class="btn small" id="t5-release">Soltar (ver la fuerza restauradora)</button>
               </div>
             </div>
-            <div class="chart-grid">
-              <div class="chart-card">
-                <h4>Gatillo y fuerzas (tercera ley en vivo)</h4>
-                <div class="canvas-wrap" style="border:none"><canvas id="t5-trigger" aria-label="Diagrama del gatillo con fuerzas"></canvas></div>
-              </div>
-              <div class="chart-card">
-                <h4>El traje de resorte: ½kx² → mgh</h4>
-                <div class="canvas-wrap" style="border:none"><canvas id="t5-frog" aria-label="Rana sobre un resorte que salta con la energía del gatillo"></canvas></div>
-              </div>
-            </div>
+            <div class="canvas-wrap"><canvas id="t5-trigger" aria-label="Resorte virtual: arrastre la manija para comprimirlo"></canvas></div>
             <div class="readouts" id="t5-ro"></div>
-            <p class="play-note">Escala del juego: cada 10 mJ guardados en el gatillo valen 1 m de salto. Con la rampa de Hooke, apretar el doble cuadruplica la altura (h ∝ x²).</p>
             </div>
-            <div class="data-note">
+            <details class="more">
+              <summary>Fuentes y supuestos del modelo</summary>
+              <div class="data-note">
               <strong>Supuestos.</strong> El recorrido del gatillo se representa en una escala ilustrativa de 0 a 10 mm, y la fuerza
               máxima del actuador, como 6 N. Sony no publica la relación entre el nivel de intensidad y los newtons; la API la expone
               como un valor normalizado de 0 a 1 [1] y otras implementaciones, como niveles de 0 a 8 por zona. La energía almacenada
@@ -1254,10 +1280,13 @@
               (\(h\propto x^2\)). La animación de “soltar” integra \(m\ddot x=-F(x)\) con una masa efectiva ilustrativa de
               10 g y amortiguamiento, mostrada en cámara lenta.
             </div>
+            </details>
           </div>
         </div>
 
-        <div class="links-box">
+        <details class="more">
+          <summary>Conexiones con la clase y con otros temas</summary>
+          <div class="links-box">
           <h4>↔ Conexiones con la clase y con otros temas</h4>
           <ul>
             <li><strong>Semana 3:</strong> resortes y \(F=-kx\). Como la fuerza cambia con \(x\), la aceleración no es constante y no sirven las ecuaciones de MRUA. Tercera ley: el par acción-reacción actúa sobre cuerpos distintos (dedo y gatillo), no sobre el mismo.</li>
@@ -1266,8 +1295,11 @@
             <li><strong>Avance 2:</strong> el mismo resorte, con amortiguamiento, es la base de las <em>spring animations</em> de las interfaces (Tema 10).</li>
           </ul>
         </div>
+        </details>
 
-        <div class="sources">
+        <details class="more">
+          <summary>Fuentes del Tema 5</summary>
+          <div class="sources">
           <h4>Fuentes del Tema 5</h4>
           <ol>
             <li>Apple Developer — <code>GCDualSenseAdaptiveTrigger</code> y <code>setModeSlopeFeedback(startPosition:endPosition:startStrength:endStrength:)</code>. <a href="https://developer.apple.com/documentation/gamecontroller/gcdualsenseadaptivetrigger" target="_blank" rel="noopener">developer.apple.com</a></li>
@@ -1277,6 +1309,7 @@
             <li>Restore Technique, “PS5 Adaptive Trigger Live Mechanics in Game – Full Teardown”, YouTube. <a href="https://www.youtube.com/watch?v=8VBZ1upH93w" target="_blank" rel="noopener">youtube.com/watch?v=8VBZ1upH93w</a></li>
           </ol>
         </div>
+        </details>
       </section>
 
       <!-- ===================================================================
@@ -1331,13 +1364,13 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-<script defer src="assets/js/ui.js?v=11"></script>
-<script defer src="assets/js/conexiones.js?v=11"></script>
-<script defer src="assets/js/tema1-dron.js?v=11"></script>
-<script defer src="assets/js/tema2-salto.js?v=11"></script>
-<script defer src="assets/js/tema3-habitat.js?v=11"></script>
-<script defer src="assets/js/tema4-llantas.js?v=11"></script>
-<script defer src="assets/js/tema5-haptico.js?v=11"></script>
-<script defer src="assets/js/main.js?v=11"></script>
+<script defer src="assets/js/ui.js?v=12"></script>
+<script defer src="assets/js/conexiones.js?v=12"></script>
+<script defer src="assets/js/tema1-dron.js?v=12"></script>
+<script defer src="assets/js/tema2-salto.js?v=12"></script>
+<script defer src="assets/js/tema3-habitat.js?v=12"></script>
+<script defer src="assets/js/tema4-llantas.js?v=12"></script>
+<script defer src="assets/js/tema5-haptico.js?v=12"></script>
+<script defer src="assets/js/main.js?v=12"></script>
 </body>
 </html>
