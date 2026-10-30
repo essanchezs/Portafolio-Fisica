@@ -1,24 +1,36 @@
 /* Mapa de conexiones entre temas (SVG generado). */
 window.Conexiones = (() => {
   const nodes = [
-    { id: 1, x: 150, y: 140, t: ["Tema 1", "Dron de reparto"], c: "--accent" },
-    { id: 2, x: 240, y: 345, t: ["Tema 2", "Salto del personaje"], c: "--accent-2" },
-    { id: 3, x: 490, y: 45, t: ["Tema 3", "Gravedad artificial"], c: "--amber" },
-    { id: 4, x: 830, y: 140, t: ["Tema 4", "Llantas de F1"], c: "--accent" },
-    { id: 5, x: 740, y: 345, t: ["Tema 5", "Resorte háptico"], c: "--green" },
-    { id: 0, x: 490, y: 225, t: ["Clase", "Semanas 2–5"], c: "--violet", hub: true },
+    { id: 1, x: 120, y: 60, t: ["Tema 1", "Dron de reparto"], c: "--accent" },
+    { id: 3, x: 490, y: 60, t: ["Tema 3", "Gravedad artificial"], c: "--amber" },
+    { id: 4, x: 860, y: 60, t: ["Tema 4", "Llantas de F1"], c: "--accent" },
+    { id: 2, x: 120, y: 250, t: ["Tema 2", "Salto del personaje"], c: "--accent-2" },
+    { id: 0, x: 490, y: 250, t: ["Clase", "Semanas 2–8"], c: "--violet", hub: true },
+    { id: 6, x: 860, y: 250, t: ["Tema 6", "Frenado regenerativo"], c: "--green" },
+    { id: 5, x: 120, y: 440, t: ["Tema 5", "Resorte háptico"], c: "--green" },
+    { id: 7, x: 300, y: 570, t: ["Tema 7", "Restitución"], c: "--accent-2" },
+    { id: 8, x: 680, y: 570, t: ["Tema 8", "Ruedas de reacción"], c: "--amber" },
+    { id: 9, x: 860, y: 440, t: ["Tema 9", "Voyager"], c: "--violet" },
   ];
   const edges = [
     [1, 3, "a = v²/R = ω²r"],
     [3, 4, "m v²/R ≤ μN"],
-    [2, 5, "½kx² = mgh"],
     [1, 2, "MRUA por componentes"],
-    [4, 5, "fuerzas de contacto: μN, −kx"],
-    [0, 1, "S2 vectores"],
-    [0, 2, "S2 caída libre"],
-    [0, 3, "S2 circular · S3 normal"],
-    [0, 4, "S3 fricción"],
-    [0, 5, "S3 Hooke · S4 energía"],
+    [2, 5, "½kx² = mgh"],
+    [4, 6, "W = −μNd → calor"],
+    [5, 7, "J = ∫F dt = Δp"],
+    [7, 8, "p y L se conservan"],
+    [8, 9, "L = mvr: Kepler"],
+    [6, 9, "ΔK = W"],
+    [0, 1, "S2"],
+    [0, 2, "S2"],
+    [0, 3, "S2 · S3"],
+    [0, 4, "S3"],
+    [0, 5, "S3 · S4"],
+    [0, 6, "S4 energía"],
+    [0, 7, "S5 choques"],
+    [0, 8, "S6–S7 rotación"],
+    [0, 9, "S8 gravitación"],
   ];
 
   function render() {
@@ -38,7 +50,7 @@ window.Conexiones = (() => {
     });
     nodes.forEach((n) => {
       const col = UI.css(n.c);
-      const w = 170, h = 58;
+      const w = 176, h = 58;
       const href = n.id ? `#tema-${n.id}` : "#inicio";
       s += `<a href="${href}"><g style="cursor:pointer">`;
       s += `<rect x="${n.x - w / 2}" y="${n.y - h / 2}" width="${w}" height="${h}" rx="14" fill="${P.panel}" stroke="${col}" stroke-width="${n.hub ? 1.5 : 2}"/>`;

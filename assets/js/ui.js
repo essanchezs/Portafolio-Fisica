@@ -124,7 +124,7 @@ const UI = (() => {
         if (b.label) {
           ctx.fillStyle = b.labelColor || palette().muted;
           ctx.font = "600 10.5px Public Sans, sans-serif";
-          ctx.fillText(b.label, Math.max(x1, chartArea.left) + 4, top + 12);
+          ctx.fillText(b.label, Math.max(x1, chartArea.left) + 4, top + 12 + (b.labelDy || 0));
         }
         ctx.restore();
       });

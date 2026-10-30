@@ -2,7 +2,7 @@
    (si un recurso falla, los demás siguen funcionando). */
 document.addEventListener("DOMContentLoaded", () => {
   UI.init();
-  [window.Conexiones, window.Tema1, window.Tema2, window.Tema3, window.Tema4, window.Tema5].forEach((m) => {
+  [window.Conexiones, window.Tema1, window.Tema2, window.Tema3, window.Tema4, window.Tema5, window.Tema6, window.Tema7, window.Tema8, window.Tema9].forEach((m) => {
     if (!m) return;
     try { m.init(); } catch (err) { console.error("Error al iniciar un recurso:", err); }
   });

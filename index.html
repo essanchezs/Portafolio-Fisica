@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-  <link rel="stylesheet" href="assets/css/styles.css?v=18" />
+  <link rel="stylesheet" href="assets/css/styles.css?v=27" />
 
   <script>
     // Aplica el tema guardado antes de pintar para evitar parpadeo
@@ -56,11 +56,11 @@
       </div>
 
       <div class="nav-group">
-        <div class="nav-group-title"><span>Avance 2</span><span class="pill">próximamente</span></div>
-        <a class="future" href="#tema-6"><span class="num">6</span><span>Frenado regenerativo en un vehículo eléctrico</span></a>
-        <a class="future" href="#tema-7"><span class="num">7</span><span>El coeficiente de restitución en un motor de videojuego</span></a>
-        <a class="future" href="#tema-8"><span class="num">8</span><span>Ruedas de reacción en satélites</span></a>
-        <a class="future" href="#tema-9"><span class="num">9</span><span>Asistencia gravitatoria de la Voyager</span></a>
+        <div class="nav-group-title"><span>Avance 2</span><span class="pill on">nuevo</span></div>
+        <a href="#tema-6"><span class="num">6</span><span>Frenado regenerativo en un vehículo eléctrico<span class="rtype">Visualización de datos</span></span></a>
+        <a href="#tema-7"><span class="num">7</span><span>El coeficiente de restitución en un motor de videojuego: por qué la pelota rebota mal<span class="rtype">Simulación interactiva</span></span></a>
+        <a href="#tema-8"><span class="num">8</span><span>Ruedas de reacción: cómo un satélite se gira sin empujarse contra nada<span class="rtype">Diagrama</span></span></a>
+        <a href="#tema-9"><span class="num">9</span><span>Asistencia gravitatoria: cómo la Voyager ganó velocidad sin gastar combustible<span class="rtype">Visualización de datos</span></span></a>
       </div>
 
       <div class="nav-group">
@@ -91,16 +91,17 @@
         <div class="eyebrow">Universidad CENFOTEC · Escuela de Fundamentos</div>
         <h1>Física mecánica <em>dentro del software</em></h1>
         <p class="lead">
-          Portafolio de evidencias de Física I. Cada tema documenta un caso real donde una ley de la cinemática o la
-          dinámica se convierte en código: el autopiloto de un dron, el salto de un personaje, un hábitat que gira, el
-          modelo de una llanta de Fórmula 1 y el gatillo de un control de consola. Cada entrada trae el caso de uso con su
+          Portafolio de evidencias de Física I. Cada tema documenta un caso real donde una ley de la mecánica se convierte
+          en código: el autopiloto de un dron, el salto de un personaje, un hábitat que gira, la llanta de un Fórmula 1, el
+          gatillo de un control, el frenado de un auto eléctrico, el rebote de una pelota en un motor de juego, las ruedas
+          que orientan un satélite y la trayectoria de la Voyager. Cada entrada trae el caso de uso con su
           ecuación y un recurso interactivo hecho por mí, del tipo exacto que pide la consigna.
         </p>
         <div class="meta-grid">
           <div class="meta"><div class="k">Estudiante</div><div class="v">Esteban Sánchez</div></div>
           <div class="meta"><div class="k">Curso</div><div class="v">FUN-18 Física I · FCV1</div></div>
           <div class="meta"><div class="k">Docente</div><div class="v">Andrés Castro Núñez</div></div>
-          <div class="meta"><div class="k">Entrega</div><div class="v">Avance 1 · 10 oct 2026</div></div>
+          <div class="meta"><div class="k">Entrega</div><div class="v">Avance 2 · 31 oct 2026</div></div>
         </div>
       </div>
     </header>
@@ -111,8 +112,8 @@
         <h2 id="como-leer">Cómo está organizada cada entrada</h2>
         <p>
           El portafolio es acumulativo: esta página ya tiene el espacio para los <strong>trece temas</strong> del curso
-          (menú de la izquierda; en celular, el botón <span class="kbd">☰ Índice</span>). Los cinco temas del Avance 1
-          están completos; los demás aparecen como secciones reservadas que se llenarán en los avances siguientes.
+          (menú de la izquierda; en celular, el botón <span class="kbd">☰ Índice</span>). Los nueve temas de los Avances 1 y 2
+          están completos; los cuatro de la entrega final aparecen como secciones reservadas.
           Cada tema tiene las dos partes obligatorias de la consigna:
         </p>
         <div class="legend-grid">
@@ -145,13 +146,14 @@
       <section class="block" id="conexiones" aria-labelledby="h-conexiones">
         <h2 id="h-conexiones">Mapa de conexiones entre temas</h2>
         <p>
-          Los cinco temas no son islas. Las mismas tres ideas reaparecen en todos: <strong>la aceleración normal
-          \(v^2/R\)</strong> (dron, hábitat, Fórmula 1), <strong>la fuerza normal y la fricción</strong> (llanta, peso aparente
-          en el hábitat) y <strong>la energía almacenada</strong> (salto, resorte). El diagrama resume esos enlaces; cada
-          sección los desarrolla en su recuadro de conexiones.
+          Los temas no son islas. Las mismas ideas reaparecen: <strong>la aceleración normal \(v^2/R\)</strong> (dron, hábitat,
+          Fórmula 1, órbitas), <strong>la fuerza normal y la fricción</strong> (llanta, peso aparente, frenado),
+          <strong>la energía</strong> (salto, resorte, frenado regenerativo, asistencia gravitatoria) y <strong>las leyes de
+          conservación</strong> (momento lineal en los choques y en la Voyager, momento angular en las ruedas de reacción y en
+          el hábitat). El diagrama resume esos enlaces; cada sección los desarrolla en su recuadro de conexiones.
         </p>
         <figure class="figure">
-          <svg id="connections-svg" viewBox="0 0 980 400" role="img" aria-label="Diagrama de conexiones entre los cinco temas"></svg>
+          <svg id="connections-svg" viewBox="0 0 980 620" role="img" aria-label="Diagrama de conexiones entre los nueve temas"></svg>
           <figcaption>Elaboración propia. Las etiquetas sobre las líneas indican la ecuación que comparten los temas conectados.</figcaption>
         </figure>
       </section>
@@ -1315,21 +1317,844 @@
       </section>
 
       <!-- ===================================================================
+           TEMA 6
+           =================================================================== -->
+      <section class="block" id="tema-6" aria-labelledby="h-tema-6">
+        <div class="tema-head">
+          <div class="tema-num">6</div>
+          <div>
+            <h2 id="h-tema-6">Tema 6 — Frenado regenerativo en un vehículo eléctrico</h2>
+            <div class="chips">
+              <span class="chip">Trabajo y energía cinética</span>
+              <span class="chip">Potencia</span>
+              <span class="chip">Transformación de energía</span>
+              <span class="chip rt rt-viz">Recurso: Visualización de datos</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="part-title"><span class="tag">(a)</span> Caso de uso en Ingeniería del Software</div>
+        <div class="uc-grid">
+          <div class="uc">
+            <div class="uc-label">(i) Caso concreto</div>
+            <h3>El software que reparte cada frenada entre el motor y las pastillas</h3>
+            <ul>
+              <li>
+                <strong>Tesla, actualización de software 2022.16.</strong> Cuando la batería está fría o casi llena, no puede
+                recibir toda la energía del frenado y la regeneración queda limitada. Esa versión agregó la opción
+                “Aplicar frenos cuando el frenado regenerativo está limitado”: el software calcula cuánta desaceleración
+                falta y la completa con los frenos de fricción, para que el auto frene igual aunque la batería no acepte
+                la energía [1].
+              </li>
+              <li>
+                <strong>EPA, Estados Unidos.</strong> La autonomía oficial de un eléctrico se mide en un dinamómetro que
+                reproduce, segundo a segundo, el ciclo urbano <strong>UDDS</strong> y el de carretera <strong>HWFET</strong> [2].
+                El dinamómetro imita la resistencia del auto con la ecuación \(F=A+Bv+Cv^2\), cuyos coeficientes la EPA
+                publica por modelo [3]. Mi gráfica usa exactamente esos datos.
+              </li>
+              <li>
+                <strong>Fórmula 1.</strong> El MGU-K recupera energía al frenar con un límite de 120 kW y de 2 MJ por
+                vuelta (reglamento 2014–2025) [4]. El software del auto decide en qué curvas cosechar ese presupuesto.
+              </li>
+            </ul>
+          </div>
+
+          <div class="uc">
+            <div class="uc-label">(ii) Concepto físico aplicado</div>
+            <h3>Teorema del trabajo y la energía, y potencia en las ruedas</h3>
+            <p>Para detener el auto, las fuerzas de frenado tienen que hacer un trabajo igual a la energía cinética que tenía:</p>
+            <div class="eq-box">
+              $$W_{\text{neto}}=\Delta K=\tfrac12 m v_f^2-\tfrac12 m v_i^2\qquad\Rightarrow\qquad W_{\text{frenado}}=-\tfrac12 m v^2\ \ (\text{al detenerse})$$
+            </div>
+            <p>En cada segundo del ciclo, la segunda ley da la fuerza que deben hacer las ruedas, y con ella la potencia:</p>
+            <div class="eq-box">
+              $$F_{\text{ruedas}}=m\,a+\underbrace{(A+Bv+Cv^2)}_{\text{resistencia al avance}},\qquad P=F_{\text{ruedas}}\,v=\frac{dW}{dt}$$
+              $$P\gt0:\ \text{tracción}\qquad P\lt0:\ \text{frenado}\qquad E_{\text{recuperada}}=\int \eta\,\min\!\left(|P|,\,P_{\max}\right)dt$$
+              <div class="eq-caption">\(A\): rodadura y transmisión; \(Bv\): pérdidas que crecen con la velocidad; \(Cv^2\): arrastre del aire. \(\eta\): eficiencia de motor, inversor y batería al cargar.</div>
+            </div>
+            <p>
+              <strong>Ejemplo con el Tesla Model 3</strong> (\(m=1928\) kg, coeficientes EPA): al frenar desde 50 km/h,
+              \(K=\tfrac12(1928)(13{,}89)^2\approx 186\) kJ. A 50 km/h la resistencia al avance es solo 212 N; para frenar a
+              1,5 m/s² hacen falta \(ma=2892\) N, así que el freno aporta 2680 N (93 %). La potencia de frenado arranca en
+              \(P=Fv=2680\cdot13{,}89\approx 37\) kW, y con \(\eta=0{,}70\) vuelven a la batería unos 120 kJ (≈ 33 Wh).
+            </p>
+          </div>
+
+          <div class="uc">
+            <div class="uc-label">(iii) Justificación: ¿por qué modelar la física?</div>
+            <h3>Un porcentaje fijo de recuperación miente en cuanto cambia el recorrido</h3>
+            <p>
+              La alternativa sin física es suponer un valor fijo (“la regeneración devuelve un 20 %”) o una tabla por
+              velocidad. Pero la energía recuperable no es un porcentaje del consumo: es la energía cinética de cada
+              frenada, y depende de cuántas veces se frena, desde qué velocidad, con qué masa y con qué límite de potencia.
+              La gráfica lo muestra: con el mismo auto, el ahorro es de cerca del 30 % en ciudad y menos del 10 % en
+              carretera. Un estudio de ciclos de manejo encontró la misma tendencia: la utilización del frenado
+              regenerativo baja de 53 % en ciudad a 13 % en carretera [5].
+            </p>
+            <p>
+              Por eso los fabricantes estiman la autonomía integrando \(P=Fv\) sobre ciclos reales, y por eso el software
+              de frenado necesita el modelo: para saber, en cada instante, cuánta potencia acepta la batería y cuánta debe
+              ir a la fricción.
+            </p>
+            <details class="more">
+              <summary>Qué se gana y qué cuesta modelar la física</summary>
+              <div class="pro-con">
+              <div class="gain">
+                <h4>Qué se gana</h4>
+                <ul>
+                  <li>Autonomía calculada para cualquier ruta, no solo para la del folleto.</li>
+                  <li>Repartir el frenado entre motor y pastillas sin que el conductor note el cambio.</li>
+                  <li>Dimensionar motor e inversor según la potencia de frenado real.</li>
+                </ul>
+              </div>
+              <div class="cost">
+                <h4>Qué cuesta</h4>
+                <ul>
+                  <li>Los coeficientes \(A\), \(B\), \(C\) se miden con pruebas de desaceleración libre en pista, que son caras.</li>
+                  <li>La eficiencia \(\eta\) cambia con la temperatura y la carga de la batería; un valor único es una aproximación.</li>
+                  <li>El modelo de un solo cuerpo ignora la transferencia de peso entre ejes, que limita cuánto puede frenar el eje con motor.</li>
+                </ul>
+              </div>
+            </div>
+            </details>
+          </div>
+        </div>
+
+        <div class="part-title"><span class="tag">(b)</span> Recurso: Visualización de datos</div>
+        <div class="resource">
+          <div class="resource-head">
+            <div>
+              <h3>Balance de energía a lo largo de un ciclo de manejo de la EPA</h3>
+              <div class="sub">Velocidad: datos reales de la EPA (1 dato por segundo) [2] · masa y resistencia al avance: Test Car List de la EPA, año modelo 2025 [3] · energía: cálculo propio con \(P=Fv\)</div>
+            </div>
+            <button class="btn small" id="t6-csv">⬇ Descargar datos (CSV)</button>
+          </div>
+          <div class="resource-body">
+            <div class="controls">
+              <div class="ctrl">
+                <label for="t6-car">Vehículo (datos EPA)</label>
+                <select id="t6-car">
+                  <option value="model3" selected>Tesla Model 3 Long Range RWD</option>
+                  <option value="leaf">Nissan Leaf</option>
+                  <option value="f150">Ford F-150 Lightning</option>
+                </select>
+              </div>
+              <div class="ctrl">
+                <label for="t6-cycle">Ciclo de manejo</label>
+                <select id="t6-cycle">
+                  <option value="udds" selected>Ciudad: UDDS (1369 s, 12,0 km)</option>
+                  <option value="hwfet">Carretera: HWFET (765 s, 16,5 km)</option>
+                </select>
+              </div>
+              <div class="ctrl">
+                <label for="t6-eta">Eficiencia de regeneración η <output for="t6-eta"></output></label>
+                <input type="range" id="t6-eta" min="0" max="95" step="1" value="70" />
+              </div>
+              <div class="ctrl">
+                <label for="t6-pmax">Potencia máxima que acepta el motor <output for="t6-pmax"></output></label>
+                <input type="range" id="t6-pmax" min="5" max="150" step="5" value="60" />
+              </div>
+            </div>
+            <div class="toggles">
+              <label class="toggle"><input type="checkbox" id="t6-fade" checked /> <span>La regeneración se desvanece por debajo de 8 km/h (el motor ya no frena bien a baja velocidad)</span></label>
+            </div>
+
+            <div class="readouts" id="t6-ro"></div>
+
+            <div class="zone">
+            <span class="zone-badge">Visualización de datos · recurso del tema</span>
+            <div class="chart-grid">
+              <div class="chart-card span2">
+                <h4>Velocidad y potencia en las ruedas, segundo a segundo</h4>
+                <div class="cap">Azul: potencia de tracción. Abajo del cero, cada frenada: en verde lo que vuelve a la batería y en rojo lo que se pierde en fricción y conversión.</div>
+                <div class="chart-box" style="height:170px"><canvas id="t6-v"></canvas></div>
+                <div class="chart-box tall"><canvas id="t6-p"></canvas></div>
+              </div>
+              <div class="chart-card">
+                <h4>Energía tomada de la batería a lo largo del ciclo</h4>
+                <div class="cap">La distancia vertical entre las dos curvas al final es la energía ahorrada.</div>
+                <div class="chart-box"><canvas id="t6-E"></canvas></div>
+              </div>
+              <div class="chart-card">
+                <h4>Balance de energía del ciclo completo</h4>
+                <div class="cap">Arriba: en qué se usa el trabajo de tracción. Abajo: a dónde va la energía de las frenadas.</div>
+                <div class="chart-box"><canvas id="t6-bal"></canvas></div>
+              </div>
+            </div>
+            <p class="data-note" id="t6-carnote" style="margin-top:12px"></p>
+            </div>
+
+            <details class="more">
+              <summary>Qué observar</summary>
+              <div class="callout">
+              <strong>Qué observar</strong>
+              (1) En ciudad (UDDS) hay unas 17 detenciones: casi cada pico de velocidad termina en un área verde. Cambie a
+              carretera (HWFET) y el ahorro cae a menos de la mitad, porque casi toda la energía se va en vencer el aire
+              (\(Cv^2\)) y no en frenar. (2) Elija la F-150 Lightning: su masa es 1,5 veces la del Model 3 y su energía de
+              frenado también, porque \(K=\tfrac12mv^2\) crece con \(m\). (3) Baje la potencia máxima a 15 kW: las frenadas
+              fuertes se vuelven rojas, porque el motor no puede absorber todo y el resto se va a las pastillas.
+            </div>
+            </details>
+            <details class="more">
+              <summary>Fuentes y supuestos del modelo</summary>
+              <div class="data-note">
+              <strong>Fuentes y supuestos.</strong> <b>Datos reales:</b> perfiles de velocidad UDDS (<code>uddscol.txt</code>) y
+              HWFET (<code>hwycol.txt</code>) de la EPA [2]; masa equivalente de prueba y coeficientes objetivo \(A\), \(B\), \(C\)
+              de la <i>Test Car List</i> 2025 de la EPA (pruebas RTSL10086702, JNSX10050525 y NFMX10073310) [3], convertidos de
+              lb, lbf y mph a kg, N y m/s. <b>Cálculo propio:</b> aceleración por diferencias centrales a partir de la
+              velocidad; \(F=ma+A+Bv+Cv^2\); \(P=Fv\). Al traccionar se supone una eficiencia batería→ruedas de 88 %. Al frenar
+              se recupera \(\eta\cdot\min(|P|,P_{\max})\). <b>Supuestos:</b> \(\eta\) y \(P_{\max}\) son ajustables porque los
+              fabricantes no los publican; no se modelan la transferencia de peso ni la temperatura de la batería.
+            </div>
+            </details>
+          </div>
+        </div>
+
+        <details class="more">
+          <summary>Conexiones con la clase y con otros temas</summary>
+          <div class="links-box">
+          <h4>↔ Conexiones con la clase y con otros temas</h4>
+          <ul>
+            <li><strong>Semana 4:</strong> trabajo como integral de la fuerza, teorema del trabajo y la energía y potencia \(P=Fv\). La fricción es una fuerza no conservativa: lo que se va a las pastillas sale del sistema como calor.</li>
+            <li><strong>Semana 5:</strong> en una frenada el impulso de las llantas cambia el momento del auto, \(J=\Delta p\), mientras la energía se reparte entre la batería y el calor.</li>
+            <li><strong>Tema 4:</strong> la fricción de la llanta es la que transmite la fuerza de frenado al piso. Si se supera \(\mu N\), la rueda se bloquea y no se recupera nada.</li>
+            <li><strong>Tema 7:</strong> un choque inelástico también “pierde” energía cinética. Aquí la idea es justamente atraparla en vez de perderla.</li>
+          </ul>
+        </div>
+        </details>
+
+        <details class="more">
+          <summary>Fuentes del Tema 6</summary>
+          <div class="sources">
+          <h4>Fuentes del Tema 6</h4>
+          <ol>
+            <li>Not a Tesla App — “Teslas may soon apply brakes for a consistent experience when regenerative braking is limited” (actualización 2022.16). <a href="https://www.notateslaapp.com/news/778/teslas-may-soon-apply-brakes-for-consistent-experience-when-regenerative-braking-is-limited" target="_blank" rel="noopener">notateslaapp.com</a></li>
+            <li>U.S. EPA — Dynamometer Drive Schedules (UDDS y HWFET, velocidad por segundo). <a href="https://www.epa.gov/vehicle-and-fuel-emissions-testing/dynamometer-drive-schedules" target="_blank" rel="noopener">epa.gov</a></li>
+            <li>U.S. EPA — Data on Cars Used for Testing Fuel Economy, Test Car List año modelo 2025 (archivo <code>25-testcar-2026-01-21.xlsx</code>). <a href="https://www.epa.gov/compliance-and-fuel-economy-data/data-cars-used-testing-fuel-economy" target="_blank" rel="noopener">epa.gov</a></li>
+            <li>Mercedes-AMG Petronas F1 — W15 Technical Specifications (MGU-K: 120 kW, recuperación máxima de 2 MJ por vuelta). <a href="https://mercedesamgf1.com/f1-w15-2024-technical-specifications" target="_blank" rel="noopener">mercedesamgf1.com</a></li>
+            <li>Universidad Técnica de Estambul — “Investigation of regenerative braking efficiency in different drive cycles”. <a href="https://polen.itu.edu.tr/items/81cf0b8f-acf9-4e57-a7e9-1a62693ec416" target="_blank" rel="noopener">polen.itu.edu.tr</a></li>
+          </ol>
+        </div>
+        </details>
+      </section>
+
+      <!-- ===================================================================
+           TEMA 7
+           =================================================================== -->
+      <section class="block" id="tema-7" aria-labelledby="h-tema-7">
+        <div class="tema-head">
+          <div class="tema-num">7</div>
+          <div>
+            <h2 id="h-tema-7">Tema 7 — El coeficiente de restitución en un motor de videojuego: por qué la pelota rebota mal</h2>
+            <div class="chips">
+              <span class="chip">Colisiones elásticas e inelásticas</span>
+              <span class="chip">Conservación del momento lineal</span>
+              <span class="chip">Coeficiente de restitución</span>
+              <span class="chip rt rt-sim">Recurso: Simulación interactiva</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="part-title"><span class="tag">(a)</span> Caso de uso en Ingeniería del Software</div>
+        <div class="uc-grid">
+          <div class="uc">
+            <div class="uc-label">(i) Caso concreto</div>
+            <h3>Unity y Box2D: un número por material, y tres formas de que salga mal</h3>
+            <ul>
+              <li>
+                <strong>Unity (motor PhysX).</strong> Cada material físico tiene un <em>Bounciness</em> de 0 a 1, que es
+                el coeficiente de restitución: 0 es un choque totalmente inelástico y 1 uno perfectamente elástico [1].
+                Cuando chocan dos materiales, el motor los combina según <em>Bounce Combine</em>: promedio (el valor por
+                defecto), mínimo, multiplicación o máximo [2]. Además, si dos objetos chocan a menos de 2 m/s, no rebotan:
+                es el <em>bounce threshold</em> por defecto [1].
+              </li>
+              <li>
+                <strong>Box2D 2.4.1</strong>, el motor 2D de código abierto. En su código fuente, la restitución de un
+                contacto es la <strong>mayor</strong> de las dos (<code>b2MixRestitution</code>), y por debajo de 1 m/s no se
+                aplica rebote (<code>restitutionThreshold</code>) [3].
+              </li>
+              <li>
+                <strong>La referencia real:</strong> la Federación Internacional de Tenis exige que una pelota soltada desde
+                254 cm rebote entre 135 y 147 cm sobre concreto [4]. Eso fija \(e\) entre 0,73 y 0,76.
+              </li>
+            </ul>
+          </div>
+
+          <div class="uc">
+            <div class="uc-label">(ii) Concepto físico aplicado</div>
+            <h3>Momento lineal conservado y una sola constante para la energía perdida</h3>
+            <p>En un choque las fuerzas de contacto son internas y enormes comparadas con las externas, así que el momento lineal del sistema se conserva. El coeficiente de restitución mide qué fracción de la velocidad relativa sobrevive:</p>
+            <div class="eq-box">
+              $$m_1v_1+m_2v_2=m_1v_1'+m_2v_2',\qquad e=-\frac{v_2'-v_1'}{v_2-v_1}\quad(0\le e\le1)$$
+              $$v_1'=\frac{m_1v_1+m_2v_2+m_2e(v_2-v_1)}{m_1+m_2},\qquad v_2'=\frac{m_1v_1+m_2v_2+m_1e(v_1-v_2)}{m_1+m_2}$$
+            </div>
+            <p>Contra el piso (la Tierra, \(m_2\to\infty\)) queda una regla muy simple para la altura y la energía:</p>
+            <div class="eq-box">
+              $$v'=-e\,v,\qquad h_{n+1}=e^2h_n\ \Rightarrow\ e=\sqrt{\frac{h'}{h}},\qquad \frac{\Delta K}{K}=1-e^2,\qquad J=m(1+e)\,|v|$$
+              $$t_{\text{total}}=\sqrt{\frac{2h_0}{g}}\;\frac{1+e}{1-e}\qquad(e=1:\ \text{elástico, rebota para siempre};\ e=0:\ \text{plástico, se queda pegada})$$
+              <div class="eq-caption">Con la ITF: \(e=\sqrt{135/254}=0{,}729\) a \(\sqrt{147/254}=0{,}761\). Una pelota real pierde 42–47 % de su energía en cada bote.</div>
+            </div>
+          </div>
+
+          <div class="uc">
+            <div class="uc-label">(iii) Justificación: ¿por qué modelar la física?</div>
+            <h3>Un rebote animado a mano no sabe desde dónde cayó la pelota</h3>
+            <p>
+              La alternativa es animar el rebote con una curva fija o regla del tipo “cada bote sube 70 %”. Funciona en un
+              solo caso, pero un juego tiene pelotas que caen de cualquier altura, chocan con otras de distinta masa y
+              rebotan en pisos distintos. Con \(e\) y la conservación del momento, el motor resuelve todo eso con un solo
+              número por material y produce choques coherentes.
+            </p>
+            <p>
+              El problema es que el motor <strong>no resuelve exactamente</strong> la física de clase, y ahí nacen los
+              rebotes “que se sienten mal”:
+            </p>
+            <ul>
+              <li><strong>Mezcla de materiales:</strong> pelota 0,745 sobre un piso que quedó en 0 con “promedio” da \(e=0{,}37\). Sube a la mitad de lo esperado.</li>
+              <li><strong>Umbral de rebote:</strong> con 2 m/s, la pelota deja de botar de golpe en cuanto cae de menos de 20 cm (\(h=v^2/2g\)) y se “pega” al piso.</li>
+              <li><strong>Paso de tiempo fijo:</strong> el choque se detecta tarde, con la pelota ya dentro del piso, y al sacarla se le suma o se le quita energía. Por eso, con \(e=1\), un motor puede hacer que la pelota suba o baje en vez de mantener la altura.</li>
+            </ul>
+            <details class="more">
+              <summary>Qué se gana y qué cuesta modelar la física</summary>
+              <div class="pro-con">
+              <div class="gain">
+                <h4>Qué se gana</h4>
+                <ul>
+                  <li>Un solo parámetro por material sirve para infinitos choques.</li>
+                  <li>El momento lineal conservado hace creíbles los choques entre objetos de distinta masa.</li>
+                  <li>Los diseñadores pueden calibrar con datos reales: \(e=\sqrt{h'/h}\).</li>
+                </ul>
+              </div>
+              <div class="cost">
+                <h4>Qué cuesta</h4>
+                <ul>
+                  <li>Las reglas de mezcla (promedio, máximo…) no son física; son convenciones que cambian entre motores.</li>
+                  <li>El umbral evita que la pelota “tiemble” en el piso, pero corta los últimos rebotes de forma artificial.</li>
+                  <li>La integración por pasos puede crear energía; hay que usar pasos pequeños o detección continua.</li>
+                </ul>
+              </div>
+            </div>
+            </details>
+          </div>
+        </div>
+
+        <div class="part-title"><span class="tag">(b)</span> Recurso: Simulación interactiva</div>
+        <div class="resource">
+          <div class="resource-head">
+            <div>
+              <h3>La misma pelota, resuelta por la física y por un motor de juego</h3>
+              <div class="sub">Izquierda: pelota de tenis con \(e\) de la ITF, integración exacta. Derecha: la pelota del motor, con los parámetros que usted elija. Todo se recalcula al mover cualquier control.</div>
+            </div>
+            <button class="btn small primary" id="t7-drop">↻ Soltar de nuevo</button>
+          </div>
+          <div class="resource-body">
+            <div class="presets">
+              <span class="lbl">Errores típicos:</span>
+              <button class="btn small" data-t7="ok">Bien calibrada</button>
+              <button class="btn small" data-t7="floor0">Piso en 0 con “promedio”</button>
+              <button class="btn small" data-t7="unity">Umbral de 2 m/s y paso de 0,02 s</button>
+              <button class="btn small" data-t7="e1">e = 1</button>
+              <button class="btn small" data-t7="e105">e = 1,05</button>
+              <button class="btn small" data-t7="bigdt">Paso de tiempo de 0,1 s</button>
+            </div>
+            <div class="controls">
+              <div class="ctrl">
+                <label for="t7-e">Coeficiente de restitución de la pelota e <output for="t7-e"></output></label>
+                <input type="range" id="t7-e" min="0" max="1.1" step="0.005" value="0.745" />
+              </div>
+              <div class="ctrl">
+                <label for="t7-floor">Restitución del piso <output for="t7-floor"></output></label>
+                <input type="range" id="t7-floor" min="0" max="1.1" step="0.005" value="0.745" />
+              </div>
+              <div class="ctrl">
+                <label for="t7-mix">Cómo combina el motor los dos valores</label>
+                <select id="t7-mix">
+                  <option value="average" selected>Promedio (Unity por defecto)</option>
+                  <option value="min">Mínimo</option>
+                  <option value="multiply">Multiplicación</option>
+                  <option value="max">Máximo (Box2D)</option>
+                </select>
+              </div>
+              <div class="ctrl">
+                <label for="t7-thr">Umbral de rebote</label>
+                <select id="t7-thr">
+                  <option value="0" selected>Sin umbral</option>
+                  <option value="1">1 m/s (Box2D)</option>
+                  <option value="2">2 m/s (Unity)</option>
+                </select>
+              </div>
+              <div class="ctrl">
+                <label for="t7-dt">Paso de tiempo del motor</label>
+                <select id="t7-dt">
+                  <option value="0" selected>Exacto (detección continua)</option>
+                  <option value="0.02">0,02 s (50 Hz, valor por defecto de Unity)</option>
+                  <option value="0.05">0,05 s (20 Hz)</option>
+                  <option value="0.1">0,1 s (10 Hz)</option>
+                </select>
+              </div>
+              <div class="ctrl">
+                <label for="t7-h">Altura inicial h₀ <output for="t7-h"></output></label>
+                <input type="range" id="t7-h" min="0.5" max="4" step="0.05" value="2" />
+              </div>
+            </div>
+
+            <div class="zone">
+            <span class="zone-badge">Simulación interactiva · recurso del tema</span>
+            <div class="canvas-wrap"><canvas id="t7-sim" aria-label="Dos pelotas que rebotan: la física real y la de un motor de juego, con su altura en el tiempo"></canvas></div>
+            <div class="readouts" id="t7-ro"></div>
+
+            <h4 style="margin:22px 0 6px">Choque entre dos cuerpos: el momento lineal se conserva aunque se pierda energía</h4>
+            <p style="margin-top:0">Con el mismo \(e\), el motor resuelve el choque entre dos objetos con las ecuaciones de arriba. Cambie las masas y las velocidades y presione “Chocar”.</p>
+            <div class="controls">
+              <div class="ctrl"><label for="t7-m1">Masa 1 <output for="t7-m1"></output></label><input type="range" id="t7-m1" min="0.5" max="10" step="0.5" value="2" /></div>
+              <div class="ctrl"><label for="t7-m2">Masa 2 <output for="t7-m2"></output></label><input type="range" id="t7-m2" min="0.5" max="10" step="0.5" value="1" /></div>
+              <div class="ctrl"><label for="t7-v1">Velocidad inicial 1 <output for="t7-v1"></output></label><input type="range" id="t7-v1" min="-3" max="3" step="0.1" value="2" /></div>
+              <div class="ctrl"><label for="t7-v2">Velocidad inicial 2 <output for="t7-v2"></output></label><input type="range" id="t7-v2" min="-3" max="3" step="0.1" value="-1" /></div>
+              <div class="ctrl"><label for="t7-e2">Coeficiente de restitución e <output for="t7-e2"></output></label><input type="range" id="t7-e2" min="0" max="1" step="0.01" value="0.75" /></div>
+              <div class="ctrl" style="justify-content:flex-end"><button class="btn small primary" id="t7-go">Chocar</button></div>
+            </div>
+            <div class="canvas-wrap"><canvas id="t7-col" aria-label="Choque en una dimensión entre dos cuerpos con barras de momento antes y después"></canvas></div>
+            <div class="readouts" id="t7-col-ro"></div>
+            </div>
+
+            <details class="more">
+              <summary>Experimentos sugeridos</summary>
+              <div class="callout">
+              <strong>Experimentos sugeridos</strong>
+              <ol style="margin:4px 0 0; padding-left:20px">
+                <li><b>“Piso en 0 con promedio”:</b> la pelota del motor apenas sube a 0,28 m en vez de 1,11 m. El diseñador puso 0,745 en la pelota, pero el motor usó \(e=0{,}37\). Cambie la combinación a “Máximo” y se arregla.</li>
+                <li><b>Umbral de 2 m/s:</b> compare el final de las dos pelotas. La real sigue con botes cada vez más cortos; la del motor se detiene de golpe al bajar de 20 cm.</li>
+                <li><b>e = 1:</b> con integración exacta la altura se mantiene. Cambie el paso a 0,1 s: la pelota ya no vuelve a los 2 m, sino a cerca de 1,5 m, aunque \(e\) siga siendo 1. Ese error es del integrador, no de la física.</li>
+                <li><b>Choque:</b> ponga \(e=0\) (plástico). Las dos masas salen juntas con la velocidad del centro de masa y la \(\Sigma p\) no cambia, aunque se pierda energía cinética.</li>
+              </ol>
+            </div>
+            </details>
+            <details class="more">
+              <summary>Cómo está hecha la simulación</summary>
+              <div class="data-note">
+              <strong>Método.</strong> La pelota de referencia se integra por eventos: se calcula analíticamente el instante
+              en que toca el piso, \(y+vt-\tfrac12gt^2=0\), y ahí se aplica \(v'=-e\,v\). No tiene error de paso. La pelota
+              del motor usa Euler semiimplícito con paso fijo, igual que los motores de juego: \(v\leftarrow v-g\,\Delta t\),
+              \(y\leftarrow y+v\,\Delta t\). Si queda dentro del piso, se saca a \(y=0\) y se aplica la restitución combinada,
+              salvo que la rapidez de impacto esté por debajo del umbral. \(e\) de referencia: 0,745, centro del rango de la
+              ITF [4]. Paso por defecto de Unity: 0,02 s [5].
+            </div>
+            </details>
+          </div>
+        </div>
+
+        <details class="more">
+          <summary>Conexiones con la clase y con otros temas</summary>
+          <div class="links-box">
+          <h4>↔ Conexiones con la clase y con otros temas</h4>
+          <ul>
+            <li><strong>Semana 5:</strong> momento lineal, impulso \(J=\Delta p\) y choques elásticos, inelásticos y perfectamente inelásticos. El choque contra el piso se analizó con impulso y coeficiente de restitución.</li>
+            <li><strong>Semana 4:</strong> la energía mecánica \(K+U\) se conserva en el vuelo y solo se pierde en el choque: \(mgh_{n+1}=e^2\,mgh_n\).</li>
+            <li><strong>Tema 2:</strong> la misma caída libre y el mismo problema de paso fijo del salto del personaje.</li>
+            <li><strong>Tema 5:</strong> durante el contacto la pelota se comprime como un resorte; si devolviera toda su energía elástica, \(e\) sería 1.</li>
+            <li><strong>Tema 6:</strong> la energía que el choque “pierde” se va como calor y sonido; el frenado regenerativo intenta recuperarla.</li>
+          </ul>
+        </div>
+        </details>
+
+        <details class="more">
+          <summary>Fuentes del Tema 7</summary>
+          <div class="sources">
+          <h4>Fuentes del Tema 7</h4>
+          <ol>
+            <li>Unity Manual 2022.3 — “Collider surface bounciness” (Bounciness de 0 a 1 y <i>bounce threshold</i> de 2 por defecto). <a href="https://docs.unity3d.com/2022.3/Documentation/Manual/collider-surface-bounce.html" target="_blank" rel="noopener">docs.unity3d.com</a></li>
+            <li>Unity Manual 2023.2 — Physic Material (Bounce Combine: Average por defecto, Minimum, Multiply, Maximum). <a href="https://docs.unity3d.com/2023.2/Documentation/Manual/class-PhysicMaterial.html" target="_blank" rel="noopener">docs.unity3d.com</a></li>
+            <li>E. Catto, Box2D v2.4.1, <code>b2_contact.h</code> (<code>b2MixRestitution</code> devuelve el máximo) y <code>b2_fixture.h</code> (<code>restitutionThreshold</code> de 1 m/s). <a href="https://github.com/erincatto/box2d/blob/v2.4.1/include/box2d/b2_contact.h" target="_blank" rel="noopener">github.com/erincatto/box2d</a></li>
+            <li>International Tennis Federation — prueba de rebote de las pelotas (caída desde 254 cm, rebote de 135 a 147 cm). <a href="https://www.itftennis.com/media/4420/2023-technical-booklet.pdf" target="_blank" rel="noopener">itftennis.com</a></li>
+            <li>Unity Scripting API — <code>Time.fixedDeltaTime</code> (paso fijo de física, 0,02 s por defecto). <a href="https://docs.unity3d.com/ScriptReference/Time-fixedDeltaTime.html" target="_blank" rel="noopener">docs.unity3d.com</a></li>
+          </ol>
+        </div>
+        </details>
+      </section>
+
+      <!-- ===================================================================
+           TEMA 8
+           =================================================================== -->
+      <section class="block" id="tema-8" aria-labelledby="h-tema-8">
+        <div class="tema-head">
+          <div class="tema-num">8</div>
+          <div>
+            <h2 id="h-tema-8">Tema 8 — Ruedas de reacción: cómo un satélite se gira sin empujarse contra nada</h2>
+            <div class="chips">
+              <span class="chip">Conservación del momento angular</span>
+              <span class="chip">Torque</span>
+              <span class="chip">Momento de inercia</span>
+              <span class="chip rt rt-dia">Recurso: Diagrama</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="part-title"><span class="tag">(a)</span> Caso de uso en Ingeniería del Software</div>
+        <div class="uc-grid">
+          <div class="uc">
+            <div class="uc-label">(i) Caso concreto</div>
+            <h3>Hubble y Kepler: apuntar con ruedas y sobrevivir cuando fallan</h3>
+            <ul>
+              <li>
+                <strong>Telescopio espacial Hubble (NASA).</strong> Se orienta con <strong>cuatro ruedas de reacción</strong>
+                que el computador de a bordo acelera hasta 3000 rpm o frena. Si una rueda gira en sentido horario, el telescopio
+                gira en sentido antihorario [1][2]. El software de control lee giroscopios y sensores de guiado fino, calcula
+                la ley de control y envía comandos de torque a las ruedas. Para que no se saturen, unas barras magnéticas
+                reaccionan contra el campo magnético de la Tierra y les bajan la velocidad [1][2].
+              </li>
+              <li>
+                <strong>Telescopio Kepler (NASA).</strong> Necesitaba tres de sus cuatro ruedas para apuntar con precisión. Una
+                falló en julio de 2012 y otra en mayo de 2013, y la misión original terminó. Los ingenieros reescribieron el
+                control: con dos ruedas y la <strong>presión de la luz solar</strong> sobre los paneles equilibrando el tercer eje,
+                nació la misión K2, aprobada en 2014 [3][4].
+              </li>
+            </ul>
+          </div>
+
+          <div class="uc">
+            <div class="uc-label">(ii) Concepto físico aplicado</div>
+            <h3>Sin torque externo, el momento angular total no cambia</h3>
+            <p>
+              El motor de la rueda está atornillado al satélite. Lo que hace el motor sobre la rueda (\(\tau\)) la rueda lo
+              devuelve sobre el satélite (\(-\tau\), tercera ley). Son fuerzas internas: el momento angular total se conserva.
+            </p>
+            <div class="eq-box">
+              $$\sum\tau_{\text{ext}}=\frac{dL}{dt}=0\ \Rightarrow\ L=I_s\,\omega_s+I_w\,\omega_w=\text{constante}\ (=0)$$
+              $$\omega_s=-\frac{I_w}{I_s}\,\omega_w,\qquad \tau=I_w\,\alpha_w=-I_s\,\alpha_s,\qquad \theta_s=-\frac{I_w}{I_s}\,\theta_w$$
+              <div class="eq-caption">\(I_s\): momento de inercia del satélite; \(I_w\): de la rueda. Como \(I_w\ll I_s\), la rueda tiene que girar miles de veces más rápido que el satélite.</div>
+            </div>
+            <p>La rueda tiene un límite. Una perturbación pequeña y constante \(\tau_d\), como la presión solar o el gradiente de gravedad, se acumula en ella hasta saturarla:</p>
+            <div class="eq-box">
+              $$L_{\max}=I_w\,\omega_{\max},\qquad \Delta\omega_w=\frac{\tau_d\,t}{I_w}\ \Rightarrow\ t_{\text{sat}}=\frac{I_w\,\omega_{\max}}{\tau_d},\qquad \tau_{\text{mag}}=\vec m\times\vec B$$
+            </div>
+          </div>
+
+          <div class="uc">
+            <div class="uc-label">(iii) Justificación: ¿por qué modelar la física?</div>
+            <h3>Con propulsores o maniobras precalculadas el satélite no dura</h3>
+            <p>
+              La alternativa obvia es girar con pequeños cohetes: cada giro gasta combustible que no se puede recargar,
+              contamina la óptica y da impulsos bruscos. Otra opción sería una tabla de maniobras precalculadas, pero no
+              sirve ante perturbaciones que cambian con la órbita. Con \(L=I\omega\) conservado, el software calcula a qué
+              velocidad poner cada rueda para cada orientación usando solo electricidad de los paneles. Además, el mismo
+              modelo predice cuándo se va a saturar la rueda y programa la descarga con las barras magnéticas antes de que
+              pase.
+            </p>
+            <p>
+              El caso Kepler muestra el valor del modelo: la misión se salvó porque los ingenieros pudieron calcular el torque
+              de la luz solar sobre la nave y usarlo como si fuera una rueda más [3].
+            </p>
+            <details class="more">
+              <summary>Qué se gana y qué cuesta modelar la física</summary>
+              <div class="pro-con">
+              <div class="gain">
+                <h4>Qué se gana</h4>
+                <ul>
+                  <li>Apuntado finísimo y suave usando solo electricidad.</li>
+                  <li>Predecir la saturación y programar las descargas con anticipación.</li>
+                  <li>Reconfigurar el control cuando falla una rueda (Hubble y Kepler).</li>
+                </ul>
+              </div>
+              <div class="cost">
+                <h4>Qué cuesta</h4>
+                <ul>
+                  <li>Las ruedas solo intercambian momento; nunca eliminan el que se acumula. Siempre hace falta un torque externo.</li>
+                  <li>Son piezas que giran miles de rpm durante años: se desgastan y fallan, como en Kepler.</li>
+                  <li>En 3D, \(\vec L\) es un vector y aparecen efectos giroscópicos (semana 7) que el control debe compensar.</li>
+                </ul>
+              </div>
+            </div>
+            </details>
+          </div>
+        </div>
+
+        <div class="part-title"><span class="tag">(b)</span> Recurso: Diagrama</div>
+        <div class="resource">
+          <div class="resource-head">
+            <div>
+              <h3>Esquema del satélite y su rueda: intercambio de momento angular y saturación</h3>
+              <div class="sub">Diagrama propio (SVG dibujado en código). Las cifras anotadas se recalculan con los controles.</div>
+            </div>
+          </div>
+          <div class="resource-body">
+            <div class="controls">
+              <div class="ctrl"><label for="t8-Is">Inercia del satélite I_s <output for="t8-Is"></output></label><input type="range" id="t8-Is" min="50" max="5000" step="10" value="500" /></div>
+              <div class="ctrl"><label for="t8-Iw">Inercia de la rueda I_w <output for="t8-Iw"></output></label><input type="range" id="t8-Iw" min="0.01" max="0.5" step="0.005" value="0.05" /></div>
+              <div class="ctrl"><label for="t8-wmax">Velocidad máxima de la rueda <output for="t8-wmax"></output></label><input type="range" id="t8-wmax" min="1000" max="8000" step="100" value="6000" /></div>
+              <div class="ctrl"><label for="t8-th">Giro pedido al satélite θ <output for="t8-th"></output></label><input type="range" id="t8-th" min="5" max="180" step="1" value="90" /></div>
+              <div class="ctrl"><label for="t8-T">Duración de la maniobra <output for="t8-T"></output></label><input type="range" id="t8-T" min="20" max="600" step="5" value="120" /></div>
+              <div class="ctrl"><label for="t8-td">Torque de perturbación τ_d <output for="t8-td"></output></label><input type="range" id="t8-td" min="0.01" max="2" step="0.01" value="0.1" /></div>
+            </div>
+            <div class="toggles">
+              <label class="toggle"><input type="checkbox" id="t8-anim" checked /> <span>Animar la maniobra: el satélite gira hacia un lado y la rueda hacia el otro (la rueda se dibuja más lenta para que se vea)</span></label>
+            </div>
+            <div class="zone">
+            <span class="zone-badge dia">Diagrama · recurso del tema</span>
+            <figure class="figure">
+              <svg id="t8-diagram" viewBox="0 0 1000 660" role="img" aria-label="Diagrama del satélite con rueda de reacción, momento angular y saturación"></svg>
+              <figcaption>
+                Elaboración propia. Izquierda: satélite visto a lo largo del eje de giro z. El motor aplica \(\tau\) a la rueda y
+                la rueda aplica \(-\tau\) al satélite, así que los dos giran en sentidos contrarios y \(\Sigma L=0\). Derecha: qué pasa
+                cuando una perturbación externa satura la rueda y cómo se descarga.
+              </figcaption>
+            </figure>
+            <div class="readouts" id="t8-ro"></div>
+
+            <h4 style="margin:20px 0 6px">Caso numérico trabajado: girar un satélite 90° en dos minutos</h4>
+            <p style="margin-top:0">Un satélite pequeño con \(I_s=500\) kg·m² y una rueda con \(I_w=0{,}05\) kg·m² que gira hasta 6000 rpm. La maniobra acelera la primera mitad y frena la segunda (perfil triangular de \(\omega_s\)):</p>
+            <div class="eq-box">
+              $$\theta=\tfrac12\,\omega_{s,\text{pico}}\,T\ \Rightarrow\ \omega_{s,\text{pico}}=\frac{2\theta}{T}=\frac{2(\pi/2)}{120\ \text{s}}=0{,}02618\ \text{rad/s},\qquad \alpha_s=\frac{0{,}02618}{60\ \text{s}}=4{,}36\times10^{-4}\ \text{rad/s}^2$$
+              $$\tau=I_s\,\alpha_s=500\cdot4{,}36\times10^{-4}=0{,}218\ \text{N·m},\qquad \omega_w=\frac{I_s}{I_w}\,\omega_{s,\text{pico}}=\frac{500}{0{,}05}\cdot0{,}02618=261{,}8\ \text{rad/s}=2500\ \text{rpm}\ \checkmark$$
+              $$\text{Saturación: } L_{\max}=0{,}05\cdot628{,}3=31{,}4\ \text{N·m·s};\ \text{con }\tau_d=10^{-4}\ \text{N·m}:\ t_{\text{sat}}=\frac{31{,}4}{10^{-4}}=3{,}14\times10^5\ \text{s}\approx3{,}6\ \text{días}$$
+            </div>
+            <p><strong>Resultado:</strong> la rueda llega a 2500 rpm, menos de la mitad de su máximo, así que la maniobra es posible. En cambio, la perturbación la llena en unos 3,6 días: el software tiene que programar una descarga magnética antes de eso. Si se pide el mismo giro en 30 s, la rueda tendría que llegar a 10 000 rpm y no alcanza.</p>
+            </div>
+          </div>
+        </div>
+
+        <details class="more">
+          <summary>Conexiones con la clase y con otros temas</summary>
+          <div class="links-box">
+          <h4>↔ Conexiones con la clase y con otros temas</h4>
+          <ul>
+            <li><strong>Semana 6:</strong> momento de inercia como la “masa” de la rotación, y torque \(\tau=I\alpha\).</li>
+            <li><strong>Semana 7:</strong> conservación del momento angular. Es el mismo caso de la persona que salta desde el borde del disco, \(0=I\omega+mvr\), y del patinador. La regla de clase aplica: un objeto que solo puede girar se analiza con \(L\), no con \(p\).</li>
+            <li><strong>Semana 7:</strong> \(\vec L\) es un vector y un torque perpendicular lo hace precesar. Por eso un satélite con ruedas en tres ejes debe compensar efectos giroscópicos.</li>
+            <li><strong>Tema 3:</strong> el hábitat rotatorio y su ascensor siguen la misma ley \(I_i\omega_i=I_f\omega_f\). En el proyecto del curso, mover masa al aro baja \(\omega\).</li>
+            <li><strong>Tema 9:</strong> en una órbita, la gravedad apunta al Sol y no hace torque: \(L=mvr\) se conserva, que es la segunda ley de Kepler.</li>
+          </ul>
+        </div>
+        </details>
+
+        <details class="more">
+          <summary>Fuentes del Tema 8</summary>
+          <div class="sources">
+          <h4>Fuentes del Tema 8</h4>
+          <ol>
+            <li>NASA Goddard — Hubble Space Telescope, Pointing Control System (ruedas hasta 3000 rpm, barras magnéticas). <a href="https://asd.gsfc.nasa.gov/archive/hubble/technology/pcs.html" target="_blank" rel="noopener">asd.gsfc.nasa.gov</a></li>
+            <li>NASA Science — Hubble: Pointing Control (cuatro ruedas de reacción). <a href="https://science.nasa.gov/mission/hubble/observatory/design/pointing-control" target="_blank" rel="noopener">science.nasa.gov</a></li>
+            <li>Phys.org — “How NASA revived the Kepler Space Telescope” (2013). <a href="https://phys.org/news/2013-11-nasa-revived-kepler-space-telescope.html" target="_blank" rel="noopener">phys.org</a></li>
+            <li>J. E. Van Cleve et al., “That’s How We Roll: The NASA K2 Mission Science Products and Their Performance Metrics”, 2016. <a href="https://arxiv.org/abs/1512.06162" target="_blank" rel="noopener">arxiv.org/abs/1512.06162</a></li>
+          </ol>
+        </div>
+        </details>
+      </section>
+
+      <!-- ===================================================================
+           TEMA 9
+           =================================================================== -->
+      <section class="block" id="tema-9" aria-labelledby="h-tema-9">
+        <div class="tema-head">
+          <div class="tema-num">9</div>
+          <div>
+            <h2 id="h-tema-9">Tema 9 — Asistencia gravitatoria: cómo la Voyager ganó velocidad sin gastar combustible</h2>
+            <div class="chips">
+              <span class="chip">Gravitación universal</span>
+              <span class="chip">Energía potencial gravitatoria</span>
+              <span class="chip">Conservación en el marco del planeta</span>
+              <span class="chip rt rt-viz">Recurso: Visualización de datos</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="part-title"><span class="tag">(a)</span> Caso de uso en Ingeniería del Software</div>
+        <div class="uc-grid">
+          <div class="uc">
+            <div class="uc-label">(i) Caso concreto</div>
+            <h3>El “Gran Tour” de la Voyager 2, calculado en computadora antes de despegar</h3>
+            <ul>
+              <li>
+                <strong>JPL, 1961–1965.</strong> Michael Minovitch calculó en las computadoras del JPL trayectorias que usan
+                la gravedad de un planeta para cambiar la velocidad de una sonda. En 1965, Gary Flandro encontró que a finales
+                de los años setenta los planetas exteriores quedarían alineados, algo que pasa más o menos cada 175 años, y
+                que una sola nave podría visitarlos todos [1][2].
+              </li>
+              <li>
+                <strong>Voyager 2 (NASA, 1977).</strong> Pasó por Júpiter (1979), Saturno (1981), Urano (1986) y Neptuno
+                (1989). Las asistencias gravitatorias redujeron el viaje a Neptuno de unos 30 años a 12 [1].
+              </li>
+              <li>
+                <strong>Hoy:</strong> el sistema <strong>Horizons</strong> del JPL calcula las efemérides de las sondas
+                integrando numéricamente la gravedad de todo el sistema solar [3]. Mis gráficas usan esos datos.
+              </li>
+            </ul>
+          </div>
+
+          <div class="uc">
+            <div class="uc-label">(ii) Concepto físico aplicado</div>
+            <h3>En el marco del planeta la rapidez no cambia; en el del Sol, sí</h3>
+            <p>La sonda se mueve en el campo del planeta con la ley de gravitación universal, y en ese campo su energía se conserva:</p>
+            <div class="eq-box">
+              $$F=\frac{GMm}{r^2},\qquad U=-\frac{GMm}{r},\qquad \tfrac12 m v_{\text{rel}}^2-\frac{GM_pm}{r}=\text{cte}\ \Rightarrow\ |\vec v_{\infty,\text{sale}}|=|\vec v_{\infty,\text{entra}}|$$
+            </div>
+            <p>
+              En el marco del planeta, la sonda sale con la <strong>misma rapidez</strong> con que llegó; solo cambia la dirección.
+              Pero el planeta se mueve alrededor del Sol con velocidad \(\vec V_p\), y en el marco del Sol las velocidades se suman:
+            </p>
+            <div class="eq-box">
+              $$\vec v_{\odot}=\vec V_p+\vec v_{\text{rel}},\qquad \Delta v_{\max}=2\,v_\infty\sin\frac{\delta}{2},\qquad \sin\frac{\delta}{2}=\frac{1}{1+r_p v_\infty^2/(GM_p)}$$
+              $$m\,\Delta\vec v_{\text{sonda}}=-M_p\,\Delta\vec V_p\qquad\qquad \varepsilon=\frac{v^2}{2}-\frac{GM_\odot}{r}\ \ (\varepsilon\lt0:\ \text{ligada al Sol};\ \varepsilon\ge0:\ \text{escapa})$$
+              <div class="eq-caption">\(\delta\): ángulo que gira la velocidad relativa; \(r_p\): distancia de máximo acercamiento. El momento ganado por la sonda lo pierde el planeta: Júpiter se frenó del orden de \(10^{-21}\) m/s.</div>
+            </div>
+          </div>
+
+          <div class="uc">
+            <div class="uc-label">(iii) Justificación: ¿por qué modelar la física?</div>
+            <h3>Sin el modelo, la única opción es más combustible, y no alcanza</h3>
+            <p>
+              Sin asistencias, cada cambio de velocidad sale del cohete, y la masa de combustible crece exponencialmente con el
+              \(\Delta v\). Llegar a Neptuno así habría tomado unos 30 años [1]. Una trayectoria “a ojo” tampoco sirve: pasar
+              unos cientos de kilómetros más lejos del planeta cambia \(\delta\), y con eso el destino siguiente. El software
+              de navegación integra \(F=GMm/r^2\) de todos los cuerpos y encuentra el paso exacto que entrega el \(\Delta v\)
+              necesario, gratis.
+            </p>
+            <p>
+              El modelo también explica algo que parece contradictorio en los datos: en Neptuno la Voyager 2
+              <strong>perdió</strong> rapidez. Se le hizo pasar sobre el polo norte del planeta para visitar la luna Tritón, y la
+              desviación giró su velocidad en contra del movimiento de Neptuno.
+            </p>
+            <details class="more">
+              <summary>Qué se gana y qué cuesta modelar la física</summary>
+              <div class="pro-con">
+              <div class="gain">
+                <h4>Qué se gana</h4>
+                <ul>
+                  <li>Kilómetros por segundo de \(\Delta v\) sin combustible.</li>
+                  <li>Misiones que serían imposibles: llegar a Neptuno o salir del sistema solar.</li>
+                  <li>Planificar décadas por adelantado, porque la gravitación es muy predecible.</li>
+                </ul>
+              </div>
+              <div class="cost">
+                <h4>Qué cuesta</h4>
+                <ul>
+                  <li>El problema de tres o más cuerpos no tiene solución cerrada: hay que integrarlo numéricamente (semana 8).</li>
+                  <li>Las ventanas de lanzamiento son estrechas y algunas alineaciones no se repiten en siglos.</li>
+                  <li>Un error pequeño en el paso se amplifica mucho en el destino; hacen falta correcciones de trayectoria.</li>
+                </ul>
+              </div>
+            </div>
+            </details>
+          </div>
+        </div>
+
+        <div class="part-title"><span class="tag">(b)</span> Recurso: Visualización de datos</div>
+        <div class="resource">
+          <div class="resource-head">
+            <div>
+              <h3>Rapidez de las Voyager respecto al Sol, de 1977 a 1992</h3>
+              <div class="sub">Datos: efemérides de NASA/JPL Horizons, vectores heliocéntricos cada 2 días y cada hora alrededor de cada encuentro [3] · rapidez de escape y energía: cálculo propio</div>
+            </div>
+            <button class="btn small" id="t9-csv">⬇ Descargar datos (CSV)</button>
+          </div>
+          <div class="resource-body">
+            <div class="controls">
+              <div class="ctrl">
+                <label for="t9-range">Intervalo</label>
+                <select id="t9-range">
+                  <option value="all" selected>Todo el viaje (1977–1992)</option>
+                  <option value="v1j">Acercamiento: V1 en Júpiter</option>
+                  <option value="v2j">Acercamiento: V2 en Júpiter</option>
+                  <option value="v1s">Acercamiento: V1 en Saturno</option>
+                  <option value="v2s">Acercamiento: V2 en Saturno</option>
+                  <option value="v2u">Acercamiento: V2 en Urano</option>
+                  <option value="v2n">Acercamiento: V2 en Neptuno</option>
+                </select>
+              </div>
+              <div class="ctrl" style="justify-content:flex-end; gap:8px">
+                <label class="toggle"><input type="checkbox" id="t9-show1" checked /> <span>Voyager 1</span></label>
+                <label class="toggle"><input type="checkbox" id="t9-show2" checked /> <span>Voyager 2</span></label>
+              </div>
+              <div class="ctrl" style="justify-content:flex-end">
+                <label class="toggle"><input type="checkbox" id="t9-esc" checked /> <span>Mostrar la rapidez de escape del Sol, \(\sqrt{2GM_\odot/r}\)</span></label>
+              </div>
+            </div>
+
+            <div class="readouts" id="t9-ro"></div>
+
+            <div class="zone">
+            <span class="zone-badge">Visualización de datos · recurso del tema</span>
+            <div class="chart-grid">
+              <div class="chart-card span2">
+                <h4>Rapidez de la sonda respecto al Sol en función del tiempo</h4>
+                <div class="cap">Cada salto es un encuentro planetario. Línea punteada: la rapidez necesaria para escapar del Sol a la distancia en que está la sonda. Cuando la línea sólida la supera, la sonda ya no vuelve.</div>
+                <div class="chart-box tall"><canvas id="t9-v"></canvas></div>
+              </div>
+              <div class="chart-card">
+                <h4>Energía orbital específica respecto al Sol</h4>
+                <div class="cap">(arepsilon=v^2/2-GM_odot/r). Entre encuentros es casi constante, porque solo actúa el Sol y la energía se conserva; en cada encuentro salta. El pico breve durante el paso es la gravedad del planeta, que esta energía (solo del Sol) no incluye.</div>
+                <div class="chart-box"><canvas id="t9-e"></canvas></div>
+              </div>
+              <div class="chart-card">
+                <h4>Rapidez antes y después de cada encuentro</h4>
+                <div class="cap">Medida 40 días antes y 40 días después del máximo acercamiento, ya fuera del pozo gravitatorio del planeta.</div>
+                <div class="chart-box"><canvas id="t9-dv"></canvas></div>
+              </div>
+            </div>
+            <div class="table-wrap" id="t9-table" style="margin-top:14px"></div>
+            </div>
+
+            <details class="more">
+              <summary>Qué observar</summary>
+              <div class="callout">
+              <strong>Qué observar</strong>
+              (1) Antes de Júpiter, la Voyager 2 iba por debajo de la rapidez de escape: estaba ligada al Sol (\(\varepsilon\lt0\)).
+              Después de Júpiter pasó a unos 20 km/s, por encima del escape: su energía se volvió positiva y ya no regresaría.
+              (2) Entre encuentros la rapidez baja poco a poco, porque se aleja del Sol y \(K\) se convierte en \(U\), con
+              \(\varepsilon\) constante. (3) Elija “V2 en Neptuno”: la rapidez <em>baja</em> 2,2 km/s. Una asistencia también
+              puede frenar; depende de hacia dónde gire la velocidad relativa. (4) En el acercamiento, el pico agudo es la sonda
+              cayendo en el pozo del planeta (\(U\) más negativa, \(K\) mayor), visto desde el Sol.
+            </div>
+            </details>
+            <details class="more">
+              <summary>Fuentes y procesamiento de los datos</summary>
+              <div class="data-note">
+              <strong>Fuentes y procesamiento.</strong> <b>Datos reales:</b> NASA/JPL Horizons [3], objetivos −31 (Voyager 1) y
+              −32 (Voyager 2), centro 500@10 (Sol), tabla de vectores 2, unidades km y km/s, consultado el 29 de octubre de
+              2026. Cada 2 días de 1977 a 1992, y cada hora durante ±4 días alrededor de cada encuentro. <b>Cálculo propio:</b>
+              rapidez \(|\vec v|\), distancia \(|\vec r|\), rapidez de escape \(\sqrt{2GM_\odot/r}\) y
+              \(\varepsilon=v^2/2-GM_\odot/r\), con \(GM_\odot=1{,}327\times10^{11}\) km³/s² y 1 UA = 149 597 870,7 km.
+            </div>
+            </details>
+          </div>
+        </div>
+
+        <details class="more">
+          <summary>Conexiones con la clase y con otros temas</summary>
+          <div class="links-box">
+          <h4>↔ Conexiones con la clase y con otros temas</h4>
+          <ul>
+            <li><strong>Semana 8:</strong> ley de gravitación universal, \(U=-GMm/r\), energía orbital y rapidez de escape \(\sqrt{2GM/r}\). En clase se vio la maniobra de la misión Artemis, que usa la gravedad de la Tierra y la Luna para cambiar de órbita con el mínimo de combustible.</li>
+            <li><strong>Semana 8:</strong> la segunda ley de Kepler (áreas iguales) explica por qué la rapidez baja suavemente entre encuentros al alejarse del Sol.</li>
+            <li><strong>Semana 5:</strong> conservación del momento lineal en un “choque” sin contacto. Sonda y planeta intercambian momento, igual que dos bolas en un choque elástico (Tema 7 con \(e=1\)).</li>
+            <li><strong>Tema 2:</strong> \(g=GM/r^2\) explica por qué la gravedad del juego es un número elegido y la de cada planeta es distinta.</li>
+            <li><strong>Tema 6:</strong> el mismo teorema del trabajo y la energía: aquí la gravedad del planeta hace trabajo neto sobre la sonda en el marco del Sol.</li>
+          </ul>
+        </div>
+        </details>
+
+        <details class="more">
+          <summary>Fuentes del Tema 9</summary>
+          <div class="sources">
+          <h4>Fuentes del Tema 9</h4>
+          <ol>
+            <li>NASA APPEL — historia del Gran Tour (Flandro, alineación cada ~175 años, viaje a Neptuno de 30 a 12 años). <a href="https://appel.nasa.gov/?p=304885" target="_blank" rel="noopener">appel.nasa.gov</a></li>
+            <li>The Planetary Society — “Gravity assist” (J. Shortt, 2013). <a href="https://www.planetary.org/articles/20130926-gravity-assist" target="_blank" rel="noopener">planetary.org</a></li>
+            <li>NASA/JPL — Horizons System (efemérides de Voyager 1 y 2). <a href="https://ssd.jpl.nasa.gov/horizons/" target="_blank" rel="noopener">ssd.jpl.nasa.gov/horizons</a></li>
+            <li>NASA — Voyager. <a href="https://science.nasa.gov/mission/voyager/" target="_blank" rel="noopener">science.nasa.gov/mission/voyager</a></li>
+          </ol>
+        </div>
+        </details>
+      </section>
+
+
+      <!-- ===================================================================
            TEMAS FUTUROS
            =================================================================== -->
       <section class="block" aria-labelledby="h-futuros">
         <h2 id="h-futuros">Próximos temas</h2>
-        <p>La estructura ya está lista para los ocho temas restantes; cada uno tendrá su caso de uso y su recurso del tipo que indique su consigna.</p>
+        <p>La estructura ya está lista para los cuatro temas restantes; cada uno tendrá su caso de uso y su recurso del tipo que indique su consigna.</p>
 
-        <h3 style="margin-bottom:10px">Avance 2 — Leyes de conservación y gravitación</h3>
-        <div class="future-grid">
-          <article class="future-card" id="tema-6"><div class="n">Tema 6</div><h4>Frenado regenerativo en un vehículo eléctrico</h4><p>En preparación para el Avance 2.</p></article>
-          <article class="future-card" id="tema-7"><div class="n">Tema 7</div><h4>El coeficiente de restitución en un motor de videojuego</h4><p>En preparación para el Avance 2.</p></article>
-          <article class="future-card" id="tema-8"><div class="n">Tema 8</div><h4>Ruedas de reacción en satélites</h4><p>En preparación para el Avance 2.</p></article>
-          <article class="future-card" id="tema-9"><div class="n">Tema 9</div><h4>Asistencia gravitatoria de la Voyager</h4><p>En preparación para el Avance 2.</p></article>
-        </div>
-
-        <h3 style="margin:26px 0 10px">Entrega final — Oscilaciones, ondas, fluidos y termodinámica</h3>
+        <h3 style="margin:10px 0 10px">Entrega final — Oscilaciones, ondas, fluidos y termodinámica</h3>
         <div class="future-grid">
           <article class="future-card" id="tema-10"><div class="n">Tema 10</div><h4>Spring animations en interfaces</h4><p>En preparación para la entrega final.</p></article>
           <article class="future-card" id="tema-11"><div class="n">Tema 11</div><h4>Síntesis de sonido y armónicos</h4><p>En preparación para la entrega final.</p></article>
@@ -1347,9 +2172,9 @@
           Las fuentes de cada tema están numeradas al final de su sección. Además:
         </p>
         <ul>
-          <li><strong>Material del curso:</strong> clases de Física I (FUN-18), semanas 2 a 5 (cinemática, leyes de Newton, fricción, resortes, trabajo y energía).</li>
+          <li><strong>Material del curso:</strong> clases de Física I (FUN-18), semanas 2 a 8 (cinemática, leyes de Newton, fricción, resortes, trabajo y energía, momento lineal y choques, rotación, momento angular y gravitación).</li>
           <li><strong>Herramientas:</strong> HTML, CSS y JavaScript sin <i>frameworks</i>; gráficas con <a href="https://www.chartjs.org/" target="_blank" rel="noopener">Chart.js</a>; ecuaciones con <a href="https://katex.org/" target="_blank" rel="noopener">KaTeX</a>; publicación en GitHub Pages.</li>
-          <li><strong>Gráficas, diagramas y simulaciones:</strong> elaboración propia. Los datos de terceros (Pirelli, constantes de <code>Player.cs</code>) están citados donde se usan.</li>
+          <li><strong>Gráficas, diagramas y simulaciones:</strong> elaboración propia. Los datos de terceros (Pirelli, constantes de <code>Player.cs</code>, ciclos y coeficientes de la EPA, efemérides de JPL Horizons) están citados donde se usan.</li>
           <li><strong>Video de terceros:</strong> Tema 5, canal <em>Restore Technique</em> en YouTube, incrustado con su enlace original.</li>
           <li><strong>Uso de IA:</strong> de acuerdo con la política del curso, usé asistentes de IA para investigar fuentes, revisar cálculos y programar las visualizaciones. Las ecuaciones, los casos y los resultados numéricos se verificaron contra las fuentes citadas y el material de clase.</li>
         </ul>
@@ -1366,13 +2191,19 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-<script defer src="assets/js/ui.js?v=18"></script>
-<script defer src="assets/js/conexiones.js?v=18"></script>
-<script defer src="assets/js/tema1-dron.js?v=18"></script>
-<script defer src="assets/js/tema2-salto.js?v=18"></script>
-<script defer src="assets/js/tema3-habitat.js?v=18"></script>
-<script defer src="assets/js/tema4-llantas.js?v=18"></script>
-<script defer src="assets/js/tema5-haptico.js?v=18"></script>
-<script defer src="assets/js/main.js?v=18"></script>
+<script defer src="assets/js/ui.js?v=27"></script>
+<script defer src="assets/js/conexiones.js?v=27"></script>
+<script defer src="assets/js/tema1-dron.js?v=27"></script>
+<script defer src="assets/js/tema2-salto.js?v=27"></script>
+<script defer src="assets/js/tema3-habitat.js?v=27"></script>
+<script defer src="assets/js/tema4-llantas.js?v=27"></script>
+<script defer src="assets/js/tema5-haptico.js?v=27"></script>
+<script defer src="assets/data/ciclos-epa.js?v=27"></script>
+<script defer src="assets/data/voyager.js?v=27"></script>
+<script defer src="assets/js/tema6-frenado.js?v=27"></script>
+<script defer src="assets/js/tema7-rebote.js?v=27"></script>
+<script defer src="assets/js/tema8-ruedas.js?v=27"></script>
+<script defer src="assets/js/tema9-voyager.js?v=27"></script>
+<script defer src="assets/js/main.js?v=27"></script>
 </body>
 </html>
