@@ -119,9 +119,9 @@ window.Tema7 = (() => {
     ctx.clearRect(0, 0, W, H);
     ctx.fillStyle = P.panel2; ctx.fillRect(0, 0, W, H);
     const narrow = W < 600;
-    const laneW = narrow ? W / 2 : W * 0.36;
+    const laneW = narrow ? W : Math.max(W * 0.36, Math.min(320, W * 0.5));
     const plotX = narrow ? 0 : laneW, plotY = narrow ? H * 0.55 : 0, plotW = narrow ? W : W - laneW, plotH = narrow ? H * 0.45 : H;
-    const top = 40, floorY = (narrow ? H * 0.55 : H) - 34;
+    const top = 56, floorY = (narrow ? H * 0.55 : H) - 34;
     const hMax = Math.max(c.h.value, S.eng.maxY || 0, 1) * 1.12;
     const Y = (y) => floorY - (y / hMax) * (floorY - top);
 
@@ -150,7 +150,7 @@ window.Tema7 = (() => {
       ctx.fillStyle = L.col; ctx.beginPath(); ctx.ellipse(L.x, Y(L.b.y) - rpx * squash, rpx / Math.sqrt(squash), rpx * squash, 0, 0, 7); ctx.fill();
       ctx.strokeStyle = P.panel; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(L.x - 4, Y(L.b.y) - rpx * squash, rpx * 0.75, -0.9, 0.9); ctx.stroke();
       ctx.fillStyle = P.text; ctx.font = "600 12px Public Sans, sans-serif"; ctx.textAlign = "center";
-      ctx.fillText(L.title, L.x, 16); ctx.fillStyle = P.muted; ctx.font = "11px Public Sans, sans-serif"; ctx.fillText(L.sub, L.x, 30);
+      ctx.fillText(L.title, L.x, 16); ctx.fillStyle = P.muted; ctx.font = "10.5px Public Sans, sans-serif"; ctx.fillText(L.sub, L.x, 30);
       ctx.fillText(`${L.b.bounces} rebotes`, L.x, floorY + 22);
       ctx.textAlign = "left";
     });
@@ -252,7 +252,10 @@ window.Tema7 = (() => {
     bar(16, "ANTES  p = m·v (kg·m/s)", [["p₁", m.m1 * m.v1, P.accent], ["p₂", m.m2 * m.v2, P.amber], ["Σp", m.p, P.text]]);
     bar(Math.max(w * 0.5, 16 + bw + 100), "DESPUÉS", [["p₁'", m.m1 * m.u1, P.accent], ["p₂'", m.m2 * m.u2, P.amber], ["Σp'", m.p1, P.text]]);
     g.fillStyle = P.muted; g.font = "11px Public Sans, sans-serif";
-    g.fillText(m.approach ? `Energía cinética: ${f(m.K0, 2)} J → ${f(m.K1, 2)} J (se pierde ${f(m.K0 > 0 ? (1 - m.K1 / m.K0) * 100 : 0, 1)} %, igual a lo que predice e)` : "Con estas velocidades los cuerpos se alejan: no hay choque.", 16, 20);
+    if (m.approach) {
+      g.fillText(`Energía cinética: ${f(m.K0, 2)} J → ${f(m.K1, 2)} J`, 16, 20);
+      g.fillText(`Se pierde ${f(m.K0 > 0 ? (1 - m.K1 / m.K0) * 100 : 0, 1)} %, como predice e; Σp no cambia.`, 16, 36);
+    } else g.fillText("Con estas velocidades los cuerpos se alejan: no hay choque.", 16, 20);
     document.getElementById("t7-col-ro").innerHTML = `
       <div class="ro"><div class="k">v₁' (después)</div><div class="v">${f(m.u1, 2)} <small>m/s</small></div></div>
       <div class="ro"><div class="k">v₂' (después)</div><div class="v">${f(m.u2, 2)} <small>m/s</small></div></div>

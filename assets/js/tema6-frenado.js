@@ -173,6 +173,161 @@ window.Tema6 = (() => {
     document.getElementById("t6-csv").addEventListener("click", exportCSV);
     UI.onTheme(makeCharts);
     makeCharts();
+    initDrive();
+  }
+
+  /* ---------- Exploración interactiva: manejar y frenar ---------- */
+  const drv = { v: 0, x: 0, gas: false, brk: false, auto: null, Erec: 0, Eheat: 0, Econv: 0, Euse: 0, Prec: 0, Pb: 0, Pcap: 0, ev: null, lastEv: null, ctx: null, cssW: 0, w: 0, h: 0, raf: 0, last: 0, visible: false };
+  const P_DRIVE = 150000; // potencia de tracción del modelo (W)
+
+  function drvStep(dt) {
+    const car = CARS[c.car.value], m = car.etw * LB;
+    const eta = c.eta.value / 100, Pmax = c.pmax.value * 1000;
+    const gas = drv.auto ? false : drv.gas;
+    const brk = drv.auto ? true : drv.brk;
+    const aB = drv.auto ? drv.auto : c.dbrake.value;
+    const v = drv.v, s = v / MPH;
+    const Frl = v > 0.05 ? (car.A + car.B * s + car.C * s * s) * LBF : 0;
+    const Fm = gas && v < 50 ? Math.min(m * 3, P_DRIVE / Math.max(v, 1)) : 0;
+    const Fb = brk && v > 0.01 ? m * aB : 0;
+    const Pb = Fb * v; // potencia de frenado
+    const fadeK = c.fade.checked ? Math.min(1, (v * 3.6) / FADE_KMH) : 1;
+    const cap = Math.min(Pb, Pmax) * fadeK; // lo que absorbe el motor
+    drv.Pb = Pb; drv.Pcap = cap; drv.Prec = cap * eta;
+    drv.Erec += cap * eta * dt; drv.Econv += cap * (1 - eta) * dt; drv.Eheat += (Pb - cap) * dt; drv.Euse += (Fm * v * dt) / ETA_DRIVE;
+    // frenada en curso: energía de frenado y cuánto volvió
+    if (brk && v > 0.05) {
+      if (!drv.ev) drv.ev = { v0: v, Eb: 0, Er: 0 };
+      drv.ev.Eb += Pb * dt; drv.ev.Er += cap * eta * dt;
+    } else if (drv.ev) { drv.lastEv = drv.ev; drv.ev = null; }
+    drv.v = Math.max(0, v + ((Fm - Fb - Frl) / m) * dt);
+    if (drv.v === 0 && drv.auto) { drv.auto = null; if (drv.ev) { drv.lastEv = drv.ev; drv.ev = null; } }
+    drv.x += drv.v * dt;
+  }
+
+  function drvDraw() {
+    const cv = document.getElementById("t6-drive");
+    const cw = cv.parentElement.clientWidth;
+    if (!drv.ctx || drv.cssW !== cw) { const r = UI.fitCanvas(cv, cw < 600 ? 1.5 : 0.4); Object.assign(drv, { ctx: r.ctx, w: r.w, h: r.h, cssW: cw }); }
+    const { ctx, w, h } = drv, P = UI.palette(), f = UI.fmt;
+    if (w < 80) return;
+    const car = CARS[c.car.value], m = car.etw * LB;
+    const narrow = w < 600;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = P.panel2; ctx.fillRect(0, 0, w, h);
+    // ---- escena (arriba en celular, izquierda en escritorio)
+    const sw = narrow ? w : w * 0.58, sh = narrow ? h * 0.42 : h;
+    const roadY = sh * 0.72, pxm = 9; // píxeles por metro
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, sw, sh); ctx.clip();
+    ctx.strokeStyle = P.line; ctx.lineWidth = 1;
+    // postes de referencia cada 20 m (paralaje)
+    for (let k = -1; k < sw / (20 * pxm * 0.6) + 2; k++) {
+      const px = k * 20 * pxm * 0.6 - ((drv.x * pxm * 0.6) % (20 * pxm * 0.6));
+      ctx.fillStyle = P.line; ctx.fillRect(px, roadY - 70, 3, 70);
+      ctx.beginPath(); ctx.arc(px + 1.5, roadY - 72, 5, 0, 7); ctx.fill();
+    }
+    ctx.fillStyle = P.muted; ctx.fillRect(0, roadY, sw, 4);
+    ctx.fillStyle = P.line; ctx.fillRect(0, roadY + 4, sw, sh - roadY - 4);
+    for (let k = -1; k < sw / 60 + 2; k++) { const px = k * 60 - ((drv.x * pxm) % 60); ctx.fillStyle = P.faint; ctx.fillRect(px, roadY + 18, 30, 3); }
+    // auto (vista lateral)
+    const cx = sw * 0.42, L = Math.min(150, sw * 0.4), H = L * 0.27, wr = L * 0.11;
+    const by = roadY - wr * 1.0;
+    ctx.fillStyle = P.accent;
+    ctx.beginPath();
+    ctx.moveTo(cx - L / 2, by); ctx.lineTo(cx - L / 2, by - H * 0.55); ctx.quadraticCurveTo(cx - L * 0.45, by - H * 0.7, cx - L * 0.3, by - H * 0.72);
+    ctx.lineTo(cx - L * 0.15, by - H * 1.25); ctx.lineTo(cx + L * 0.15, by - H * 1.25); ctx.lineTo(cx + L * 0.3, by - H * 0.72);
+    ctx.quadraticCurveTo(cx + L * 0.5, by - H * 0.62, cx + L / 2, by - H * 0.3); ctx.lineTo(cx + L / 2, by); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = P.panel2; ctx.globalAlpha = 0.55;
+    ctx.beginPath(); ctx.moveTo(cx - L * 0.12, by - H * 1.15); ctx.lineTo(cx + L * 0.13, by - H * 1.15); ctx.lineTo(cx + L * 0.25, by - H * 0.76); ctx.lineTo(cx - L * 0.25, by - H * 0.76); ctx.closePath(); ctx.fill();
+    ctx.globalAlpha = 1;
+    // luces de freno
+    if ((drv.brk || drv.auto) && drv.v > 0.05) { ctx.fillStyle = P.danger; ctx.fillRect(cx - L / 2 - 2, by - H * 0.5, 5, H * 0.22); }
+    const rot = drv.x / (wr / pxm);
+    [cx - L * 0.3, cx + L * 0.3].forEach((wx) => {
+      ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(wx, roadY - wr, wr, 0, 7); ctx.fill();
+      ctx.strokeStyle = P.panel2; ctx.lineWidth = 2;
+      for (let k = 0; k < 4; k++) { const a = rot + (k * Math.PI) / 2; ctx.beginPath(); ctx.moveTo(wx, roadY - wr); ctx.lineTo(wx + Math.cos(a) * wr * 0.75, roadY - wr + Math.sin(a) * wr * 0.75); ctx.stroke(); }
+    });
+    // flujo de energía sobre el auto
+    if (drv.Pb > 100) {
+      UI.arrow(ctx, cx, by - H * 1.4, cx, by - H * 1.4 - 26, P.green, 3, 9);
+      ctx.fillStyle = P.green; ctx.font = "600 11.5px Public Sans, sans-serif"; ctx.textAlign = "center";
+      ctx.fillText(`a la batería ${f(drv.Prec / 1000, 0)} kW`, cx, by - H * 1.4 - 32);
+      if (drv.Pb - drv.Pcap > 100) { ctx.fillStyle = P.danger; ctx.fillText(`calor en frenos ${f((drv.Pb - drv.Pcap) / 1000, 0)} kW`, cx, roadY + 38); }
+      ctx.textAlign = "left";
+    }
+    ctx.restore();
+    ctx.strokeStyle = P.line; ctx.lineWidth = 1; ctx.beginPath(); if (narrow) { ctx.moveTo(0, sh); ctx.lineTo(w, sh); } else { ctx.moveTo(sw, 0); ctx.lineTo(sw, h); } ctx.stroke();
+    ctx.fillStyle = P.text; ctx.font = "700 22px JetBrains Mono, monospace"; ctx.fillText(`${f(drv.v * 3.6, 0)} km/h`, 14, 30);
+    ctx.fillStyle = P.muted; ctx.font = "11px Public Sans, sans-serif"; ctx.fillText(car.name, 14, 48);
+
+    // ---- panel de energía
+    const ox = narrow ? 14 : sw + 18, oy = narrow ? sh + 16 : 18, pw = narrow ? w - 28 : w - sw - 34;
+    const K = 0.5 * m * drv.v * drv.v;
+    const Eref = Math.max(0.5 * m * (130 / 3.6) ** 2, drv.Erec + drv.Eheat + drv.Econv, K);
+    const rows = [
+      ["Energía cinética ½mv²", K, P.violet],
+      ["Volvió a la batería", drv.Erec, P.green],
+      ["Pérdidas del motor", drv.Econv, P.amber],
+      ["Calor en los frenos", drv.Eheat, P.danger],
+    ];
+    ctx.fillStyle = P.muted; ctx.font = "700 11px Public Sans, sans-serif"; ctx.fillText("ENERGÍA (Wh)", ox, oy + 8);
+    rows.forEach(([lbl, val, col], i) => {
+      const y = oy + 22 + i * 34;
+      ctx.fillStyle = P.text; ctx.font = "12px Public Sans, sans-serif"; ctx.fillText(lbl, ox, y + 8);
+      ctx.textAlign = "right"; ctx.font = "12px JetBrains Mono, monospace"; ctx.fillText(f(val / 3600, 1), ox + pw, y + 8); ctx.textAlign = "left";
+      ctx.fillStyle = P.line; ctx.fillRect(ox, y + 14, pw, 7);
+      ctx.fillStyle = col; ctx.fillRect(ox, y + 14, Math.min(pw, (val / Eref) * pw), 7);
+    });
+    // medidor de potencia de frenado contra el límite del motor
+    const my = oy + 22 + 4 * 34 + 6;
+    ctx.fillStyle = P.muted; ctx.font = "700 11px Public Sans, sans-serif"; ctx.fillText("POTENCIA DE FRENADO (kW)", ox, my + 8);
+    const Pscale = Math.max(150000, drv.Pb) * 1.05;
+    ctx.fillStyle = P.line; ctx.fillRect(ox, my + 16, pw, 12);
+    ctx.fillStyle = P.green; ctx.fillRect(ox, my + 16, (drv.Pcap / Pscale) * pw, 12);
+    ctx.fillStyle = P.danger; ctx.fillRect(ox + (drv.Pcap / Pscale) * pw, my + 16, ((drv.Pb - drv.Pcap) / Pscale) * pw, 12);
+    const lx = ox + ((c.pmax.value * 1000) / Pscale) * pw;
+    ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(lx, my + 12); ctx.lineTo(lx, my + 32); ctx.stroke();
+    ctx.fillStyle = P.text; ctx.font = "11px JetBrains Mono, monospace"; ctx.textAlign = lx > ox + pw - 60 ? "right" : "left";
+    ctx.fillText(`límite ${c.pmax.value}`, lx + (ctx.textAlign === "right" ? -4 : 4), my + 44); ctx.textAlign = "left";
+
+    const ev = drv.ev || drv.lastEv;
+    document.getElementById("t6-drive-ro").innerHTML = `
+      <div class="ro"><div class="k">Potencia de frenado P = F·v</div><div class="v">${f(drv.Pb / 1000, 1)} <small>kW</small></div></div>
+      <div class="ro"><div class="k">${drv.ev ? "Frenada en curso" : "Última frenada"}: recuperado</div><div class="v" style="color:var(--green)">${ev && ev.Eb > 0 ? f((ev.Er / ev.Eb) * 100, 0) : "—"} <small>% de su energía</small></div></div>
+      <div class="ro"><div class="k">Desde</div><div class="v">${ev ? f(ev.v0 * 3.6, 0) : "—"} <small>km/h</small></div></div>
+      <div class="ro"><div class="k">Energía consumida al acelerar</div><div class="v">${f(drv.Euse / 3600, 1)} <small>Wh</small></div></div>`;
+  }
+
+  function drvLoop(now) {
+    drv.raf = requestAnimationFrame(drvLoop);
+    const dt = Math.min(0.05, (now - drv.last) / 1000 || 0); drv.last = now;
+    if (!drv.visible) return;
+    for (let k = 0; k < 4; k++) drvStep(dt / 4);
+    drvDraw();
+  }
+
+  function initDrive() {
+    c.dbrake = UI.bindRange("t6-dbrake", (v) => `${UI.fmt(v, 1)} m/s²`);
+    const hold = (id, key) => {
+      const b = document.getElementById(id);
+      const on = (e) => { e.preventDefault(); drv.auto = null; drv[key] = true; b.setAttribute("aria-pressed", "true"); };
+      const off = () => { drv[key] = false; b.setAttribute("aria-pressed", "false"); };
+      b.addEventListener("pointerdown", on); ["pointerup", "pointerleave", "pointercancel"].forEach((ev) => b.addEventListener(ev, off));
+    };
+    hold("t6-gas", "gas"); hold("t6-brk", "brk");
+    const cv = document.getElementById("t6-drive");
+    cv.addEventListener("keydown", (e) => { if (e.key === "ArrowUp") { drv.gas = true; drv.auto = null; e.preventDefault(); } if (e.key === "ArrowDown") { drv.brk = true; drv.auto = null; e.preventDefault(); } });
+    cv.addEventListener("keyup", (e) => { if (e.key === "ArrowUp") drv.gas = false; if (e.key === "ArrowDown") drv.brk = false; });
+    document.querySelectorAll("[data-t6demo]").forEach((b) => b.addEventListener("click", () => {
+      drv.v = 100 / 3.6; drv.auto = +b.dataset.t6demo; drv.ev = null; drv.lastEv = null;
+      c.dbrake.set(drv.auto, true);
+    }));
+    const io = new IntersectionObserver((en) => { drv.visible = en[0].isIntersecting; }, { threshold: 0.05 });
+    io.observe(cv);
+    window.addEventListener("resize", () => { drv.cssW = 0; });
+    drvDraw();
+    drv.raf = requestAnimationFrame(drvLoop);
   }
 
   return { init, simulate, CARS, CYCLES };

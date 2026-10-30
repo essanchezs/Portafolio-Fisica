@@ -220,6 +220,156 @@ window.Tema8 = (() => {
     io.observe(document.getElementById("t8-diagram"));
     build();
     requestAnimationFrame(frame);
+    initPlay();
+  }
+
+  /* ---------- Exploración interactiva: apuntar el satélite con la rueda ---------- */
+  const WARP = 20, TAU_M = 0.2, TAU_D = 0.05; // tiempo ×20, torque del motor (N·m), perturbación exagerada (N·m)
+  const pl = { th: 0, ws: 0, ww: 0, target: 1.1, left: false, right: false, auto: false, dump: false, sat: false, tm: 0, ctx: null, cssW: 0, w: 0, h: 0, last: 0, visible: false, stars: null, onTarget: 0 };
+
+  const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
+
+  function plStep(dt) {
+    const Is = c.Is.value, Iw = c.Iw.value, wmax = (c.wmax.value * 2 * Math.PI) / 60;
+    const dist = c.dist.checked ? TAU_D : 0;
+    // torque que el motor aplica a la rueda (+); el satélite recibe el opuesto
+    let tm = 0, tExt = dist;
+    if (pl.dump) {
+      // descarga: el motor frena la rueda y las barras magnéticas dan al satélite el torque contrario
+      tm = -Math.sign(pl.ww) * Math.min(TAU_M, (Iw * Math.abs(pl.ww)) / dt);
+      tExt += tm; // torque externo que cancela la reacción sobre el cuerpo
+      if (Math.abs(pl.ww) < 1) pl.dump = false;
+    } else if (pl.auto) {
+      const e = wrap(pl.target - pl.th), wn = 0.04, z = 0.9;
+      const Tdes = Is * (wn * wn * e - 2 * z * wn * pl.ws) - dist; // torque deseado sobre el cuerpo
+      tm = Math.max(-TAU_M, Math.min(TAU_M, -Tdes));
+    } else {
+      if (pl.left) tm -= TAU_M; // la rueda gira en un sentido y el satélite en el otro
+      if (pl.right) tm += TAU_M;
+    }
+    // límite de la rueda: si ya está a ω_max no puede acelerar más
+    pl.sat = false;
+    if ((pl.ww >= wmax && tm > 0) || (pl.ww <= -wmax && tm < 0)) { tm = 0; pl.sat = true; }
+    pl.tm = tm;
+    pl.ww += (tm / Iw) * dt;
+    pl.ww = Math.max(-wmax, Math.min(wmax, pl.ww));
+    pl.ws += ((-tm + tExt) / Is) * dt;
+    pl.th += pl.ws * dt;
+  }
+
+  function plDraw() {
+    const cv = document.getElementById("t8-play");
+    const cw = cv.parentElement.clientWidth;
+    if (!pl.ctx || pl.cssW !== cw) { const r = UI.fitCanvas(cv, cw < 600 ? 1.45 : 0.48); Object.assign(pl, { ctx: r.ctx, w: r.w, h: r.h, cssW: cw }); pl.stars = null; }
+    const { ctx, w, h } = pl, P = UI.palette(), f = UI.fmt;
+    if (w < 80) return;
+    const narrow = w < 600;
+    const Is = c.Is.value, Iw = c.Iw.value, wmax = (c.wmax.value * 2 * Math.PI) / 60;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = P.panel2; ctx.fillRect(0, 0, w, h);
+    const sw = narrow ? w : w * 0.6, sh = narrow ? h * 0.52 : h;
+    const cx = sw / 2, cy = sh / 2 + 6, Rt = Math.min(sw, sh) * 0.42;
+    if (!pl.stars) { let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647); pl.stars = Array.from({ length: 90 }, () => [rnd() * sw, rnd() * sh, rnd() * 1.4 + 0.3]); }
+    ctx.fillStyle = P.faint; pl.stars.forEach(([x, y, r]) => { ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); });
+    // objetivo
+    const tx = cx + Rt * Math.cos(-pl.target), ty = cy + Rt * Math.sin(-pl.target);
+    const err = wrap(pl.target - pl.th), ok = Math.abs(err) < (1 * Math.PI) / 180 && Math.abs(pl.ws) < 0.002;
+    ctx.strokeStyle = ok ? P.green : P.amber; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(tx, ty, 12, 0, 7); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(tx - 18, ty); ctx.lineTo(tx - 6, ty); ctx.moveTo(tx + 6, ty); ctx.lineTo(tx + 18, ty); ctx.moveTo(tx, ty - 18); ctx.lineTo(tx, ty - 6); ctx.moveTo(tx, ty + 6); ctx.lineTo(tx, ty + 18); ctx.stroke();
+    ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(tx, ty, 2.5, 0, 7); ctx.fill();
+    ctx.fillStyle = ok ? P.green : P.amber; ctx.font = "600 11px Public Sans, sans-serif";
+    const lblRight = tx < sw - 80;
+    ctx.textAlign = lblRight ? "left" : "right";
+    ctx.fillText("objetivo", tx + (lblRight ? 22 : -22), ty + 4); ctx.textAlign = "left";
+    // línea de apuntado
+    ctx.setLineDash([4, 6]); ctx.strokeStyle = P.accent; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Rt * 1.1 * Math.cos(-pl.th), cy + Rt * 1.1 * Math.sin(-pl.th)); ctx.stroke(); ctx.setLineDash([]);
+    // satélite
+    const S = Math.min(sw, sh) * 0.1;
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(-pl.th);
+    ctx.fillStyle = P.accent; ctx.globalAlpha = 0.8;
+    ctx.fillRect(-S * 0.5, -S * 2.3, S, S * 1.5); ctx.fillRect(-S * 0.5, S * 0.8, S, S * 1.5);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = P.panel; ctx.strokeStyle = P.text; ctx.lineWidth = 2;
+    ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(-S * 0.8, -S * 0.8, S * 1.6, S * 1.6, 5); else ctx.rect(-S * 0.8, -S * 0.8, S * 1.6, S * 1.6); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = P.text; ctx.fillRect(S * 0.8, -S * 0.22, S * 0.6, S * 0.44); // telescopio
+    // rueda (se dibuja más lenta para que se vea)
+    ctx.strokeStyle = pl.sat ? P.danger : P.amber; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(0, 0, S * 0.45, 0, 7); ctx.stroke();
+    pl.wAng = (pl.wAng || 0) + (pl.ww / 60) * 0.016;
+    for (let k = 0; k < 3; k++) { const a = pl.wAng + (k * 2 * Math.PI) / 3; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * S * 0.45, Math.sin(a) * S * 0.45); ctx.stroke(); }
+    ctx.restore();
+    ctx.fillStyle = P.muted; ctx.font = "11px Public Sans, sans-serif"; ctx.fillText(`tiempo ×${WARP}`, 12, 18);
+    if (ok) { ctx.fillStyle = P.green; ctx.font = "700 13px Public Sans, sans-serif"; ctx.fillText("✓ apuntando al objetivo", 12, 36); }
+    if (pl.sat) { ctx.fillStyle = P.danger; ctx.font = "700 13px Public Sans, sans-serif"; ctx.fillText("Rueda saturada: ya no puede dar más torque", 12, sh - 12); }
+
+    // ---- panel de momento angular
+    const ox = narrow ? 14 : sw + 16, oy = narrow ? sh + 12 : 20, pw = narrow ? w - 28 : w - sw - 30;
+    const Ls = Is * pl.ws, Lw = Iw * pl.ww, Lmax = Iw * wmax;
+    ctx.fillStyle = P.muted; ctx.font = "700 11px Public Sans, sans-serif"; ctx.fillText("VELOCIDAD DE LA RUEDA", ox, oy + 8);
+    const rpm = RPM(pl.ww), frac = pl.ww / wmax;
+    const mid = ox + pw / 2;
+    ctx.fillStyle = P.line; ctx.fillRect(ox, oy + 18, pw, 12);
+    ctx.fillStyle = Math.abs(frac) > 0.97 ? P.danger : P.amber;
+    ctx.fillRect(frac >= 0 ? mid : mid + frac * (pw / 2), oy + 18, Math.abs(frac) * (pw / 2), 12);
+    ctx.fillStyle = P.text; ctx.fillRect(mid - 1, oy + 14, 2, 20);
+    ctx.font = "12px JetBrains Mono, monospace"; ctx.fillText(`${f(rpm, 0)} rpm`, ox, oy + 48);
+    ctx.textAlign = "right"; ctx.fillStyle = P.muted; ctx.fillText(`máx ±${f(c.wmax.value, 0)}`, ox + pw, oy + 48); ctx.textAlign = "left";
+
+    const ly = oy + 74;
+    ctx.fillStyle = P.muted; ctx.font = "700 11px Public Sans, sans-serif"; ctx.fillText("MOMENTO ANGULAR (N·m·s)", ox, ly);
+    const sc = (pw / 2) / Math.max(Lmax, Math.abs(Ls), Math.abs(Lw), 1e-6);
+    [["satélite", Ls, P.accent], ["rueda", Lw, P.amber], ["total", Ls + Lw, P.green]].forEach(([lbl, L, col], i) => {
+      const y = ly + 12 + i * 30;
+      ctx.fillStyle = P.line; ctx.fillRect(ox, y, pw, 9);
+      ctx.fillStyle = col; ctx.fillRect(L >= 0 ? mid : mid + L * sc, y, Math.abs(L) * sc, 9);
+      ctx.fillStyle = P.text; ctx.fillRect(mid - 1, y - 3, 2, 15);
+      ctx.font = "11.5px Public Sans, sans-serif"; ctx.fillText(lbl, ox, y + 22);
+      ctx.textAlign = "right"; ctx.font = "11.5px JetBrains Mono, monospace"; ctx.fillText(f(L, 2), ox + pw, y + 22); ctx.textAlign = "left";
+    });
+    const ny = ly + 12 + 3 * 30 + 8;
+    ctx.fillStyle = P.muted; ctx.font = "11px Public Sans, sans-serif";
+    const note = c.dist.checked || pl.dump ? "Hay torque externo: el total cambia." : "Sin torque externo: el total no cambia.";
+    ctx.fillText(note, ox, ny);
+
+    document.getElementById("t8-play-ro").innerHTML = `
+      <div class="ro"><div class="k">Error de apuntado</div><div class="v" style="color:var(${ok ? "--green" : "--text"})">${f((err * 180) / Math.PI, 1)} <small>°</small></div></div>
+      <div class="ro"><div class="k">ω del satélite</div><div class="v">${f((pl.ws * 180) / Math.PI, 3)} <small>°/s</small></div></div>
+      <div class="ro"><div class="k">Torque del motor</div><div class="v">${f(pl.tm * 1000, 0)} <small>mN·m</small></div></div>
+      <div class="ro"><div class="k">Rueda</div><div class="v" style="color:var(${pl.sat ? "--danger" : "--text"})">${f(Math.abs(frac) * 100, 0)} <small>% de ω_max</small></div></div>`;
+  }
+
+  function plLoop(now) {
+    requestAnimationFrame(plLoop);
+    const dt = Math.min(0.05, (now - pl.last) / 1000 || 0); pl.last = now;
+    if (!pl.visible) return;
+    const steps = 10, h = (dt * WARP) / steps;
+    for (let k = 0; k < steps; k++) plStep(h);
+    plDraw();
+  }
+
+  function initPlay() {
+    c.dist = document.getElementById("t8-dist");
+    const autoBtn = document.getElementById("t8-auto");
+    const setAuto = (v) => { pl.auto = v; autoBtn.setAttribute("aria-pressed", String(v)); };
+    const hold = (id, key) => {
+      const b = document.getElementById(id);
+      b.addEventListener("pointerdown", (e) => { e.preventDefault(); setAuto(false); pl.dump = false; pl[key] = true; b.setAttribute("aria-pressed", "true"); });
+      ["pointerup", "pointerleave", "pointercancel"].forEach((ev) => b.addEventListener(ev, () => { pl[key] = false; b.setAttribute("aria-pressed", "false"); }));
+    };
+    hold("t8-left", "left"); hold("t8-right", "right");
+    autoBtn.addEventListener("click", () => { pl.dump = false; setAuto(!pl.auto); });
+    document.getElementById("t8-dump").addEventListener("click", () => { setAuto(false); pl.dump = true; });
+    document.getElementById("t8-new").addEventListener("click", () => { pl.target = wrap(pl.th + (Math.random() < 0.5 ? -1 : 1) * (0.6 + Math.random() * 1.8)); });
+    const cv = document.getElementById("t8-play");
+    cv.addEventListener("keydown", (e) => { if (e.key === "ArrowLeft") { pl.left = true; setAuto(false); e.preventDefault(); } if (e.key === "ArrowRight") { pl.right = true; setAuto(false); e.preventDefault(); } });
+    cv.addEventListener("keyup", (e) => { if (e.key === "ArrowLeft") pl.left = false; if (e.key === "ArrowRight") pl.right = false; });
+    const io = new IntersectionObserver((en) => { pl.visible = en[0].isIntersecting; }, { threshold: 0.05 });
+    io.observe(cv);
+    window.addEventListener("resize", () => { pl.cssW = 0; });
+    plDraw();
+    requestAnimationFrame(plLoop);
   }
 
   return { init };

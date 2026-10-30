@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-  <link rel="stylesheet" href="assets/css/styles.css?v=27" />
+  <link rel="stylesheet" href="assets/css/styles.css?v=29" />
 
   <script>
     // Aplica el tema guardado antes de pintar para evitar parpadeo
@@ -1484,6 +1484,26 @@
             <p class="data-note" id="t6-carnote" style="margin-top:12px"></p>
             </div>
 
+            <div class="playground">
+              <span class="play-badge">Exploración interactiva · complemento</span>
+              <p class="play-hint">Maneje el auto: mantenga presionado Acelerar o Frenar (o use ↑ y ↓ con la escena seleccionada). Usa el vehículo, la eficiencia y la potencia elegidos arriba.</p>
+              <div class="controls" style="margin-bottom:10px">
+                <div class="ctrl">
+                  <label for="t6-dbrake">Desaceleración al frenar <output for="t6-dbrake"></output></label>
+                  <input type="range" id="t6-dbrake" min="0.5" max="8" step="0.1" value="2" />
+                </div>
+                <div class="ctrl" style="flex-direction:row; flex-wrap:wrap; gap:8px; align-items:flex-end">
+                  <button class="btn small primary" id="t6-gas">Acelerar ↑</button>
+                  <button class="btn small" id="t6-brk">Frenar ↓</button>
+                  <button class="btn small" data-t6demo="1">Frenada suave desde 100 km/h</button>
+                  <button class="btn small" data-t6demo="6">Frenada fuerte desde 100 km/h</button>
+                </div>
+              </div>
+              <div class="canvas-wrap"><canvas id="t6-drive" tabindex="0" aria-label="Auto eléctrico que acelera y frena, con la energía recuperada y la perdida en calor"></canvas></div>
+              <div class="readouts" id="t6-drive-ro"></div>
+              <p class="play-note">En cada instante la potencia de frenado es \(P=F\,v=m\,a\,v\). Si supera lo que acepta el motor, el exceso va a las pastillas como calor. Por eso una frenada fuerte a alta velocidad recupera un porcentaje menor que una suave, aunque la energía cinética inicial \(\tfrac12mv^2\) sea la misma.</p>
+            </div>
+
             <details class="more">
               <summary>Qué observar</summary>
               <div class="callout">
@@ -1909,6 +1929,26 @@
             </div>
             <p><strong>Resultado:</strong> la rueda llega a 2500 rpm, menos de la mitad de su máximo, así que la maniobra es posible. En cambio, la perturbación la llena en unos 3,6 días: el software tiene que programar una descarga magnética antes de eso. Si se pide el mismo giro en 30 s, la rueda tendría que llegar a 10 000 rpm y no alcanza.</p>
             </div>
+
+            <div class="playground">
+              <span class="play-badge">Exploración interactiva · complemento</span>
+              <p class="play-hint">Apunte el telescopio a la estrella marcada usando solo la rueda: mantenga presionados los botones de giro (o ← y →). Usa la inercia del satélite, la de la rueda y la velocidad máxima elegidas arriba. Tiempo acelerado ×20.</p>
+              <div class="controls" style="margin-bottom:10px">
+                <div class="ctrl" style="flex-direction:row; flex-wrap:wrap; gap:8px; align-items:flex-end">
+                  <button class="btn small" id="t8-left">↺ Girar</button>
+                  <button class="btn small" id="t8-right">Girar ↻</button>
+                  <button class="btn small primary" id="t8-auto" aria-pressed="false">Piloto automático</button>
+                  <button class="btn small" id="t8-dump">Descargar momento (barras magnéticas)</button>
+                  <button class="btn small" id="t8-new">Nuevo objetivo</button>
+                </div>
+                <div class="ctrl" style="justify-content:flex-end">
+                  <label class="toggle"><input type="checkbox" id="t8-dist" /> <span>Perturbación externa constante (exagerada: 50 mN·m)</span></label>
+                </div>
+              </div>
+              <div class="canvas-wrap"><canvas id="t8-play" tabindex="0" aria-label="Satélite que se orienta con una rueda de reacción hacia una estrella objetivo"></canvas></div>
+              <div class="readouts" id="t8-play-ro"></div>
+              <p class="play-note">El piloto automático es la misma ley de control que usan los satélites: calcula el torque que necesita el cuerpo y se lo pide al motor de la rueda, con el signo contrario. Active la perturbación y mantenga el satélite apuntando: la rueda acumula el momento que entra desde afuera hasta saturarse. A partir de ahí, solo la descarga magnética, que es un torque externo, puede vaciarla.</p>
+            </div>
           </div>
         </div>
 
@@ -2093,6 +2133,46 @@
             <div class="table-wrap" id="t9-table" style="margin-top:14px"></div>
             </div>
 
+            <div class="playground">
+              <span class="play-badge">Exploración interactiva · complemento</span>
+              <p class="play-hint">Diseñe su propia asistencia gravitatoria: elija el planeta, la velocidad de llegada, qué tan cerca pasa y por qué lado.</p>
+              <div class="controls" style="margin-bottom:10px">
+                <div class="ctrl">
+                  <label for="t9-pl">Planeta</label>
+                  <select id="t9-pl">
+                    <option value="jup" selected>Júpiter (V = 13,1 km/s)</option>
+                    <option value="sat">Saturno (V = 9,7 km/s)</option>
+                    <option value="nep">Neptuno (V = 5,4 km/s)</option>
+                  </select>
+                </div>
+                <div class="ctrl">
+                  <label for="t9-vinf">Rapidez de llegada respecto al planeta v∞ <output for="t9-vinf"></output></label>
+                  <input type="range" id="t9-vinf" min="2" max="20" step="0.1" value="9" />
+                </div>
+                <div class="ctrl">
+                  <label for="t9-rp">Distancia mínima al centro r_p <output for="t9-rp"></output></label>
+                  <input type="range" id="t9-rp" min="1.1" max="40" step="0.1" value="10" />
+                </div>
+                <div class="ctrl">
+                  <label for="t9-phi">Dirección de llegada (respecto al movimiento del planeta) <output for="t9-phi"></output></label>
+                  <input type="range" id="t9-phi" min="0" max="355" step="5" value="135" />
+                </div>
+                <div class="ctrl">
+                  <label for="t9-side">Por dónde pasa</label>
+                  <select id="t9-side">
+                    <option value="back" selected>Por detrás del planeta</option>
+                    <option value="front">Por delante del planeta</option>
+                  </select>
+                </div>
+                <div class="ctrl" style="justify-content:flex-end">
+                  <button class="btn small primary" id="t9-fly">↻ Repetir el paso</button>
+                </div>
+              </div>
+              <div class="canvas-wrap"><canvas id="t9-play" aria-label="Trayectoria hiperbólica de una sonda alrededor de un planeta y suma de velocidades en el marco del Sol"></canvas></div>
+              <div class="readouts" id="t9-play-ro"></div>
+              <p class="play-note">Izquierda: en el marco del planeta la sonda describe una hipérbola y sale con la <strong>misma rapidez</strong> con que llegó (la energía se conserva); solo gira un ángulo \(\delta\). Derecha: en el marco del Sol se suma la velocidad del planeta, \(\vec v_\odot=\vec V_p+\vec v_{\text{rel}}\). Si la velocidad relativa gira hacia \(\vec V_p\) (paso por detrás), la flecha resultante crece; si gira en contra, se achica.</p>
+            </div>
+
             <details class="more">
               <summary>Qué observar</summary>
               <div class="callout">
@@ -2191,19 +2271,19 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-<script defer src="assets/js/ui.js?v=27"></script>
-<script defer src="assets/js/conexiones.js?v=27"></script>
-<script defer src="assets/js/tema1-dron.js?v=27"></script>
-<script defer src="assets/js/tema2-salto.js?v=27"></script>
-<script defer src="assets/js/tema3-habitat.js?v=27"></script>
-<script defer src="assets/js/tema4-llantas.js?v=27"></script>
-<script defer src="assets/js/tema5-haptico.js?v=27"></script>
-<script defer src="assets/data/ciclos-epa.js?v=27"></script>
-<script defer src="assets/data/voyager.js?v=27"></script>
-<script defer src="assets/js/tema6-frenado.js?v=27"></script>
-<script defer src="assets/js/tema7-rebote.js?v=27"></script>
-<script defer src="assets/js/tema8-ruedas.js?v=27"></script>
-<script defer src="assets/js/tema9-voyager.js?v=27"></script>
-<script defer src="assets/js/main.js?v=27"></script>
+<script defer src="assets/js/ui.js?v=29"></script>
+<script defer src="assets/js/conexiones.js?v=29"></script>
+<script defer src="assets/js/tema1-dron.js?v=29"></script>
+<script defer src="assets/js/tema2-salto.js?v=29"></script>
+<script defer src="assets/js/tema3-habitat.js?v=29"></script>
+<script defer src="assets/js/tema4-llantas.js?v=29"></script>
+<script defer src="assets/js/tema5-haptico.js?v=29"></script>
+<script defer src="assets/data/ciclos-epa.js?v=29"></script>
+<script defer src="assets/data/voyager.js?v=29"></script>
+<script defer src="assets/js/tema6-frenado.js?v=29"></script>
+<script defer src="assets/js/tema7-rebote.js?v=29"></script>
+<script defer src="assets/js/tema8-ruedas.js?v=29"></script>
+<script defer src="assets/js/tema9-voyager.js?v=29"></script>
+<script defer src="assets/js/main.js?v=29"></script>
 </body>
 </html>
