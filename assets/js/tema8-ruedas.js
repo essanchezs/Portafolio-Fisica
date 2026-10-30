@@ -51,17 +51,17 @@ window.Tema8 = (() => {
   function build() {
     const d = compute();
     const svg = document.getElementById("t8-diagram");
-    const cx = 250, cy = 300;
+    const cx = 250, cy = 272; // las etiquetas quedan fuera del círculo que barre el satélite al girar (r ≈ 166)
     // ---- panel izquierdo: satélite y rueda
     let panel = "";
-    for (let i = 0; i < 4; i++) panel += `<line x1="${cx - 220 + i * 26}" y1="${cy - 40}" x2="${cx - 220 + i * 26}" y2="${cy + 40}" ${s("stroke:var(--panel);stroke-width:2")}/>`;
+    for (let i = 0; i < 4; i++) panel += `<line x1="${cx - 156 + i * 19}" y1="${cy - 33}" x2="${cx - 156 + i * 19}" y2="${cy + 33}" ${s("stroke:var(--panel);stroke-width:2")}/>`;
     let panelR = "";
-    for (let i = 0; i < 4; i++) panelR += `<line x1="${cx + 120 + i * 26}" y1="${cy - 40}" x2="${cx + 120 + i * 26}" y2="${cy + 40}" ${s("stroke:var(--panel);stroke-width:2")}/>`;
+    for (let i = 0; i < 4; i++) panelR += `<line x1="${cx + 98 + i * 19}" y1="${cy - 33}" x2="${cx + 98 + i * 19}" y2="${cy + 33}" ${s("stroke:var(--panel);stroke-width:2")}/>`;
     let spokes = "";
     for (let i = 0; i < 6; i++) { const a = (i * Math.PI) / 3; spokes += `<line x1="${cx}" y1="${cy}" x2="${cx + 40 * Math.cos(a)}" y2="${cy + 40 * Math.sin(a)}" ${s("stroke:var(--amber);stroke-width:3;stroke-linecap:round")}/>`; }
 
     // barras de L
-    const bx = 250, by = 540, bwid = 190;
+    const bx = 250, by = 548, bwid = 190;
     const Lw = d.Iw * Math.min(d.wwPeak, d.wmax), Ls = -Lw;
     const lscale = bwid / Math.max(d.Lmax, Lw, 1e-9);
 
@@ -83,31 +83,30 @@ window.Tema8 = (() => {
       ${txt(20, 78, "ω_s = −(I_w / I_s)·ω_w        τ_rueda = I_w·α_w = −I_s·α_s", mono(13))}
 
       <g id="t8-body">
-        <rect x="${cx - 225}" y="${cy - 44}" width="110" height="88" rx="4" ${s("fill:var(--accent);opacity:.75")}/>${panel}
-        <rect x="${cx + 115}" y="${cy - 44}" width="110" height="88" rx="4" ${s("fill:var(--accent);opacity:.75")}/>${panelR}
-        <line x1="${cx - 115}" y1="${cy}" x2="${cx - 72}" y2="${cy}" ${s("stroke:var(--muted);stroke-width:4")}/>
-        <line x1="${cx + 72}" y1="${cy}" x2="${cx + 115}" y2="${cy}" ${s("stroke:var(--muted);stroke-width:4")}/>
+        <rect x="${cx - 162}" y="${cy - 36}" width="70" height="72" rx="4" ${s("fill:var(--accent);opacity:.75")}/>${panel}
+        <rect x="${cx + 92}" y="${cy - 36}" width="70" height="72" rx="4" ${s("fill:var(--accent);opacity:.75")}/>${panelR}
+        <line x1="${cx - 92}" y1="${cy}" x2="${cx - 72}" y2="${cy}" ${s("stroke:var(--muted);stroke-width:4")}/>
+        <line x1="${cx + 72}" y1="${cy}" x2="${cx + 92}" y2="${cy}" ${s("stroke:var(--muted);stroke-width:4")}/>
         <rect x="${cx - 72}" y="${cy - 72}" width="144" height="144" rx="10" ${s("fill:var(--panel);stroke:var(--text);stroke-width:2.5")}/>
         <line x1="${cx}" y1="${cy - 72}" x2="${cx}" y2="${cy - 100}" ${s("stroke:var(--text);stroke-width:2")}/>
         <circle cx="${cx}" cy="${cy - 106}" r="7" ${s("fill:none;stroke:var(--text);stroke-width:2")}/>
-        ${txt(cx + 14, cy - 102, "antena / telescopio", sans(11))}
       </g>
       <circle cx="${cx}" cy="${cy}" r="46" ${s("fill:none;stroke:var(--amber);stroke-width:3")}/>
       <g id="t8-wheel">${spokes}</g>
       <circle cx="${cx}" cy="${cy}" r="6" ${s("fill:var(--text)")}/>
-      ${txt(cx - 46, cy + 92, "⊙ eje z (sale de la pantalla)", sans(11, "--text", 600))}
+      ${txt(372, 146, "⊙ eje z (sale de la pantalla)", sans(11, "--text", 600))}
       ${arcArrow(cx, cy, 60, -2.6, -0.6, "--amber", true)}
-      ${txt(cx + 80, cy - 58, "ω_w (rueda)", sans(13, "--amber", 700))}
-      ${arcArrow(cx, cy, 140, 2.2, 0.9, "--accent", false)}
-      ${txt(cx + 40, cy + 150, "ω_s (satélite, sentido contrario)", sans(13, "--accent", 700))}
-      ${txt(cx - 230, cy - 104, "τ: motor → rueda", sans(12, "--amber", 700))}
-      ${txt(cx - 230, cy - 88, "−τ: rueda → satélite (3.ª ley)", sans(12, "--accent", 700))}
-      ${txt(cx - 230, cy + 72, "Nada sale del satélite:", sans(11))}
-      ${txt(cx - 230, cy + 87, "las fuerzas del motor son internas.", sans(11))}
+      ${txt(372, 126, "ω_w (rueda) ↻", sans(13, "--amber", 700))}
+      ${arcArrow(cx, cy, 180, 2.25, 0.85, "--accent", false)}
+      ${txt(318, 468, "ω_s (satélite, sentido contrario)", sans(13, "--accent", 700))}
+      ${txt(20, 102, "τ: motor → rueda", sans(12, "--amber", 700))}
+      ${txt(20, 118, "−τ: rueda → satélite (3.ª ley)", sans(12, "--accent", 700))}
+      ${txt(20, 446, "Nada sale del satélite:", sans(11))}
+      ${txt(20, 461, "las fuerzas del motor son internas.", sans(11))}
 
-      ${txt(20, 476, "MOMENTO ANGULAR EN EL PICO DE LA MANIOBRA", "fill:var(--muted);font:600 12px 'Public Sans',sans-serif;letter-spacing:.08em")}
+      ${txt(20, 492, "MOMENTO ANGULAR EN EL PICO DE LA MANIOBRA", "fill:var(--muted);font:600 12px 'Public Sans',sans-serif;letter-spacing:.08em")}
       <line x1="${bx}" y1="${by - 34}" x2="${bx}" y2="${by + 54}" ${s("stroke:var(--text);stroke-width:1.5")}/>
-      ${txt(bx, by + 70, "0", mono(11, "--muted"), "middle")}
+      ${txt(bx, by - 38, "0", mono(11, "--muted"), "middle")}
       <rect x="${bx}" y="${by - 26}" width="${Lw * lscale}" height="18" ${s("fill:var(--amber)")}/>
       ${txt(20, by - 12, "L_rueda", mono(12, "--amber", 600))}
       ${txt(bx + Lw * lscale + 8, by - 12, `+${F(Lw, 3)} N·m·s`, mono(12, "--text"))}
@@ -200,11 +199,11 @@ window.Tema8 = (() => {
     const p = profile(d, forward ? anim.t : 0);
     const thDisp = forward ? p.th : d.ok ? d.th * Math.max(0, 1 - (anim.t - d.T * 1.3) / (d.T * 0.3)) : 0;
     const body = document.getElementById("t8-body");
-    if (body) body.setAttribute("transform", `rotate(${(-thDisp * 180) / Math.PI} 250 300)`);
+    if (body) body.setAttribute("transform", `rotate(${(-thDisp * 180) / Math.PI} 250 272)`);
     const slow = Math.max(1, ((d.Is / d.Iw) * d.th) / (6 * Math.PI)); // la rueda da ~3 vueltas en pantalla
     const wheelAng = (-(d.Is / d.Iw) * thDisp) / slow;
     const wheel = document.getElementById("t8-wheel");
-    if (wheel) wheel.setAttribute("transform", `rotate(${(-wheelAng * 180) / Math.PI} 250 300)`);
+    if (wheel) wheel.setAttribute("transform", `rotate(${(-wheelAng * 180) / Math.PI} 250 272)`);
   }
 
   function init() {
