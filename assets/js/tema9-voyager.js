@@ -50,7 +50,7 @@ window.Tema9 = (() => {
       type: "bar", data: { labels: [], datasets: [] },
       options: {
         plugins: { legend: { position: "top", align: "end" }, tooltip: { callbacks: { label: (it) => `${it.dataset.label}: ${UI.fmt(it.raw, 2)} km/s` } } },
-        scales: { x: { grid: { display: false } }, y: UI.axis("Rapidez respecto al Sol (km/s)", { min: 0 }) },
+        scales: { x: { grid: { display: false }, title: { display: true, text: "Encuentro planetario (sonda · planeta)", font: { weight: "600" } } }, y: UI.axis("Rapidez respecto al Sol (km/s)", { min: 0 }) },
       },
     });
     update();

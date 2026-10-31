@@ -71,7 +71,7 @@ window.Tema6 = (() => {
     const fixW = { afterFit: (sc) => { sc.width = 64; } };
     charts.v = new Chart(document.getElementById("t6-v"), {
       type: "line", data: { datasets: [] },
-      options: opts(UI.axis("", { min: 0, display: false }), UI.axis("Velocidad (km/h)", Object.assign({ min: 0 }, fixW))),
+      options: opts(UI.axis("Tiempo del ciclo t (s)", { min: 0 }), UI.axis("Velocidad (km/h)", Object.assign({ min: 0 }, fixW))),
     });
     charts.p = new Chart(document.getElementById("t6-p"), {
       type: "line", data: { datasets: [] },
@@ -88,7 +88,7 @@ window.Tema6 = (() => {
         plugins: { legend: { position: "top", align: "start" }, tooltip: { callbacks: { label: (it) => `${it.dataset.label}: ${UI.fmt(it.raw * 1000, 0)} Wh` } } },
         scales: {
           x: UI.axis("Energía en el ciclo (kWh)", { stacked: true, min: 0 }),
-          y: { stacked: true, grid: { display: false } },
+          y: { stacked: true, grid: { display: false }, title: { display: true, text: "Flujo de energía", font: { weight: "600" } } },
         },
       },
     });
