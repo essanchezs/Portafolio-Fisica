@@ -9,6 +9,7 @@ window.Tema13 = (() => {
   // PG25 (25 % propilenglicol) a ≈ 35 °C, valores de diseño
   const FLUID = { rho: 1020, cp: 3900, mu: 2.0e-3 };
   const G = 9.81, P0 = 300000; // presión manométrica de salida de la CDU (Pa)
+  const P_ATM = 101325, P_VAP = 5600; // presión atmosférica y de vapor (agua a 35 °C), en Pa
   let c = {}, charts = {}, last = null;
 
   /** Tramos del circuito en orden. share = fracción del caudal total que pasa por un solo conducto del tramo. */
@@ -97,13 +98,16 @@ window.Tema13 = (() => {
     charts.a.update("none");
 
     const f = UI.fmt, cp = r.segs[3], hose = r.segs[2], main = r.segs[0];
+    const pmin = Math.min(...r.pts.map((p) => p.pReal)) + P_ATM;
     document.getElementById("t13-ro").innerHTML = `
       <div class="ro"><div class="k">Caudal necesario Q = P / (ρ·c_p·ΔT)</div><div class="v">${f(r.lpm, 0)} <small>L/min (${f(r.lpm / (r.P / 1000), 2)} L/min por kW)</small></div></div>
       <div class="ro"><div class="k">Caudal por bandeja</div><div class="v">${f(r.lpm / c.n.value, 1)} <small>L/min</small></div></div>
       <div class="ro"><div class="k">v en la tubería principal</div><div class="v">${f(main.v, 2)} <small>m/s (Re ${f(main.Re, 0)})</small></div></div>
       <div class="ro"><div class="k">v en la manguera de una bandeja</div><div class="v">${f(hose.v, 2)} <small>m/s</small></div></div>
       <div class="ro"><div class="k">v en la placa fría</div><div class="v">${f(cp.v, 2)} <small>m/s (Re ${f(cp.Re, 0)}, ${cp.Re < 2300 ? "laminar" : "turbulento"})</small></div></div>
-      <div class="ro"><div class="k">Caída de presión del circuito</div><div class="v">${f(r.loss / 1000, 1)} <small>kPa (${f(r.loss / 1e5, 2)} bar)</small></div></div>`;
+      <div class="ro"><div class="k">Caída de presión del circuito</div><div class="v">${f(r.loss / 1000, 1)} <small>kPa (${f(r.loss / 1e5, 2)} bar)</small></div></div>
+      <div class="ro"><div class="k">Presión absoluta mínima (vapor: 5,6 kPa)</div><div class="v" style="color:var(${pmin > P_VAP ? "--green" : "--danger"})">${pmin > P_VAP ? f(pmin / 1000, 1) : "&lt; 5,6"} <small>kPa · ${pmin > P_VAP ? "sin cavitación" : "¡cavitación! la bomba no alcanza"}</small></div></div>
+      <div class="ro"><div class="k">Chorro de una fuga a la salida de la CDU (Torricelli)</div><div class="v">${f(Math.sqrt((2 * P0) / FLUID.rho), 1)} <small>m/s</small></div></div>`;
     document.getElementById("t13-table").innerHTML = `
       <table class="compare"><thead><tr><th>Tramo</th><th class="num">D (mm)</th><th class="num">A (cm²)</th><th class="num">Q del conducto (L/min)</th><th class="num">v (m/s)</th><th class="num">Re</th><th class="num">Δp por fricción (kPa)</th></tr></thead>
       <tbody>${r.segs.map((s) => `<tr><td>${s.name}</td><td class="num">${f(s.D * 1000, 1)}</td><td class="num">${f(s.A * 1e4, 2)}</td><td class="num">${f(s.q * 60000, 1)}</td><td class="num">${f(s.v, 2)}</td><td class="num">${f(s.Re, 0)}</td><td class="num">${f(s.dp / 1000, 1)}</td></tr>`).join("")}</tbody></table>`;

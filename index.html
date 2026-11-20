@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-  <link rel="stylesheet" href="assets/css/styles.css?v=37" />
+  <link rel="stylesheet" href="assets/css/styles.css?v=39" />
 
   <script>
     // Aplica el tema guardado antes de pintar para evitar parpadeo
@@ -2923,7 +2923,12 @@
             <div class="eq-box">
               $$Q=A_1v_1=A_2v_2\qquad\text{(continuidad)}\qquad\qquad Q_{\text{bandeja}}=\frac{Q}{N}$$
               $$p_1+\tfrac12\rho v_1^2+\rho g z_1=p_2+\tfrac12\rho v_2^2+\rho g z_2+\Delta p_{\text{pérdidas}},\qquad \Delta p_{\text{pérdidas}}=f\,\frac{L}{D}\,\frac{\rho v^2}{2}$$
-              <div class="eq-caption">Bernoulli con pérdidas por fricción (Darcy–Weisbach). \(f=64/Re\) en flujo laminar; \(f=0{,}316\,Re^{-1/4}\) en tubo liso turbulento; \(Re=\rho vD/\mu\).</div>
+              <div class="eq-caption">Bernoulli es la conservación de la energía por unidad de volumen: cada término está en J/m³ (\(\tfrac12\rho v^2\) cinética, \(\rho g z\) potencial, \(p\) trabajo de la presión). Las pérdidas por fricción se calculan con Darcy–Weisbach: \(f=64/Re\) en flujo laminar; \(f=0{,}316\,Re^{-1/4}\) en tubo liso turbulento; \(Re=\rho vD/\mu\).</div>
+            </div>
+            <p>Dos extensiones de Bernoulli que el diseño real no puede ignorar:</p>
+            <div class="eq-box">
+              $\text{Torricelli: } v_{\text{chorro}}=\sqrt{\frac{2\,\Delta p}{\rho}}\ \ \big(=\sqrt{2gh}\ \text{si}\ \Delta p=\rho g h\big)\qquad\qquad \text{Sin cavitación: } p_{\text{abs}}=p_{\text{atm}}+p_{\text{man}}\gt p_{\text{vapor}}$
+              <div class="eq-caption">Con 300 kPa manométricos, una fuga en el circuito lanza un chorro de \(\sqrt{2\cdot300\,000/1020}\approx24\) m/s sobre los servidores. Si en algún punto la presión absoluta baja de la presión de vapor del líquido (≈ 5,6 kPa para agua a 35 °C), se forman burbujas que colapsan y erosionan la bomba: cavitación.</div>
             </div>
           </div>
 
@@ -2955,7 +2960,7 @@
               <div class="cost">
                 <h4>Qué cuesta</h4>
                 <ul>
-                  <li>Bernoulli ideal no alcanza: hay que agregar fricción y pérdidas en codos, conectores rápidos y válvulas.</li>
+                  <li>Bernoulli ideal no alcanza: hay que agregar fricción, la rugosidad de cada material (que sube \(f\)) y las pérdidas en codos, conectores rápidos y válvulas.</li>
                   <li>La viscosidad del glicol cambia con la temperatura, y con ella \(Re\) y \(f\).</li>
                   <li>Un centro de datos real tiene cientos de ramas en paralelo: es una red hidráulica que se resuelve numéricamente.</li>
                 </ul>
@@ -3017,7 +3022,7 @@
               paralelo. <b>Circuito (supuesto):</b> 10 m de tubería principal de 50 mm de ida y otros 10 de vuelta; manifold vertical de
               40 mm y 2 m de alto; manguera de 9,5 mm (3/8") y 1 m por bandeja, de ida y de vuelta; placa fría con 0,8 cm² de sección
               de paso en microcanales de 0,8 mm de diámetro hidráulico y 15 cm de largo. Salida de la CDU a 300 kPa manométricos.
-              <b>Simplificaciones:</b> reparto uniforme entre bandejas, tubos lisos, sin pérdidas localizadas en codos y conectores.
+              <b>Simplificaciones:</b> reparto uniforme entre bandejas, tubos lisos (sin rugosidad), sin pérdidas localizadas en codos y conectores. Presión atmosférica 101,3 kPa; presión de vapor 5,6 kPa (agua a 35 °C, referencia conservadora para el PG25).
             </div>
             </details>
             <details class="more">
@@ -3029,7 +3034,9 @@
               del desnivel del manifold (\(\rho g h\)). La caída real la dominan la fricción en las mangueras y la placa fría. (3) Baje
               la manguera a 6 mm: la velocidad sube a casi 6 m/s y la caída de presión se dispara, porque crece con \(v^2\) y también
               con \(1/D\). (4) Suba la potencia a 200 kW sin cambiar nada más: el caudal y la velocidad suben un 67 % y las pérdidas
-              casi se triplican.
+              casi se triplican. (5) Combine 200 kW con mangueras de 6 mm: la fricción pide más presión de la que entrega la CDU. La presión calculada
+              cae por debajo de la de vapor (incluso por debajo de cero, que es imposible), y el indicador avisa de cavitación. En la
+              realidad el caudal bajaría y las GPU se sobrecalentarían: hace falta más presión de bomba o tubos más anchos.
             </div>
             </details>
           </div>
@@ -3040,7 +3047,9 @@
           <div class="links-box">
           <h4>↔ Conexiones con la clase y con otros temas</h4>
           <ul>
-            <li><strong>Módulo de mecánica de fluidos</strong> (programa del curso, semana 1): densidad, presión, continuidad y Bernoulli.</li>
+            <li><strong>Semana 12 (hidrostática):</strong> densidad volumétrica, presión \(P=F/A\), presión hidrostática \(\rho g h\), y la diferencia entre presión absoluta y manométrica. El circuito trabaja con presión manométrica, y el desnivel de 2 m del manifold aporta \(\rho g h\approx20\) kPa. Por el principio de Pascal, la presión de la bomba se transmite a todo el circuito.</li>
+            <li><strong>Semana 12 (dinámica):</strong> la ecuación de continuidad \(A_1v_1=A_2v_2\), deducida de la conservación de la masa, y Bernoulli como energía por unidad de volumen. En el tubo de Venturi, la sección angosta tiene más velocidad y menos presión: lo mismo pasa en las mangueras de cada bandeja. Torricelli, como extensión de Bernoulli, da la velocidad de una fuga. La cavitación aparece cuando la presión cae demasiado.</li>
+            <li><strong>Semana 12:</strong> el profe señaló que en tuberías reales hay que tomar en cuenta la rugosidad de los materiales y la pérdida de energía en el camino, que la clase asumió nula. Por eso esta visualización compara Bernoulli ideal con el circuito real con fricción.</li>
             <li><strong>Semana 4:</strong> Bernoulli es la conservación de la energía por unidad de volumen: \(\tfrac12\rho v^2\) es la cinética, \(\rho g z\) la potencial, y la fricción es trabajo no conservativo que se pierde como calor.</li>
             <li><strong>Tema 6:</strong> el mismo balance de energía; aquí la energía que la bomba entrega se pierde por fricción en lugar de en los frenos.</li>
             <li><strong>Tema 9:</strong> en una órbita también se intercambia energía cinética por potencial con la energía total constante, igual que en Bernoulli sin pérdidas.</li>
@@ -3157,7 +3166,7 @@
           Las fuentes de cada tema están numeradas al final de su sección. Además:
         </p>
         <ul>
-          <li><strong>Material del curso:</strong> clases de Física I (FUN-18), semanas 2 a 10 (cinemática, leyes de Newton, fricción, resortes, trabajo y energía, momento lineal y choques, rotación, momento angular, gravitación, oscilaciones y ondas) y el módulo de mecánica de fluidos del programa.</li>
+          <li><strong>Material del curso:</strong> clases de Física I (FUN-18), semanas 2 a 12 (cinemática, leyes de Newton, fricción, resortes, trabajo y energía, momento lineal y choques, rotación, momento angular, gravitación, oscilaciones, ondas y mecánica de fluidos).</li>
           <li><strong>Herramientas:</strong> HTML, CSS y JavaScript sin <i>frameworks</i>; gráficas con <a href="https://www.chartjs.org/" target="_blank" rel="noopener">Chart.js</a>; ecuaciones con <a href="https://katex.org/" target="_blank" rel="noopener">KaTeX</a>; publicación en GitHub Pages.</li>
           <li><strong>Gráficas, diagramas y simulaciones:</strong> elaboración propia. Los datos de terceros (Pirelli, constantes de <code>Player.cs</code>, ciclos y coeficientes de la EPA, efemérides de JPL Horizons, especificaciones de NVIDIA y OCP) están citados donde se usan.</li>
           <li><strong>Video y audio de terceros:</strong> Tema 5, canal <em>Restore Technique</em> en YouTube, incrustado con su enlace original. Tema 11, grabaciones de la University of Iowa (uso libre). Tema 12, película del Tacoma Narrows de 1940 (Internet Archive, dominio público).</li>
@@ -3176,24 +3185,24 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-<script defer src="assets/js/ui.js?v=37"></script>
-<script defer src="assets/js/conexiones.js?v=37"></script>
-<script defer src="assets/js/tema1-dron.js?v=37"></script>
-<script defer src="assets/js/tema2-salto.js?v=37"></script>
-<script defer src="assets/js/tema3-habitat.js?v=37"></script>
-<script defer src="assets/js/tema4-llantas.js?v=37"></script>
-<script defer src="assets/js/tema5-haptico.js?v=37"></script>
-<script defer src="assets/data/ciclos-epa.js?v=37"></script>
-<script defer src="assets/data/voyager.js?v=37"></script>
-<script defer src="assets/js/tema6-frenado.js?v=37"></script>
-<script defer src="assets/js/tema7-rebote.js?v=37"></script>
-<script defer src="assets/js/tema8-ruedas.js?v=37"></script>
-<script defer src="assets/js/tema9-voyager.js?v=37"></script>
-<script defer src="assets/data/tacoma-inclinacion.js?v=37"></script>
-<script defer src="assets/js/tema10-resorte.js?v=37"></script>
-<script defer src="assets/js/tema11-sonido.js?v=37"></script>
-<script defer src="assets/js/tema12-tacoma.js?v=37"></script>
-<script defer src="assets/js/tema13-enfriamiento.js?v=37"></script>
-<script defer src="assets/js/main.js?v=37"></script>
+<script defer src="assets/js/ui.js?v=39"></script>
+<script defer src="assets/js/conexiones.js?v=39"></script>
+<script defer src="assets/js/tema1-dron.js?v=39"></script>
+<script defer src="assets/js/tema2-salto.js?v=39"></script>
+<script defer src="assets/js/tema3-habitat.js?v=39"></script>
+<script defer src="assets/js/tema4-llantas.js?v=39"></script>
+<script defer src="assets/js/tema5-haptico.js?v=39"></script>
+<script defer src="assets/data/ciclos-epa.js?v=39"></script>
+<script defer src="assets/data/voyager.js?v=39"></script>
+<script defer src="assets/js/tema6-frenado.js?v=39"></script>
+<script defer src="assets/js/tema7-rebote.js?v=39"></script>
+<script defer src="assets/js/tema8-ruedas.js?v=39"></script>
+<script defer src="assets/js/tema9-voyager.js?v=39"></script>
+<script defer src="assets/data/tacoma-inclinacion.js?v=39"></script>
+<script defer src="assets/js/tema10-resorte.js?v=39"></script>
+<script defer src="assets/js/tema11-sonido.js?v=39"></script>
+<script defer src="assets/js/tema12-tacoma.js?v=39"></script>
+<script defer src="assets/js/tema13-enfriamiento.js?v=39"></script>
+<script defer src="assets/js/main.js?v=39"></script>
 </body>
 </html>
